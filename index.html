@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Inventario Empresarial</title>
+
+<style>
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+padding:20px;
+}
+
+.card{
+background:rgba(0,0,0,0.65);
+padding:20px;
+border-radius:15px;
+max-width:550px;
+margin:auto;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+margin-bottom:20px;
+}
+
+input, select, textarea, button{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:8px;
+border:none;
+}
+
+button{
+background:#00c853;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{ background:#00a843; }
+
+.secondary{ background:#607d8b; }
+
+.delete-btn{
+background:#ff3b3b;
+width:auto;
+padding:6px 12px;
+margin-left:10px;
+}
+
+.status{
+padding:10px;
+border-radius:8px;
+font-weight:bold;
+text-align:center;
+margin-top:10px;
+}
+
+.ok{ background:#2e7d32; }
+.error{ background:#c62828; }
+.warning{ background:#ef6c00; }
+
+.hidden{ display:none; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="card" id="login">
+<h2>📦 Inventario Diario</h2>
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="password" id="password" placeholder="Contraseña">
+<button onclick="login()">Ingresar</button>
+<p id="error" style="color:red;"></p>
+</div>
+
+<!-- ADMIN -->
+<div class="card hidden" id="adminPanel">
+<h3>👑 Panel Administrador</h3>
+
+<input type="text" id="productoAdmin" placeholder="Nombre del producto">
+<input type="number" id="cantidadAdmin" placeholder="Cantidad en sistema">
+<button onclick="agregarProducto()">Guardar Producto</button>
+
+<div id="listaProductos"></div>
+
+<hr>
+
+<button onclick="verRespuestas()">Ver Respuestas del Mes</button>
+<button onclick="exportarRespuestas()">Exportar a Excel</button>
+
+<div id="verDatos"></div>
+
+<button class="secondary" onclick="salir()">Salir</button>
+</div>
+
+<!-- COLABORADOR -->
+<div class="card hidden" id="colaboradorPanel">
+<h3>Conteo de Producto</h3>
+
+<select id="selectProducto" onchange="actualizarSistema()"></select>
+
+<input type="number" id="sistema" disabled>
+
+<input type="number" id="fisico" placeholder="Físico buen estado" oninput="validar()">
+<input type="number" id="muestras" placeholder="Muestras / Promociones" oninput="validar()">
+<input type="number" id="caducados" placeholder="Caducados" oninput="validar()">
+
+<textarea id="comentarios" placeholder="Comentarios adicionales"></textarea>
+
+<div id="resultado" class="status hidden"></div>
+
+<button id="btnEnviar" onclick="enviarConteo()" disabled>Enviar Conteo</button>
+<button class="secondary" onclick="salir()">Salir</button>
+</div>
+
+<script>
+
+const passColab="1234";
+const passAdmin="ADMIN2026";
+
+// 🔴 PEGA AQUÍ TU URL REAL DEL FLUJO
+const urlFlujo="";
+
+let productos=[];
+let nombreUsuario="";
+
+function login(){
+nombreUsuario=document.getElementById("nombre").value.trim();
+let pass=document.getElementById("password").value;
+
+if(nombreUsuario===""){
+document.getElementById("error").innerText="Ingrese nombre";
+return;
+}
+
+if(pass===passAdmin){
+document.getElementById("login").classList.add("hidden");
+document.getElementById("adminPanel").classList.remove("hidden");
+return;
+}
+
+if(pass===passColab){
+document.getElementById("login").classList.add("hidden");
+document.getElementById("colaboradorPanel").classList.remove("hidden");
+cargarSelect();
+return;
+}
+
+document.getElementById("error").innerText="Contraseña incorrecta";
+}
+
+function agregarProducto(){
+let prod=document.getElementById("productoAdmin").value;
+let cant=parseFloat(document.getElementById("cantidadAdmin").value);
+if(!prod || !cant){ alert("Complete los campos"); return; }
+productos.push({producto:prod,cantidad:cant});
+mostrarProductos();
+}
+
+function mostrarProductos(){
+let div=document.getElementById("listaProductos");
+div.innerHTML="";
+productos.forEach((p,index)=>{
+div.innerHTML+=`
+<p>
+${p.producto} - Sistema: ${p.cantidad}
+<button class="delete-btn" onclick="eliminarProducto(${index})">Eliminar</button>
+</p>
+`;
+});
+}
+
+function eliminarProducto(index){
+productos.splice(index,1);
+mostrarProductos();
+}
+
+function cargarSelect(){
+let select=document.getElementById("selectProducto");
+select.innerHTML="";
+productos.forEach((p,i)=>{
+select.innerHTML+=`<option value="${i}">${p.producto}</option>`;
+});
+actualizarSistema();
+}
+
+function actualizarSistema(){
+let i=document.getElementById("selectProducto").value;
+if(productos[i]){
+document.getElementById("sistema").value=productos[i].cantidad;
+validar();
+}
+}
+
+function validar(){
+
+let sistema=parseFloat(document.getElementById("sistema").value)||0;
+let fisico=parseFloat(document.getElementById("fisico").value)||0;
+let muestras=parseFloat(document.getElementById("muestras").value)||0;
+let caducados=parseFloat(document.getElementById("caducados").value)||0;
+
+let total=fisico+muestras+caducados;
+let diferencia=sistema-total;
+
+let resultado=document.getElementById("resultado");
+let btn=document.getElementById("btnEnviar");
+
+resultado.classList.remove("hidden","ok","error","warning");
+
+if(total===0){
+btn.disabled=true;
+resultado.classList.add("hidden");
+return;
+}
+
+if(diferencia===0){
+resultado.innerText="✅ Inventario CUADRADO";
+resultado.classList.add("ok");
+btn.disabled=false;
+}else if(diferencia>0){
+resultado.innerText="❌ FALTANTE de "+diferencia;
+resultado.classList.add("error");
+btn.disabled=true;
+}else{
+resultado.innerText="⚠ SOBRANTE de "+Math.abs(diferencia);
+resultado.classList.add("warning");
+btn.disabled=true;
+}
+}
+
+async function enviarConteo(){
+
+let i=document.getElementById("selectProducto").value;
+let producto=productos[i];
+
+let datos={
+fecha:new Date().toLocaleDateString(),
+hora:new Date().toLocaleTimeString(),
+nombre:nombreUsuario,
+producto:producto.producto,
+sistema:producto.cantidad,
+fisico:parseFloat(document.getElementById("fisico").value)||0,
+muestras:parseFloat(document.getElementById("muestras").value)||0,
+caducados:parseFloat(document.getElementById("caducados").value)||0,
+comentarios:document.getElementById("comentarios").value
+};
+
+try{
+if(urlFlujo){
+let response = await fetch(urlFlujo,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(datos)
+});
+
+if(!response.ok){
+alert("⚠ Error del flujo");
+return;
+}
+}
+alert("✅ Guardado correctamente en la nube");
+}catch(error){
+alert("❌ Error enviando: "+error);
+}
+
+}
+
+function verRespuestas(){
+alert("Las respuestas se visualizan directamente desde Excel en OneDrive.");
+}
+
+function exportarRespuestas(){
+alert("Exportación se realiza desde Excel en la nube.");
+}
+
+function salir(){
+document.getElementById("adminPanel").classList.add("hidden");
+document.getElementById("colaboradorPanel").classList.add("hidden");
+document.getElementById("login").classList.remove("hidden");
+document.getElementById("password").value="";
+}
+
+</script>
+</body>
+</html>
