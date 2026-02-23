@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Panel Administrador</title>
+<title>Login Inventario</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -11,16 +11,20 @@
 body{
 font-family:Arial;
 background:#1e3c72;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
 color:white;
-padding:20px;
 }
 .card{
 background:#203a43;
-padding:20px;
+padding:30px;
 border-radius:12px;
-margin-bottom:20px;
+width:350px;
 }
-input,select,button{
+input,button{
 width:100%;
 padding:10px;
 margin:8px 0;
@@ -31,251 +35,67 @@ button{
 background:#00c853;
 color:white;
 font-weight:bold;
-cursor:pointer;
 }
-button:hover{
-opacity:0.9;
-}
-.producto{
-background:#1c2b33;
-padding:10px;
-margin:8px 0;
-border-radius:8px;
-cursor:pointer;
-}
-.registro{
-background:#102027;
-padding:10px;
-margin:6px 0;
-border-radius:6px;
-}
-.fechaBox{
-background:#1565c0;
-padding:6px;
-margin-top:10px;
-border-radius:6px;
-}
-.eliminar{
-background:#c62828;
-margin-top:5px;
+#error{
+color:#ff5252;
 }
 </style>
 </head>
 <body>
 
-<script>
-// Validar sesión admin
-if(localStorage.getItem("rol")!=="admin"){
-alert("Acceso solo administrador");
-window.location="login.html";
-}
-</script>
-
-<h2>👑 Panel Administrador</h2>
-
-<button onclick="cerrarSesion()">Cerrar Sesión</button>
-
-<!-- Crear Producto -->
 <div class="card">
-<h3>Crear Producto</h3>
-<input type="text" id="nombreProducto" placeholder="Nombre Producto">
-<input type="number" id="cantidadSistema" placeholder="Cantidad Sistema">
-<button onclick="crearProducto()">Guardar Producto</button>
-</div>
+<h2>🔐 Login Inventario</h2>
 
-<!-- Filtro Mes -->
-<div class="card">
-<h3>Filtrar por Mes</h3>
-<input type="month" id="filtroMes">
-<button onclick="aplicarFiltro()">Aplicar Filtro</button>
-<button onclick="exportarExcel()">Exportar Excel</button>
-</div>
+<input type="text" id="usuario" placeholder="Usuario">
+<input type="password" id="password" placeholder="Contraseña">
 
-<!-- Lista Productos -->
-<div class="card">
-<h3>Productos Registrados</h3>
-<div id="listaProductos"></div>
+<button onclick="login()">Ingresar</button>
+
+<p id="error"></p>
 </div>
 
 <script>
 
 const firebaseConfig = {
-apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
-authDomain: "inventario-eurofert.firebaseapp.com",
-databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
-projectId: "inventario-eurofert",
-storageBucket: "inventario-eurofert.firebasestorage.app",
-messagingSenderId: "786796692081",
-appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+    apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+    authDomain: "inventario-eurofert.firebaseapp.com",
+    databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
+    projectId: "inventario-eurofert",
+    storageBucket: "inventario-eurofert.firebasestorage.app",
+    messagingSenderId: "786796692081",
+    appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let filtroMesSeleccionado = null;
+function login(){
 
-// Cerrar sesión
-function cerrarSesion(){
-localStorage.clear();
-window.location="login.html";
-}
+let usuario = document.getElementById("usuario").value;
+let password = document.getElementById("password").value;
 
-// Crear producto
-function crearProducto(){
-let nombre=document.getElementById("nombreProducto").value;
-let sistema=parseInt(document.getElementById("cantidadSistema").value);
-
-if(!nombre || !sistema){
-alert("Complete los campos");
-return;
-}
-
-db.ref("productos").push({
-nombre:nombre,
-sistema:sistema
-});
-
-document.getElementById("nombreProducto").value="";
-document.getElementById("cantidadSistema").value="";
-}
-
-// Cargar productos
-db.ref("productos").on("value", snapshot=>{
-
-let contenedor=document.getElementById("listaProductos");
-contenedor.innerHTML="";
-
-snapshot.forEach(child=>{
-let data=child.val();
-let key=child.key;
-
-contenedor.innerHTML+=`
-<div class="producto" onclick="toggleProducto('${data.nombre}')">
-📦 ${data.nombre} (Sistema: ${data.sistema})
-</div>
-<div id="registros-${data.nombre}" style="display:none;"></div>
-`;
-});
-
-});
-
-// Toggle producto
-function toggleProducto(nombreProducto){
-
-let contenedor=document.getElementById("registros-"+nombreProducto);
-
-if(contenedor.style.display==="block"){
-contenedor.style.display="none";
-return;
-}
-
-contenedor.style.display="block";
-contenedor.innerHTML="Cargando...";
-
-let mesConsulta = filtroMesSeleccionado || new Date().toISOString().substring(0,7);
-
-db.ref("inventario/"+mesConsulta).once("value", snapshot=>{
+db.ref("usuarios/" + usuario).once("value", snapshot=>{
 
 if(!snapshot.exists()){
-contenedor.innerHTML="<p>No hay registros este mes.</p>";
+document.getElementById("error").innerText="Usuario no existe";
 return;
 }
 
-let datosPorFecha={};
+let data = snapshot.val();
 
-snapshot.forEach(child=>{
-let data=child.val();
-let key=child.key;
-
-if(data.producto===nombreProducto){
-
-let fechaISO=data.fecha;
-let fecha=fechaISO.split("T")[0];
-let hora=new Date(fechaISO).toLocaleTimeString();
-
-if(!datosPorFecha[fecha]){
-datosPorFecha[fecha]=[];
-}
-
-datosPorFecha[fecha].push({
-...data,
-id:key,
-hora:hora
-});
-
-}
-});
-
-contenedor.innerHTML="";
-
-Object.keys(datosPorFecha).sort().reverse().forEach(fecha=>{
-
-contenedor.innerHTML+=`
-<div class="fechaBox">📅 ${fecha}</div>
-`;
-
-datosPorFecha[fecha].forEach(registro=>{
-
-contenedor.innerHTML+=`
-<div class="registro">
-👤 ${registro.nombre}<br>
-🕒 ${registro.hora}<br>
-Sistema: ${registro.sistema}<br>
-Físico: ${registro.fisico}<br>
-Muestras: ${registro.muestras}<br>
-Caducados: ${registro.caducados}
-<button class="eliminar" onclick="eliminarRegistro('${mesConsulta}','${registro.id}')">Eliminar</button>
-</div>
-`;
-
-});
-
-});
-
-});
-
-}
-
-// Eliminar registro
-function eliminarRegistro(mes,id){
-if(confirm("¿Eliminar registro?")){
-db.ref("inventario/"+mes+"/"+id).remove();
-}
-}
-
-// Filtro mes
-function aplicarFiltro(){
-filtroMesSeleccionado=document.getElementById("filtroMes").value;
-alert("Filtro aplicado");
-}
-
-// Exportar Excel
-function exportarExcel(){
-
-let mesConsulta = filtroMesSeleccionado || new Date().toISOString().substring(0,7);
-
-db.ref("inventario/"+mesConsulta).once("value", snapshot=>{
-
-if(!snapshot.exists()){
-alert("No hay datos");
+if(data.password !== password){
+document.getElementById("error").innerText="Contraseña incorrecta";
 return;
 }
 
-let csv="Fecha,Hora,Nombre,Producto,Sistema,Fisico,Muestras,Caducados\n";
+localStorage.setItem("usuario", usuario);
+localStorage.setItem("rol", data.rol);
 
-snapshot.forEach(child=>{
-let d=child.val();
-let fecha=d.fecha.split("T")[0];
-let hora=new Date(d.fecha).toLocaleTimeString();
-
-csv+=`${fecha},${hora},${d.nombre},${d.producto},${d.sistema},${d.fisico},${d.muestras},${d.caducados}\n`;
-});
-
-let blob=new Blob([csv],{type:"text/csv"});
-let link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download="inventario_"+mesConsulta+".csv";
-link.click();
+if(data.rol === "admin"){
+window.location="admin.html";
+}else{
+window.location="panel.html";
+}
 
 });
 
