@@ -8,63 +8,24 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <style>
-body{
-font-family:Arial;
-background:#1e3c72;
-color:white;
-padding:20px;
-}
-.card{
-background:#203a43;
-padding:20px;
-border-radius:12px;
-margin-bottom:20px;
-}
-input,select,button{
-width:100%;
-padding:10px;
-margin:8px 0;
-border-radius:6px;
-border:none;
-}
-button{
-background:#00c853;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-button:hover{
-opacity:0.9;
-}
-.producto{
-background:#1c2b33;
-padding:10px;
-margin:8px 0;
-border-radius:8px;
-cursor:pointer;
-}
-.registro{
-background:#102027;
-padding:10px;
-margin:6px 0;
-border-radius:6px;
-}
-.fechaBox{
-background:#1565c0;
-padding:6px;
-margin-top:10px;
-border-radius:6px;
-}
-.eliminar{
-background:#c62828;
-margin-top:5px;
-}
+body{font-family:Arial;background:#1e3c72;color:white;padding:20px;}
+.card{background:#203a43;padding:20px;border-radius:12px;margin-bottom:20px;position:relative;}
+input,select,button{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:none;}
+button{background:#00c853;color:white;font-weight:bold;cursor:pointer;}
+button:hover{opacity:0.9;}
+.sugerencias{background:#102027;border-radius:6px;max-height:150px;overflow-y:auto;position:absolute;width:92%;z-index:10;}
+.sugerencias div{padding:8px;cursor:pointer;}
+.sugerencias div:hover{background:#1565c0;}
+.producto{background:#102027;padding:8px;margin:6px 0;border-radius:6px;cursor:pointer;}
+.registro{background:#1c313a;padding:8px;margin:6px 0;border-radius:6px;}
+.fechaBox{background:#1565c0;padding:6px;margin-top:10px;border-radius:6px;}
+.eliminar{background:#c62828;margin-top:5px;}
+.asignado{background:#455a64;padding:6px;margin:5px 0;border-radius:6px;}
 </style>
 </head>
 <body>
 
 <script>
-// Validar sesión admin
 if(localStorage.getItem("rol")!=="admin"){
 alert("Acceso solo administrador");
 window.location="index.html";
@@ -72,216 +33,254 @@ window.location="index.html";
 </script>
 
 <h2>👑 Panel Administrador</h2>
-
 <button onclick="cerrarSesion()">Cerrar Sesión</button>
 
-<!-- Crear Producto -->
+<!-- CREAR USUARIO -->
 <div class="card">
-<h3>Crear Producto</h3>
-<input type="text" id="nombreProducto" placeholder="Nombre Producto">
-<input type="number" id="cantidadSistema" placeholder="Cantidad Sistema">
-<button onclick="crearProducto()">Guardar Producto</button>
+<h3>👤 Crear Usuario</h3>
+<input type="text" id="nuevoUsuario" placeholder="Usuario">
+<input type="password" id="nuevoPassword" placeholder="Contraseña">
+<select id="rolUsuario">
+<option value="colaborador">Colaborador</option>
+<option value="admin">Administrador</option>
+</select>
+<button onclick="crearUsuario()">Crear Usuario</button>
 </div>
 
-<!-- Filtro Mes -->
+<!-- CREAR PRODUCTO -->
 <div class="card">
-<h3>Filtrar por Mes</h3>
+<h3>📦 Crear / Actualizar Producto</h3>
+<input type="text" id="nombreProducto" placeholder="Nombre Producto" onkeyup="buscarSugerencias()">
+<div id="listaSugerencias" class="sugerencias"></div>
+<input type="number" id="cantidadSistema" placeholder="Cantidad Sistema">
+<button onclick="crearProducto()">Guardar Producto</button>
+<div id="estadoProducto"></div>
+</div>
+
+<!-- ASIGNAR PRODUCTO -->
+<div class="card">
+<h3>📌 Asignar Producto a Colaborador</h3>
+<select id="selectUsuario"></select>
+<select id="selectProducto"></select>
+<button onclick="asignarProducto()">Asignar</button>
+<div id="estadoAsignacion"></div>
+<h4>📋 Productos Asignados</h4>
+<div id="listaAsignados"></div>
+</div>
+
+<!-- FILTRO MES -->
+<div class="card">
+<h3>📅 Filtro por Mes</h3>
 <input type="month" id="filtroMes">
 <button onclick="aplicarFiltro()">Aplicar Filtro</button>
 <button onclick="exportarExcel()">Exportar Excel</button>
 </div>
 
-<!-- Lista Productos -->
+<!-- PRODUCTOS -->
 <div class="card">
-<h3>Productos Registrados</h3>
+<h3>📊 Productos</h3>
 <div id="listaProductos"></div>
 </div>
 
 <script>
 
-const firebaseConfig = {
-apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
-authDomain: "inventario-eurofert.firebaseapp.com",
-databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
-projectId: "inventario-eurofert",
-storageBucket: "inventario-eurofert.firebasestorage.app",
-messagingSenderId: "786796692081",
-appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+const firebaseConfig={
+apiKey:"AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+authDomain:"inventario-eurofert.firebaseapp.com",
+databaseURL:"https://inventario-eurofert-default-rtdb.firebaseio.com",
+projectId:"inventario-eurofert",
+storageBucket:"inventario-eurofert.firebasestorage.app",
+messagingSenderId:"786796692081",
+appId:"1:786796692081:web:c742cfbd1d23c3347f91d0"
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const db=firebase.database();
 
-let filtroMesSeleccionado = null;
+let productosCache={};
+let filtroMesSeleccionado=null;
 
-// Cerrar sesión
 function cerrarSesion(){
 localStorage.clear();
 window.location="index.html";
 }
 
-// Crear producto
-function crearProducto(){
-let nombre=document.getElementById("nombreProducto").value;
-let sistema=parseInt(document.getElementById("cantidadSistema").value);
-
-if(!nombre || !sistema){
-alert("Complete los campos");
-return;
+function crearUsuario(){
+let u=document.getElementById("nuevoUsuario").value.trim();
+let p=document.getElementById("nuevoPassword").value.trim();
+let r=document.getElementById("rolUsuario").value;
+if(!u||!p){alert("Complete campos");return;}
+db.ref("usuarios/"+u).set({password:p,rol:r});
+alert("Usuario creado");
 }
 
-db.ref("productos").push({
-nombre:nombre,
-sistema:sistema
-});
-
-document.getElementById("nombreProducto").value="";
-document.getElementById("cantidadSistema").value="";
+function generarID(nombre){
+return nombre.toLowerCase().trim().replace(/\s+/g,"_").replace(/[^\w_]/g,"");
 }
 
-// Cargar productos
-db.ref("productos").on("value", snapshot=>{
-
+db.ref("productos").on("value",snapshot=>{
+productosCache={};
 let contenedor=document.getElementById("listaProductos");
+let selectProd=document.getElementById("selectProducto");
 contenedor.innerHTML="";
-
+selectProd.innerHTML="";
 snapshot.forEach(child=>{
-let data=child.val();
-let key=child.key;
-
+productosCache[child.key]=child.val();
 contenedor.innerHTML+=`
-<div class="producto" onclick="toggleProducto('${data.nombre}')">
-📦 ${data.nombre} (Sistema: ${data.sistema})
+<div class="producto" onclick="toggleProducto('${child.key}')">
+${child.val().nombre} (Sistema: ${child.val().sistema})
 </div>
-<div id="registros-${data.nombre}" style="display:none;"></div>
+<div id="registros-${child.key}" style="display:none;"></div>
 `;
+let opt=document.createElement("option");
+opt.value=child.key;
+opt.text=child.val().nombre;
+selectProd.appendChild(opt);
+});
 });
 
-});
-
-// Toggle producto
-function toggleProducto(nombreProducto){
-
-let contenedor=document.getElementById("registros-"+nombreProducto);
-
-if(contenedor.style.display==="block"){
-contenedor.style.display="none";
-return;
-}
-
-contenedor.style.display="block";
-contenedor.innerHTML="Cargando...";
-
-let mesConsulta = filtroMesSeleccionado || new Date().toISOString().substring(0,7);
-
-db.ref("inventario/"+mesConsulta).once("value", snapshot=>{
-
-if(!snapshot.exists()){
-contenedor.innerHTML="<p>No hay registros este mes.</p>";
-return;
-}
-
-let datosPorFecha={};
-
+db.ref("usuarios").on("value",snapshot=>{
+let select=document.getElementById("selectUsuario");
+select.innerHTML="";
 snapshot.forEach(child=>{
-let data=child.val();
-let key=child.key;
-
-if(data.producto===nombreProducto){
-
-let fechaISO=data.fecha;
-let fecha=fechaISO.split("T")[0];
-let hora=new Date(fechaISO).toLocaleTimeString();
-
-if(!datosPorFecha[fecha]){
-datosPorFecha[fecha]=[];
-}
-
-datosPorFecha[fecha].push({
-...data,
-id:key,
-hora:hora
-});
-
+if(child.val().rol==="colaborador"){
+let opt=document.createElement("option");
+opt.value=child.key;
+opt.text=child.key;
+select.appendChild(opt);
 }
 });
+});
 
-contenedor.innerHTML="";
+function crearProducto(){
+let nombre=document.getElementById("nombreProducto").value.trim();
+let sistema=parseInt(document.getElementById("cantidadSistema").value);
+let estado=document.getElementById("estadoProducto");
+estado.innerHTML="";
+if(!nombre||!sistema){estado.innerHTML="<p style='color:red'>Complete campos</p>";return;}
+let id=generarID(nombre);
 
-Object.keys(datosPorFecha).sort().reverse().forEach(fecha=>{
+if(productosCache[id]){
+if(confirm("Producto existe. ¿Actualizar cantidad?")){
+db.ref("productos/"+id).update({sistema:sistema});
+estado.innerHTML="<p style='color:lightgreen'>Cantidad actualizada</p>";
+}
+}else{
+db.ref("productos/"+id).set({nombre:nombre,sistema:sistema});
+estado.innerHTML="<p style='color:lightgreen'>Producto creado</p>";
+}
+}
 
-contenedor.innerHTML+=`
-<div class="fechaBox">📅 ${fecha}</div>
-`;
+function buscarSugerencias(){
+let input=document.getElementById("nombreProducto").value.toLowerCase();
+let lista=document.getElementById("listaSugerencias");
+lista.innerHTML="";
+if(input.length<2)return;
+Object.keys(productosCache).forEach(key=>{
+let p=productosCache[key];
+if(p.nombre.toLowerCase().includes(input)){
+let div=document.createElement("div");
+div.innerText=p.nombre+" (Sistema: "+p.sistema+")";
+div.onclick=function(){
+document.getElementById("nombreProducto").value=p.nombre;
+document.getElementById("cantidadSistema").value=p.sistema;
+lista.innerHTML="";
+};
+lista.appendChild(div);
+}
+});
+}
 
-datosPorFecha[fecha].forEach(registro=>{
+function asignarProducto(){
+let usuario=document.getElementById("selectUsuario").value;
+let producto=document.getElementById("selectProducto").value;
+db.ref("asignaciones/"+usuario+"/"+producto).set(true);
+document.getElementById("estadoAsignacion").innerHTML="<p style='color:lightgreen'>Asignado correctamente</p>";
+mostrarAsignados(usuario);
+}
 
-contenedor.innerHTML+=`
+function mostrarAsignados(usuario){
+let lista=document.getElementById("listaAsignados");
+lista.innerHTML="";
+db.ref("asignaciones/"+usuario).once("value").then(snapshot=>{
+if(!snapshot.exists()){lista.innerHTML="No tiene productos asignados";return;}
+snapshot.forEach(child=>{
+let id=child.key;
+let nombre=productosCache[id]?.nombre||id;
+lista.innerHTML+=`
+<div class="asignado">
+${nombre}
+<button class="eliminar" onclick="quitarAsignacion('${usuario}','${id}')">Quitar</button>
+</div>`;
+});
+});
+}
+
+function quitarAsignacion(usuario,id){
+db.ref("asignaciones/"+usuario+"/"+id).remove();
+mostrarAsignados(usuario);
+}
+
+document.getElementById("selectUsuario").addEventListener("change",function(){
+mostrarAsignados(this.value);
+});
+
+function aplicarFiltro(){
+filtroMesSeleccionado=document.getElementById("filtroMes").value;
+alert("Filtro aplicado");
+}
+
+function toggleProducto(id){
+let cont=document.getElementById("registros-"+id);
+if(cont.style.display==="block"){cont.style.display="none";return;}
+cont.style.display="block";
+cont.innerHTML="Cargando...";
+let mes=filtroMesSeleccionado||new Date().toISOString().substring(0,7);
+db.ref("inventario/"+mes).once("value").then(snapshot=>{
+if(!snapshot.exists()){cont.innerHTML="No hay registros";return;}
+let html="";
+snapshot.forEach(child=>{
+let d=child.val();
+if(generarID(d.producto)===id){
+let fecha=d.fecha.split("T")[0];
+let hora=new Date(d.fecha).toLocaleTimeString();
+html+=`
 <div class="registro">
-👤 ${registro.nombre}<br>
-🕒 ${registro.hora}<br>
-Sistema: ${registro.sistema}<br>
-Físico: ${registro.fisico}<br>
-Muestras: ${registro.muestras}<br>
-Caducados: ${registro.caducados}
-<button class="eliminar" onclick="eliminarRegistro('${mesConsulta}','${registro.id}')">Eliminar</button>
-</div>
-`;
-
+${fecha} - ${hora}<br>
+${d.nombre} | F:${d.fisico} M:${d.muestras} C:${d.caducados}
+<button class="eliminar" onclick="eliminarRegistro('${mes}','${child.key}')">Eliminar</button>
+</div>`;
+}
 });
-
+cont.innerHTML=html||"Sin registros";
 });
-
-});
-
 }
 
-// Eliminar registro
 function eliminarRegistro(mes,id){
 if(confirm("¿Eliminar registro?")){
 db.ref("inventario/"+mes+"/"+id).remove();
 }
 }
 
-// Filtro mes
-function aplicarFiltro(){
-filtroMesSeleccionado=document.getElementById("filtroMes").value;
-alert("Filtro aplicado");
-}
-
-// Exportar Excel
 function exportarExcel(){
-
-let mesConsulta = filtroMesSeleccionado || new Date().toISOString().substring(0,7);
-
-db.ref("inventario/"+mesConsulta).once("value", snapshot=>{
-
-if(!snapshot.exists()){
-alert("No hay datos");
-return;
-}
-
+let mes=filtroMesSeleccionado||new Date().toISOString().substring(0,7);
+db.ref("inventario/"+mes).once("value").then(snapshot=>{
+if(!snapshot.exists()){alert("No hay datos");return;}
 let csv="Fecha,Hora,Nombre,Producto,Sistema,Fisico,Muestras,Caducados\n";
-
 snapshot.forEach(child=>{
 let d=child.val();
 let fecha=d.fecha.split("T")[0];
 let hora=new Date(d.fecha).toLocaleTimeString();
-
 csv+=`${fecha},${hora},${d.nombre},${d.producto},${d.sistema},${d.fisico},${d.muestras},${d.caducados}\n`;
 });
-
 let blob=new Blob([csv],{type:"text/csv"});
 let link=document.createElement("a");
 link.href=URL.createObjectURL(blob);
-link.download="inventario_"+mesConsulta+".csv";
+link.download="inventario_"+mes+".csv";
 link.click();
-
 });
-
 }
 
 </script>
-
 </body>
 </html>

@@ -102,25 +102,40 @@ window.location="index.html";
 }
 
 // 🔹 Cargar productos
-db.ref("productos").on("value", snapshot=>{
+let usuario=localStorage.getItem("usuario");
+
+db.ref("asignaciones/"+usuario).once("value").then(snapshot=>{
+
+if(!snapshot.exists()){
+document.getElementById("productoSelect").innerHTML="<option>No tiene productos asignados</option>";
+return;
+}
+
+let productosAsignados=snapshot.val();
+
+db.ref("productos").once("value").then(prodSnap=>{
 
 let select=document.getElementById("productoSelect");
 select.innerHTML="";
 
-if(!snapshot.exists()){
-select.innerHTML="<option>No hay productos creados</option>";
-return;
-}
+prodSnap.forEach(child=>{
+let id=child.key;
 
-snapshot.forEach(child=>{
+if(productosAsignados[id]){
+
 let data=child.val();
 
 let option=document.createElement("option");
 option.value=data.nombre;
-option.text=data.nombre + " (Sistema: " + data.sistema + ")";
-option.setAttribute("data-sistema", data.sistema);
+option.text=data.nombre+" (Sistema: "+data.sistema+")";
+option.setAttribute("data-sistema",data.sistema);
 
 select.appendChild(option);
+
+}
+
+});
+
 });
 
 });
