@@ -20,7 +20,7 @@ padding:20px;
 border-radius:12px;
 margin-bottom:20px;
 }
-input,button{
+input,button,select{
 width:100%;
 padding:10px;
 margin:8px 0;
@@ -32,9 +32,6 @@ background:#00c853;
 color:white;
 font-weight:bold;
 cursor:pointer;
-}
-button:hover{
-opacity:0.9;
 }
 .producto{
 background:#1c2b33;
@@ -62,25 +59,30 @@ padding:8px;
 margin-top:10px;
 border-radius:6px;
 }
-.eliminarBtn{
-background:#c62828;
-}
-.eliminarTodoBtn{
-background:#ff6f00;
-margin-top:10px;
-}
-.filtroMes{
-background:#102a43;
-padding:10px;
-border-radius:8px;
-margin-bottom:15px;
-}
+.eliminarBtn{ background:#c62828; }
+.eliminarTodoBtn{ background:#ff6f00; margin-top:10px; }
+.filtroMes{ background:#102a43; padding:10px; border-radius:8px; margin-bottom:15px; }
 </style>
 </head>
 <body>
 
 <h2>👑 Panel Administrador</h2>
 
+<button onclick="cerrarSesion()">Cerrar Sesión</button>
+
+<!-- CREAR USUARIO -->
+<div class="card">
+<h3>👤 Crear Usuario</h3>
+<input type="text" id="nuevoUsuario" placeholder="Nombre usuario">
+<input type="password" id="nuevoPassword" placeholder="Contraseña">
+<select id="rolUsuario">
+<option value="colaborador">Colaborador</option>
+<option value="admin">Administrador</option>
+</select>
+<button onclick="crearUsuario()">Crear Usuario</button>
+</div>
+
+<!-- CREAR PRODUCTO -->
 <div class="card">
 <h3>➕ Crear Producto</h3>
 <input type="text" id="nombreProducto" placeholder="Nombre producto">
@@ -88,6 +90,7 @@ margin-bottom:15px;
 <button onclick="crearProducto()">Guardar Producto</button>
 </div>
 
+<!-- FILTRO MES -->
 <div class="card filtroMes">
 <h3>📅 Filtro por Mes</h3>
 <input type="month" id="mesFiltro">
@@ -95,14 +98,21 @@ margin-bottom:15px;
 <button onclick="limpiarFiltro()">Ver Todo</button>
 </div>
 
+<!-- LISTA PRODUCTOS -->
 <div class="card">
-<h3>📦 Productos Registrados (Click para ver registros)</h3>
+<h3>📦 Productos (Click para ver registros)</h3>
 <div id="listaProductos"></div>
 </div>
 
 <script>
 
-// 🔥 CONFIGURACIÓN FIREBASE
+// 🔒 PROTEGER ACCESO SOLO ADMIN
+if(localStorage.getItem("rol") !== "admin"){
+alert("Acceso denegado");
+window.location="login.html";
+}
+
+// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
     apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
     authDomain: "inventario-eurofert.firebaseapp.com",
@@ -118,13 +128,41 @@ const db = firebase.database();
 
 let filtroMesSeleccionado = null;
 
-// 🔹 Crear Producto
+// 🔹 CERRAR SESIÓN
+function cerrarSesion(){
+localStorage.clear();
+window.location="login.html";
+}
+
+// 🔹 CREAR USUARIO
+function crearUsuario(){
+let usuario = document.getElementById("nuevoUsuario").value;
+let password = document.getElementById("nuevoPassword").value;
+let rol = document.getElementById("rolUsuario").value;
+
+if(usuario==="" || password===""){
+alert("Complete los campos");
+return;
+}
+
+db.ref("usuarios/" + usuario).set({
+password: password,
+rol: rol
+});
+
+alert("Usuario creado correctamente");
+
+document.getElementById("nuevoUsuario").value="";
+document.getElementById("nuevoPassword").value="";
+}
+
+// 🔹 CREAR PRODUCTO
 function crearProducto(){
 let nombre = document.getElementById("nombreProducto").value;
 let sistema = parseInt(document.getElementById("cantidadSistema").value) || 0;
 
-if(nombre === ""){
-alert("Ingrese nombre del producto");
+if(nombre===""){
+alert("Ingrese nombre producto");
 return;
 }
 
@@ -137,123 +175,91 @@ document.getElementById("nombreProducto").value="";
 document.getElementById("cantidadSistema").value="";
 }
 
-
-// 🔹 Mostrar Productos
+// 🔹 MOSTRAR PRODUCTOS
 db.ref("productos").on("value", snapshot=>{
-
-let lista = document.getElementById("listaProductos");
+let lista=document.getElementById("listaProductos");
 lista.innerHTML="";
-
 snapshot.forEach(child=>{
-let data = child.val();
-
-lista.innerHTML += `
+let data=child.val();
+lista.innerHTML+=`
 <div class="producto" onclick="toggleProducto('${data.nombre}')">
 📦 ${data.nombre} - Sistema: ${data.sistema}
 <div id="registros-${data.nombre}" class="registrosProducto"></div>
 </div>
 `;
 });
-
 });
 
-
-// 🔹 Filtro Mes
+// 🔹 FILTRO MES
 function aplicarFiltro(){
-filtroMesSeleccionado = document.getElementById("mesFiltro").value;
-alert("Filtro aplicado: " + filtroMesSeleccionado);
+filtroMesSeleccionado=document.getElementById("mesFiltro").value;
+alert("Filtro aplicado");
 }
-
 function limpiarFiltro(){
-filtroMesSeleccionado = null;
+filtroMesSeleccionado=null;
 document.getElementById("mesFiltro").value="";
-alert("Mostrando todos los registros");
 }
 
-
-// 🔹 Mostrar registros por producto
+// 🔹 MOSTRAR REGISTROS
 function toggleProducto(nombreProducto){
 
-let contenedor = document.getElementById("registros-" + nombreProducto);
+let contenedor=document.getElementById("registros-"+nombreProducto);
 
-if(contenedor.style.display === "block"){
-contenedor.style.display = "none";
+if(contenedor.style.display==="block"){
+contenedor.style.display="none";
 return;
 }
 
-contenedor.style.display = "block";
-contenedor.innerHTML = "Cargando...";
+contenedor.style.display="block";
+contenedor.innerHTML="Cargando...";
 
 db.ref("inventario").once("value", snapshot=>{
 
-let datosPorFecha = {};
-let registrosTotales = [];
+let datosPorFecha={};
 
 snapshot.forEach(child=>{
-let data = child.val();
-let key = child.key;
+let data=child.val();
+let key=child.key;
 
-if(data.producto === nombreProducto){
+if(data.producto===nombreProducto){
 
-let fechaISO = data.fecha;
-let fecha = fechaISO.split("T")[0];
-let mesRegistro = fechaISO.substring(0,7);
+let fechaISO=data.fecha;
+let mesRegistro=fechaISO.substring(0,7);
 
-// 🔎 aplicar filtro si existe
-if(filtroMesSeleccionado && mesRegistro !== filtroMesSeleccionado){
+if(filtroMesSeleccionado && mesRegistro!==filtroMesSeleccionado){
 return;
 }
 
-let hora = new Date(fechaISO).toLocaleTimeString();
+let fecha=fechaISO.split("T")[0];
+let hora=new Date(fechaISO).toLocaleTimeString();
 
 if(!datosPorFecha[fecha]){
-datosPorFecha[fecha] = [];
+datosPorFecha[fecha]=[];
 }
 
-datosPorFecha[fecha].push({
-...data,
-id:key,
-hora:hora
-});
-
-registrosTotales.push(key);
+datosPorFecha[fecha].push({...data,id:key,hora:hora});
 }
 });
 
-if(registrosTotales.length === 0){
-contenedor.innerHTML = "<p>No hay registros para este producto en el mes seleccionado.</p>";
-return;
-}
+contenedor.innerHTML="";
 
-contenedor.innerHTML = `
-<button class="eliminarTodoBtn" onclick="eliminarTodos('${nombreProducto}')">
-🗑 Eliminar TODOS los registros de este producto
-</button>
-`;
+Object.keys(datosPorFecha).sort().reverse().forEach(fecha=>{
 
-let fechasOrdenadas = Object.keys(datosPorFecha).sort().reverse();
-
-fechasOrdenadas.forEach(fecha=>{
-
-contenedor.innerHTML += `
-<div class="fechaBox">
-📅 ${fecha}
-</div>
+contenedor.innerHTML+=`
+<div class="fechaBox">📅 ${fecha}</div>
 `;
 
 datosPorFecha[fecha].forEach(registro=>{
 
-contenedor.innerHTML += `
+contenedor.innerHTML+=`
 <div class="registro">
 👤 ${registro.nombre}<br>
-🕒 Hora: ${registro.hora}<br>
+🕒 ${registro.hora}<br>
 Sistema: ${registro.sistema}<br>
 Físico: ${registro.fisico}<br>
 Muestras: ${registro.muestras}<br>
 Caducados: ${registro.caducados}<br><br>
-<button class="eliminarBtn" onclick="eliminarRegistro('${registro.id}')">
-🗑 Eliminar
-</button>
+<button class="eliminarBtn" onclick="eliminarRegistro('${registro.id}')">🗑 Eliminar</button>
 </div>
 `;
 
@@ -265,54 +271,10 @@ Caducados: ${registro.caducados}<br><br>
 
 }
 
-
-// 🔹 Eliminar registro individual
+// 🔹 ELIMINAR REGISTRO
 function eliminarRegistro(id){
-
-if(!confirm("¿Seguro que deseas eliminar este registro?")){
-return;
-}
-
-db.ref("inventario/" + id).remove()
-.then(()=>{
-alert("Registro eliminado correctamente");
-})
-.catch(error=>{
-alert("Error: " + error.message);
-});
-
-}
-
-
-// 🔹 Eliminar todos registros de un producto
-function eliminarTodos(nombreProducto){
-
-if(!confirm("⚠ Esto eliminará TODOS los registros visibles según filtro. ¿Continuar?")){
-return;
-}
-
-db.ref("inventario").once("value", snapshot=>{
-
-snapshot.forEach(child=>{
-let data = child.val();
-
-let fechaISO = data.fecha;
-let mesRegistro = fechaISO.substring(0,7);
-
-if(data.producto === nombreProducto){
-
-if(!filtroMesSeleccionado || mesRegistro === filtroMesSeleccionado){
-db.ref("inventario/" + child.key).remove();
-}
-
-}
-
-});
-
-alert("Registros eliminados correctamente");
-
-});
-
+if(!confirm("¿Eliminar registro?")) return;
+db.ref("inventario/"+id).remove();
 }
 
 </script>
