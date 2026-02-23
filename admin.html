@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Panel Administrador</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+body{
+font-family:Arial;
+background:#1e3c72;
+color:white;
+padding:20px;
+}
+.card{
+background:#203a43;
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+}
+input,button{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+}
+button{
+background:#00c853;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+button:hover{
+opacity:0.9;
+}
+.producto{
+background:#1c2b33;
+padding:12px;
+margin:6px 0;
+border-radius:8px;
+cursor:pointer;
+}
+.producto:hover{
+background:#294c5a;
+}
+.registrosProducto{
+display:none;
+margin-top:10px;
+}
+.registro{
+background:#102a43;
+padding:8px;
+margin:5px 0;
+border-radius:6px;
+}
+.fechaBox{
+background:#0f3057;
+padding:8px;
+margin-top:10px;
+border-radius:6px;
+}
+.eliminarBtn{
+background:#c62828;
+}
+.eliminarTodoBtn{
+background:#ff6f00;
+margin-top:10px;
+}
+.filtroMes{
+background:#102a43;
+padding:10px;
+border-radius:8px;
+margin-bottom:15px;
+}
+</style>
+</head>
+<body>
+
+<h2>👑 Panel Administrador</h2>
+
+<div class="card">
+<h3>➕ Crear Producto</h3>
+<input type="text" id="nombreProducto" placeholder="Nombre producto">
+<input type="number" id="cantidadSistema" placeholder="Cantidad Sistema">
+<button onclick="crearProducto()">Guardar Producto</button>
+</div>
+
+<div class="card filtroMes">
+<h3>📅 Filtro por Mes</h3>
+<input type="month" id="mesFiltro">
+<button onclick="aplicarFiltro()">Aplicar Filtro</button>
+<button onclick="limpiarFiltro()">Ver Todo</button>
+</div>
+
+<div class="card">
+<h3>📦 Productos Registrados (Click para ver registros)</h3>
+<div id="listaProductos"></div>
+</div>
+
+<script>
+
+// 🔥 CONFIGURACIÓN FIREBASE
+const firebaseConfig = {
+    apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+    authDomain: "inventario-eurofert.firebaseapp.com",
+    databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
+    projectId: "inventario-eurofert",
+    storageBucket: "inventario-eurofert.firebasestorage.app",
+    messagingSenderId: "786796692081",
+    appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let filtroMesSeleccionado = null;
+
+// 🔹 Crear Producto
+function crearProducto(){
+let nombre = document.getElementById("nombreProducto").value;
+let sistema = parseInt(document.getElementById("cantidadSistema").value) || 0;
+
+if(nombre === ""){
+alert("Ingrese nombre del producto");
+return;
+}
+
+db.ref("productos").push({
+nombre:nombre,
+sistema:sistema
+});
+
+document.getElementById("nombreProducto").value="";
+document.getElementById("cantidadSistema").value="";
+}
+
+
+// 🔹 Mostrar Productos
+db.ref("productos").on("value", snapshot=>{
+
+let lista = document.getElementById("listaProductos");
+lista.innerHTML="";
+
+snapshot.forEach(child=>{
+let data = child.val();
+
+lista.innerHTML += `
+<div class="producto" onclick="toggleProducto('${data.nombre}')">
+📦 ${data.nombre} - Sistema: ${data.sistema}
+<div id="registros-${data.nombre}" class="registrosProducto"></div>
+</div>
+`;
+});
+
+});
+
+
+// 🔹 Filtro Mes
+function aplicarFiltro(){
+filtroMesSeleccionado = document.getElementById("mesFiltro").value;
+alert("Filtro aplicado: " + filtroMesSeleccionado);
+}
+
+function limpiarFiltro(){
+filtroMesSeleccionado = null;
+document.getElementById("mesFiltro").value="";
+alert("Mostrando todos los registros");
+}
+
+
+// 🔹 Mostrar registros por producto
+function toggleProducto(nombreProducto){
+
+let contenedor = document.getElementById("registros-" + nombreProducto);
+
+if(contenedor.style.display === "block"){
+contenedor.style.display = "none";
+return;
+}
+
+contenedor.style.display = "block";
+contenedor.innerHTML = "Cargando...";
+
+db.ref("inventario").once("value", snapshot=>{
+
+let datosPorFecha = {};
+let registrosTotales = [];
+
+snapshot.forEach(child=>{
+let data = child.val();
+let key = child.key;
+
+if(data.producto === nombreProducto){
+
+let fechaISO = data.fecha;
+let fecha = fechaISO.split("T")[0];
+let mesRegistro = fechaISO.substring(0,7);
+
+// 🔎 aplicar filtro si existe
+if(filtroMesSeleccionado && mesRegistro !== filtroMesSeleccionado){
+return;
+}
+
+let hora = new Date(fechaISO).toLocaleTimeString();
+
+if(!datosPorFecha[fecha]){
+datosPorFecha[fecha] = [];
+}
+
+datosPorFecha[fecha].push({
+...data,
+id:key,
+hora:hora
+});
+
+registrosTotales.push(key);
+}
+});
+
+if(registrosTotales.length === 0){
+contenedor.innerHTML = "<p>No hay registros para este producto en el mes seleccionado.</p>";
+return;
+}
+
+contenedor.innerHTML = `
+<button class="eliminarTodoBtn" onclick="eliminarTodos('${nombreProducto}')">
+🗑 Eliminar TODOS los registros de este producto
+</button>
+`;
+
+let fechasOrdenadas = Object.keys(datosPorFecha).sort().reverse();
+
+fechasOrdenadas.forEach(fecha=>{
+
+contenedor.innerHTML += `
+<div class="fechaBox">
+📅 ${fecha}
+</div>
+`;
+
+datosPorFecha[fecha].forEach(registro=>{
+
+contenedor.innerHTML += `
+<div class="registro">
+👤 ${registro.nombre}<br>
+🕒 Hora: ${registro.hora}<br>
+Sistema: ${registro.sistema}<br>
+Físico: ${registro.fisico}<br>
+Muestras: ${registro.muestras}<br>
+Caducados: ${registro.caducados}<br><br>
+<button class="eliminarBtn" onclick="eliminarRegistro('${registro.id}')">
+🗑 Eliminar
+</button>
+</div>
+`;
+
+});
+
+});
+
+});
+
+}
+
+
+// 🔹 Eliminar registro individual
+function eliminarRegistro(id){
+
+if(!confirm("¿Seguro que deseas eliminar este registro?")){
+return;
+}
+
+db.ref("inventario/" + id).remove()
+.then(()=>{
+alert("Registro eliminado correctamente");
+})
+.catch(error=>{
+alert("Error: " + error.message);
+});
+
+}
+
+
+// 🔹 Eliminar todos registros de un producto
+function eliminarTodos(nombreProducto){
+
+if(!confirm("⚠ Esto eliminará TODOS los registros visibles según filtro. ¿Continuar?")){
+return;
+}
+
+db.ref("inventario").once("value", snapshot=>{
+
+snapshot.forEach(child=>{
+let data = child.val();
+
+let fechaISO = data.fecha;
+let mesRegistro = fechaISO.substring(0,7);
+
+if(data.producto === nombreProducto){
+
+if(!filtroMesSeleccionado || mesRegistro === filtroMesSeleccionado){
+db.ref("inventario/" + child.key).remove();
+}
+
+}
+
+});
+
+alert("Registros eliminados correctamente");
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

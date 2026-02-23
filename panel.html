@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Panel Colaborador</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<style>
+body{
+font-family:Arial;
+background:#1e3c72;
+color:white;
+padding:20px;
+}
+.card{
+background:#203a43;
+padding:20px;
+border-radius:12px;
+margin-bottom:20px;
+}
+select,input,button{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+}
+button{
+background:#00c853;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+button:hover{
+background:#00a843;
+}
+#estado{
+margin-top:10px;
+}
+.ok{
+background:#2e7d32;
+padding:8px;
+border-radius:6px;
+}
+.error{
+background:#c62828;
+padding:8px;
+border-radius:6px;
+}
+</style>
+</head>
+<body>
+
+<h2>📦 Panel Colaborador - Inventario</h2>
+
+<div class="card">
+
+<label>Seleccione Producto</label>
+<select id="productoSelect">
+<option value="">Cargando productos...</option>
+</select>
+
+<input type="number" id="fisico" placeholder="Cantidad Física Buen Estado">
+<input type="number" id="muestras" placeholder="Muestras / Promociones">
+<input type="number" id="caducados" placeholder="Caducados">
+
+<button onclick="guardar()">Enviar Inventario</button>
+
+<div id="estado"></div>
+
+</div>
+
+<script>
+
+// 🔥 CONFIGURACIÓN FIREBASE
+const firebaseConfig = {
+    apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+    authDomain: "inventario-eurofert.firebaseapp.com",
+    databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
+    projectId: "inventario-eurofert",
+    storageBucket: "inventario-eurofert.firebasestorage.app",
+    messagingSenderId: "786796692081",
+    appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// 🔹 Cargar productos creados por admin
+db.ref("productos").on("value", snapshot => {
+
+let select = document.getElementById("productoSelect");
+select.innerHTML = "";
+
+if(!snapshot.exists()){
+select.innerHTML = "<option>No hay productos creados</option>";
+return;
+}
+
+snapshot.forEach(child => {
+
+let data = child.val();
+
+let option = document.createElement("option");
+option.value = data.nombre;
+option.text = data.nombre + " (Sistema: " + data.sistema + ")";
+option.setAttribute("data-sistema", data.sistema);
+
+select.appendChild(option);
+
+});
+
+});
+
+// 🔹 Guardar inventario
+function guardar(){
+
+let estado = document.getElementById("estado");
+estado.innerHTML = "";
+
+let select = document.getElementById("productoSelect");
+
+if(select.selectedOptions.length === 0 || select.value === ""){
+estado.innerHTML = '<div class="error">Seleccione producto</div>';
+return;
+}
+
+let producto = select.value;
+let sistema = parseInt(select.selectedOptions[0].getAttribute("data-sistema"));
+
+let fisico = parseInt(document.getElementById("fisico").value) || 0;
+let muestras = parseInt(document.getElementById("muestras").value) || 0;
+let caducados = parseInt(document.getElementById("caducados").value) || 0;
+
+let total = fisico + muestras + caducados;
+
+// 🔎 Validar que cuadre
+if(sistema !== total){
+estado.innerHTML = '<div class="error">❌ Inventario no cuadra</div>';
+return;
+}
+
+// 🔹 Obtener nombre del usuario logueado
+let usuario = firebase.auth().currentUser;
+
+if(!usuario){
+estado.innerHTML = '<div class="error">Sesión no válida. Vuelva a iniciar sesión.</div>';
+return;
+}
+
+let nombreColaborador = usuario.email.split("@")[0];
+
+// 🔥 Guardar en Firebase
+db.ref("inventario").push({
+fecha: new Date().toISOString(),
+nombre: nombreColaborador,
+producto: producto,
+sistema: sistema,
+fisico: fisico,
+muestras: muestras,
+caducados: caducados
+})
+.then(()=>{
+
+estado.innerHTML = '<div class="ok">✅ Inventario enviado correctamente</div>';
+
+document.getElementById("fisico").value = "";
+document.getElementById("muestras").value = "";
+document.getElementById("caducados").value = "";
+
+})
+.catch(error=>{
+estado.innerHTML = '<div class="error">Error al guardar: ' + error.message + '</div>';
+});
+
+}
+
+</script>
+
+</body>
+</html>
