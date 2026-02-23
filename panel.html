@@ -2,206 +2,774 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Panel Colaborador - Inventario</title>
+<title>Panel Colaborador - Eurofert</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <style>
 body{
-font-family:Arial;
-background:#1e3c72;
-color:white;
-padding:20px;
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:#1e3c72;
+    color:white;
+    padding:20px;
+    margin:0;
 }
+
+.header{
+    background:#0d47a1;
+    padding:15px 20px;
+    border-radius:10px;
+    margin-bottom:25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.header h2{
+    margin:0;
+    font-size:24px;
+}
+
 .card{
-background:#203a43;
-padding:20px;
-border-radius:12px;
-margin-bottom:20px;
+    background:#203a43;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.3);
 }
-select,input,button{
-width:100%;
-padding:10px;
-margin:8px 0;
-border-radius:6px;
-border:none;
+
+.card h3{
+    margin-top:0;
+    margin-bottom:20px;
+    color:#a8dadc;
+    border-bottom:2px solid #2a5f7a;
+    padding-bottom:10px;
 }
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    color:#a8dadc;
+    font-weight:500;
+    font-size:14px;
+}
+
+input, select, button{
+    width:100%;
+    padding:12px;
+    margin:5px 0;
+    border-radius:8px;
+    border:none;
+    box-sizing:border-box;
+    font-size:14px;
+}
+
+select{
+    background:white;
+    color:#333;
+    cursor:pointer;
+}
+
+select option{
+    padding:10px;
+}
+
 button{
-background:#00c853;
-color:white;
-font-weight:bold;
-cursor:pointer;
+    background:#00c853;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:16px;
+    transition:all 0.3s;
+    border:none;
 }
+
 button:hover{
-opacity:0.9;
+    background:#00a844;
+    transform:translateY(-2px);
+    box-shadow:0 5px 15px rgba(0,200,83,0.3);
 }
-.ok{
-background:#2e7d32;
-padding:8px;
-border-radius:6px;
-margin-top:10px;
+
+button.cerrar-sesion{
+    background:#c62828;
+    width:auto;
+    padding:10px 20px;
 }
+
+button.cerrar-sesion:hover{
+    background:#b71c1c;
+}
+
 .error{
-background:#c62828;
-padding:8px;
-border-radius:6px;
-margin-top:10px;
+    background:#c62828;
+    padding:12px;
+    border-radius:8px;
+    margin-top:15px;
+    text-align:center;
+    animation:shake 0.5s;
+}
+
+.ok{
+    background:#2e7d32;
+    padding:12px;
+    border-radius:8px;
+    margin-top:15px;
+    text-align:center;
+    animation:fadeIn 0.5s;
+}
+
+@keyframes shake{
+    0%,100%{transform:translateX(0);}
+    10%,30%,50%,70%,90%{transform:translateX(-5px);}
+    20%,40%,60%,80%{transform:translateX(5px);}
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(-10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.tabla-container{
+    overflow-x:auto;
+    background:#2a4a5e;
+    border-radius:8px;
+    padding:15px;
+    margin-top:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    color:white;
+}
+
+th{
+    background:#0d47a1;
+    padding:12px;
+    text-align:left;
+    font-weight:600;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #3a6a7e;
+}
+
+.pendiente{
+    background:#b85e00;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:0.9em;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.completado{
+    background:#2e7d32;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:0.9em;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.stock-badge{
+    background:#00c853;
+    color:white;
+    padding:4px 10px;
+    border-radius:20px;
+    font-weight:bold;
+    font-size:0.9em;
+    margin-left:10px;
+}
+
+.producto-info{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#1c313a;
+    padding:15px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.producto-nombre{
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+}
+
+.producto-stock{
+    background:#0d47a1;
+    padding:8px 15px;
+    border-radius:30px;
+    font-weight:bold;
+    font-size:16px;
+}
+
+.stock-valor{
+    color:#00c853;
+    font-size:20px;
+    margin-left:5px;
+}
+
+.grid-campos{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:15px;
+    margin:20px 0;
+}
+
+.campo-conteo{
+    background:#1c313a;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+}
+
+.campo-conteo label{
+    display:block;
+    margin-bottom:10px;
+    color:#a8dadc;
+    font-weight:500;
+}
+
+.campo-conteo input{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.total-info{
+    background:#0d47a1;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+    margin:15px 0;
+    font-size:18px;
+}
+
+.total-info span{
+    font-size:24px;
+    font-weight:bold;
+    color:#00c853;
+    margin-left:10px;
+}
+
+.fecha-info{
+    text-align:right;
+    color:#a8dadc;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+.info-usuario{
+    background:#1c313a;
+    padding:10px 15px;
+    border-radius:30px;
+    font-size:14px;
+}
+
+.info-usuario i{
+    margin-right:5px;
 }
 </style>
 </head>
 <body>
 
-<h2>📦 Panel Colaborador - Inventario</h2>
+<script>
+if(!localStorage.getItem("usuario")){
+    alert("Debe iniciar sesión");
+    window.location="index.html";
+}
+</script>
 
-<button onclick="cerrarSesion()">Cerrar Sesión</button>
+<div class="header">
+    <div>
+        <h2>📦 Panel de Conteo Diario</h2>
+        <div class="fecha-info">
+            <i>📅</i> Hoy: <span id="fechaActual"></span>
+        </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <div class="info-usuario">
+            <i>👤</i> <span id="nombreUsuario"></span>
+        </div>
+        <button class="cerrar-sesion" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+</div>
 
+<!-- SECCIÓN: CONTEO DIARIO MEJORADO -->
 <div class="card">
+    <h3>📝 Realizar Conteo</h3>
+    
+    <!-- Selector de producto con stock visible -->
+    <div class="input-group">
+        <label>Selecciona el producto a contar:</label>
+        <select id="productoSelect" onchange="actualizarInfoProducto()">
+            <option value="">Cargando productos...</option>
+        </select>
+    </div>
 
-<label>Seleccione Producto</label>
-<select id="productoSelect">
-<option value="">Cargando productos...</option>
-</select>
+    <!-- Información del producto seleccionado -->
+    <div id="infoProducto" class="producto-info" style="display:none;">
+        <div>
+            <span class="producto-nombre" id="productoNombre"></span>
+        </div>
+        <div>
+            <span class="producto-stock">
+                Stock Sistema: <span class="stock-valor" id="productoStock">0</span>
+            </span>
+        </div>
+    </div>
 
-<input type="number" id="fisico" placeholder="Cantidad Física Buen Estado">
-<input type="number" id="muestras" placeholder="Muestras / Promociones">
-<input type="number" id="caducados" placeholder="Caducados">
+    <!-- Campos de conteo en grid -->
+    <div class="grid-campos">
+        <div class="campo-conteo">
+            <label>🔵 Físico (Buen Estado)</label>
+            <input type="number" id="fisico" placeholder="0" min="0" onchange="calcularTotal()">
+        </div>
+        <div class="campo-conteo">
+            <label>🟡 Muestras / Promociones</label>
+            <input type="number" id="muestras" placeholder="0" min="0" onchange="calcularTotal()">
+        </div>
+        <div class="campo-conteo">
+            <label>🔴 Caducados / Dañados</label>
+            <input type="number" id="caducados" placeholder="0" min="0" onchange="calcularTotal()">
+        </div>
+    </div>
 
-<button onclick="guardar()">Enviar Inventario</button>
+    <!-- Total calculado -->
+    <div class="total-info">
+        Total contado: <span id="totalCalculado">0</span>
+    </div>
 
-<div id="estado"></div>
+    <button onclick="enviarInventario()" id="btnEnviar">✓ Enviar Inventario</button>
 
+    <div id="estado"></div>
+</div>
+
+<!-- SECCIÓN ASIGNACIONES PENDIENTES -->
+<div class="card">
+    <h3>⏳ Productos Pendientes de Hoy</h3>
+    <div id="pendientesContainer" class="tabla-container">
+        <p>Cargando pendientes...</p>
+    </div>
+</div>
+
+<!-- SECCIÓN HISTORIAL DE ENVÍOS -->
+<div class="card">
+    <h3>📅 Historial de tus últimos envíos</h3>
+    <div id="historialContainer" class="tabla-container">
+        <p>Cargando historial...</p>
+    </div>
 </div>
 
 <script>
-
-// 🔒 VALIDAR SESIÓN
-if(!localStorage.getItem("usuario")){
-alert("Debe iniciar sesión");
-window.location="index.html";
-}
-
-// 🔥 FIREBASE CONFIG
-const firebaseConfig = {
-    apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
-    authDomain: "inventario-eurofert.firebaseapp.com",
-    databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
-    projectId: "inventario-eurofert",
-    storageBucket: "inventario-eurofert.firebasestorage.app",
-    messagingSenderId: "786796692081",
-    appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+// ============================================
+// CONFIGURACIÓN FIREBASE
+// ============================================
+const firebaseConfig={
+    apiKey:"AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+    authDomain:"inventario-eurofert.firebaseapp.com",
+    databaseURL:"https://inventario-eurofert-default-rtdb.firebaseio.com",
+    projectId:"inventario-eurofert",
+    storageBucket:"inventario-eurofert.firebasestorage.app",
+    messagingSenderId:"786796692081",
+    appId:"1:786796692081:web:c742cfbd1d23c3347f91d0"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🔹 Cerrar sesión
+// ============================================
+// VARIABLES GLOBALES
+// ============================================
+let usuario = localStorage.getItem("usuario");
+let fechaHoy = new Date().toISOString().split("T")[0];
+let mesActual = new Date().toISOString().substring(0,7);
+let productoSeleccionado = null;
+
+// Mostrar fecha actual y usuario
+document.getElementById("fechaActual").textContent = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric'
+});
+document.getElementById("nombreUsuario").textContent = usuario;
+
+// ============================================
+// FUNCIONES GENERALES
+// ============================================
 function cerrarSesion(){
-localStorage.clear();
-window.location="index.html";
+    localStorage.clear();
+    window.location="index.html";
 }
 
-// 🔹 Cargar productos
-let usuario=localStorage.getItem("usuario");
-
-db.ref("asignaciones/"+usuario).once("value").then(snapshot=>{
-
-if(!snapshot.exists()){
-document.getElementById("productoSelect").innerHTML="<option>No tiene productos asignados</option>";
-return;
+function formatearFecha(fechaISO) {
+    let fecha = new Date(fechaISO);
+    return fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
-let productosAsignados=snapshot.val();
-
-db.ref("productos").once("value").then(prodSnap=>{
-
-let select=document.getElementById("productoSelect");
-select.innerHTML="";
-
-prodSnap.forEach(child=>{
-let id=child.key;
-
-if(productosAsignados[id]){
-
-let data=child.val();
-
-let option=document.createElement("option");
-option.value=data.nombre;
-option.text=data.nombre+" (Sistema: "+data.sistema+")";
-option.setAttribute("data-sistema",data.sistema);
-
-select.appendChild(option);
-
+// ============================================
+// FUNCIONES DE CONTEO
+// ============================================
+function calcularTotal() {
+    let fisico = parseInt(document.getElementById("fisico").value) || 0;
+    let muestras = parseInt(document.getElementById("muestras").value) || 0;
+    let caducados = parseInt(document.getElementById("caducados").value) || 0;
+    let total = fisico + muestras + caducados;
+    document.getElementById("totalCalculado").textContent = total;
+    return total;
 }
 
+function actualizarInfoProducto() {
+    let select = document.getElementById("productoSelect");
+    let selectedOption = select.options[select.selectedIndex];
+    
+    if(selectedOption && selectedOption.value) {
+        let nombre = selectedOption.getAttribute("data-nombre");
+        let stock = selectedOption.getAttribute("data-stock");
+        let productoId = selectedOption.value;
+        
+        document.getElementById("productoNombre").textContent = nombre;
+        document.getElementById("productoStock").textContent = stock;
+        document.getElementById("infoProducto").style.display = "flex";
+        
+        productoSeleccionado = {
+            id: productoId,
+            nombre: nombre,
+            stock: parseInt(stock)
+        };
+    } else {
+        document.getElementById("infoProducto").style.display = "none";
+        productoSeleccionado = null;
+    }
+}
+
+// ============================================
+// CARGAR PRODUCTOS ASIGNADOS (CON STOCK)
+// ============================================
+function cargarProductosAsignados() {
+    return new Promise((resolve, reject) => {
+        db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value").then(snapshot => {
+            let select = document.getElementById("productoSelect");
+            select.innerHTML = "<option value=''>Seleccione un producto...</option>";
+
+            if(!snapshot.exists()){
+                select.innerHTML = "<option value=''>No tiene productos asignados hoy</option>";
+                resolve([]);
+                return;
+            }
+
+            let asignaciones = snapshot.val();
+            let productosIds = Object.keys(asignaciones);
+            let opciones = [];
+
+            // Para cada producto asignado, obtener sus detalles
+            let promesas = productosIds.map(productoId => {
+                return db.ref("productos/" + productoId).once("value").then(prodSnap => {
+                    if(prodSnap.exists()) {
+                        let data = prodSnap.val();
+                        let asignacionData = asignaciones[productoId];
+                        
+                        // Usar el stock que guardamos en la asignación o el del producto
+                        let stockSistema = asignacionData.stockSistema || data.sistema;
+                        
+                        let option = document.createElement("option");
+                        option.value = productoId;
+                        option.text = `${data.nombre} (Stock: ${stockSistema})`;
+                        option.setAttribute("data-nombre", data.nombre);
+                        option.setAttribute("data-stock", stockSistema);
+                        option.setAttribute("data-id", productoId);
+                        
+                        select.appendChild(option);
+                        
+                        opciones.push({
+                            id: productoId,
+                            nombre: data.nombre,
+                            stock: stockSistema
+                        });
+                    }
+                });
+            });
+
+            Promise.all(promesas).then(() => {
+                resolve(opciones);
+                if(opciones.length > 0) {
+                    // Seleccionar el primer producto por defecto
+                    select.selectedIndex = 1;
+                    actualizarInfoProducto();
+                }
+            }).catch(reject);
+
+        }).catch(reject);
+    });
+}
+
+// ============================================
+// CARGAR PENDIENTES
+// ============================================
+function cargarPendientes() {
+    let container = document.getElementById("pendientesContainer");
+    container.innerHTML = "<p>Cargando pendientes...</p>";
+
+    db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value").then(snapAsignaciones => {
+        if (!snapAsignaciones.exists()) {
+            container.innerHTML = "<p>No tienes asignaciones para hoy.</p>";
+            return;
+        }
+
+        let asignaciones = snapAsignaciones.val();
+        let productosIds = Object.keys(asignaciones);
+
+        // Obtener envíos de hoy
+        db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value").then(snapEnvios => {
+            
+            let productosEnviadosHoy = new Set();
+            
+            snapEnvios.forEach(child => {
+                let envio = child.val();
+                let fechaEnvio = envio.fecha ? envio.fecha.split("T")[0] : null;
+                
+                if (fechaEnvio === fechaHoy) {
+                    productosEnviadosHoy.add(envio.productoId || envio.producto);
+                }
+            });
+
+            // Obtener detalles de productos
+            let promesas = productosIds.map(productoId => {
+                return db.ref("productos/" + productoId).once("value").then(prodSnap => {
+                    if(prodSnap.exists()) {
+                        let data = prodSnap.val();
+                        return {
+                            id: productoId,
+                            nombre: data.nombre,
+                            stock: asignaciones[productoId].stockSistema || data.sistema,
+                            enviado: productosEnviadosHoy.has(productoId)
+                        };
+                    }
+                    return null;
+                });
+            });
+
+            Promise.all(promesas).then(resultados => {
+                let productos = resultados.filter(p => p !== null);
+                let pendientes = productos.filter(p => !p.enviado);
+
+                if (pendientes.length === 0) {
+                    container.innerHTML = "<p>✅ ¡Completaste todos tus productos de hoy!</p>";
+                    return;
+                }
+
+                let html = `<table>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Stock Sistema</th>
+                        <th>Estado</th>
+                    </tr>`;
+                
+                pendientes.forEach(p => {
+                    html += `<tr>
+                        <td><strong>${p.nombre}</strong></td>
+                        <td style="color:#00c853; font-weight:bold;">${p.stock}</td>
+                        <td><span class="pendiente">PENDIENTE</span></td>
+                    </tr>`;
+                });
+                html += `</table>`;
+                container.innerHTML = html;
+            });
+        });
+    });
+}
+
+// ============================================
+// CARGAR HISTORIAL
+// ============================================
+function cargarHistorial() {
+    let container = document.getElementById("historialContainer");
+    container.innerHTML = "<p>Cargando historial...</p>";
+
+    let fecha = new Date();
+    let meses = [];
+    for (let i = 0; i < 3; i++) {
+        let anio = fecha.getFullYear();
+        let mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+        meses.push(`${anio}-${mes}`);
+        fecha.setMonth(fecha.getMonth() - 1);
+    }
+
+    let promesas = meses.map(mes => 
+        db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value")
+    );
+
+    Promise.all(promesas).then(results => {
+        let todosEnvios = [];
+        results.forEach(snap => {
+            snap.forEach(child => {
+                let envio = child.val();
+                let fechaObj = new Date(envio.fecha);
+                let total = envio.fisico + envio.muestras + envio.caducados;
+                let diferencia = total - envio.sistema;
+                
+                todosEnvios.push({
+                    fecha: formatearFecha(envio.fecha),
+                    producto: envio.producto,
+                    sistema: envio.sistema,
+                    fisico: envio.fisico,
+                    muestras: envio.muestras,
+                    caducados: envio.caducados,
+                    total: total,
+                    diferencia: diferencia,
+                    cuadra: diferencia === 0
+                });
+            });
+        });
+
+        todosEnvios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+        if (todosEnvios.length === 0) {
+            container.innerHTML = "<p>Aún no has realizado ningún envío.</p>";
+            return;
+        }
+
+        let html = `<table>
+            <tr>
+                <th>Fecha</th>
+                <th>Producto</th>
+                <th>Sistema</th>
+                <th>Físico</th>
+                <th>Muestras</th>
+                <th>Caducados</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>`;
+        
+        todosEnvios.slice(0, 10).forEach(e => {
+            html += `<tr>
+                <td>${e.fecha}</td>
+                <td><strong>${e.producto}</strong></td>
+                <td style="color:#00c853;">${e.sistema}</td>
+                <td>${e.fisico}</td>
+                <td>${e.muestras}</td>
+                <td>${e.caducados}</td>
+                <td>${e.total}</td>
+                <td>${e.cuadra ? '✅' : '❌'}</td>
+            </tr>`;
+        });
+        html += `</table>`;
+        
+        if(todosEnvios.length > 10) {
+            html += `<p style="text-align:center; margin-top:10px;">Mostrando últimos 10 de ${todosEnvios.length} envíos</p>`;
+        }
+        
+        container.innerHTML = html;
+    }).catch(error => {
+        container.innerHTML = `<p class="error">Error cargando historial: ${error.message}</p>`;
+    });
+}
+
+// ============================================
+// ENVIAR INVENTARIO
+// ============================================
+function enviarInventario() {
+    let estado = document.getElementById("estado");
+    estado.innerHTML = "";
+    let btnEnviar = document.getElementById("btnEnviar");
+
+    if(!productoSeleccionado) {
+        estado.innerHTML = "<div class='error'>Seleccione un producto</div>";
+        return;
+    }
+
+    let fisico = parseInt(document.getElementById("fisico").value) || 0;
+    let muestras = parseInt(document.getElementById("muestras").value) || 0;
+    let caducados = parseInt(document.getElementById("caducados").value) || 0;
+    let total = fisico + muestras + caducados;
+
+    if(total !== productoSeleccionado.stock) {
+        estado.innerHTML = `<div class='error'>El inventario no cuadra (Total: ${total} vs Sistema: ${productoSeleccionado.stock})</div>`;
+        return;
+    }
+
+    btnEnviar.disabled = true;
+    btnEnviar.textContent = "Enviando...";
+
+    let fechaCompleta = new Date().toISOString();
+    let mes = fechaCompleta.substring(0,7);
+
+    let datos = {
+        nombre: usuario,
+        producto: productoSeleccionado.nombre,
+        productoId: productoSeleccionado.id,
+        sistema: productoSeleccionado.stock,
+        fisico: fisico,
+        muestras: muestras,
+        caducados: caducados,
+        fecha: fechaCompleta,
+        total: total,
+        cuadra: true
+    };
+
+    db.ref("inventario/" + mes).push(datos).then(() => {
+        estado.innerHTML = "<div class='ok'>✅ Inventario enviado correctamente</div>";
+        
+        // Limpiar campos
+        document.getElementById("fisico").value = "";
+        document.getElementById("muestras").value = "";
+        document.getElementById("caducados").value = "";
+        document.getElementById("totalCalculado").textContent = "0";
+        
+        // Recargar datos
+        cargarPendientes();
+        cargarHistorial();
+        
+        // Quitar el producto del select si ya se envió
+        let select = document.getElementById("productoSelect");
+        let selectedIndex = select.selectedIndex;
+        if(selectedIndex > 0) {
+            select.remove(selectedIndex);
+        }
+        
+        if(select.options.length === 1) {
+            select.innerHTML = "<option value=''>¡Completaste todos!</option>";
+            document.getElementById("infoProducto").style.display = "none";
+            productoSeleccionado = null;
+        } else {
+            select.selectedIndex = 1;
+            actualizarInfoProducto();
+        }
+        
+    }).catch(error => {
+        estado.innerHTML = `<div class='error'>Error al guardar: ${error.message}</div>`;
+    }).finally(() => {
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "✓ Enviar Inventario";
+    });
+}
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+cargarProductosAsignados().then(() => {
+    cargarPendientes();
+    cargarHistorial();
+}).catch(error => {
+    console.error("Error en carga inicial:", error);
 });
-
-});
-
-});
-
-// 🔹 Guardar inventario
-function guardar(){
-
-let estado=document.getElementById("estado");
-estado.innerHTML="";
-
-let nombreColaborador=localStorage.getItem("usuario");
-
-if(!nombreColaborador){
-estado.innerHTML='<div class="error">Sesión no válida. Vuelva a iniciar sesión.</div>';
-return;
-}
-
-let select=document.getElementById("productoSelect");
-
-if(select.value===""){
-estado.innerHTML='<div class="error">Seleccione producto</div>';
-return;
-}
-
-let producto=select.value;
-let sistema=parseInt(select.selectedOptions[0].getAttribute("data-sistema"));
-
-let fisico=parseInt(document.getElementById("fisico").value)||0;
-let muestras=parseInt(document.getElementById("muestras").value)||0;
-let caducados=parseInt(document.getElementById("caducados").value)||0;
-
-let total=fisico+muestras+caducados;
-
-// 🔎 Validar que cuadre
-if(total!==sistema){
-estado.innerHTML='<div class="error">❌ Inventario no cuadra</div>';
-return;
-}
-
-// 📅 Guardar por mes
-let fechaISO=new Date().toISOString();
-let mes=fechaISO.substring(0,7);
-
-db.ref("inventario/"+mes).push({
-fecha:fechaISO,
-nombre:nombreColaborador,
-producto:producto,
-sistema:sistema,
-fisico:fisico,
-muestras:muestras,
-caducados:caducados
-})
-.then(()=>{
-
-estado.innerHTML='<div class="ok">✅ Inventario enviado correctamente</div>';
-
-document.getElementById("fisico").value="";
-document.getElementById("muestras").value="";
-document.getElementById("caducados").value="";
-
-})
-.catch(error=>{
-estado.innerHTML='<div class="error">Error al guardar: '+error.message+'</div>';
-});
-
-}
 
 </script>
 

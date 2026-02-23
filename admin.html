@@ -2,285 +2,1280 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Panel Administrador</title>
+<title>Panel Administrador - Eurofert</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <style>
-body{font-family:Arial;background:#1e3c72;color:white;padding:20px;}
-.card{background:#203a43;padding:20px;border-radius:12px;margin-bottom:20px;position:relative;}
-input,select,button{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:none;}
-button{background:#00c853;color:white;font-weight:bold;cursor:pointer;}
-button:hover{opacity:0.9;}
-.sugerencias{background:#102027;border-radius:6px;max-height:150px;overflow-y:auto;position:absolute;width:92%;z-index:10;}
-.sugerencias div{padding:8px;cursor:pointer;}
-.sugerencias div:hover{background:#1565c0;}
-.producto{background:#102027;padding:8px;margin:6px 0;border-radius:6px;cursor:pointer;}
-.registro{background:#1c313a;padding:8px;margin:6px 0;border-radius:6px;}
-.fechaBox{background:#1565c0;padding:6px;margin-top:10px;border-radius:6px;}
-.eliminar{background:#c62828;margin-top:5px;}
-.asignado{background:#455a64;padding:6px;margin:5px 0;border-radius:6px;}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.header{
+    background: rgba(13, 71, 161, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.header h2{
+    margin: 0;
+    font-size: 24px;
+    background: linear-gradient(135deg, #fff, #a8dadc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.menuERP{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.erpCard{
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.erpCard:hover{
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.2);
+    border-color: #00c853;
+    box-shadow: 0 10px 25px rgba(0,200,83,0.2);
+}
+
+.iconERP{
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.erpCard h3{
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.card{
+    background: rgba(32, 58, 67, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card h3{
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #a8dadc;
+    font-size: 20px;
+    border-bottom: 2px solid #2a5f7a;
+    padding-bottom: 10px;
+}
+
+input, select, textarea{
+    width: 100%;
+    padding: 12px 15px;
+    margin: 8px 0;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+input:focus, select:focus{
+    outline: none;
+    border-color: #00c853;
+    background: rgba(255,255,255,0.15);
+}
+
+input::placeholder{
+    color: rgba(255,255,255,0.5);
+}
+
+select{
+    cursor: pointer;
+}
+
+select option{
+    background: #203a43;
+    color: white;
+}
+
+button{
+    padding: 12px 25px;
+    margin: 8px 5px;
+    border-radius: 8px;
+    border: none;
+    background: #00c853;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+button:hover{
+    background: #00a844;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,200,83,0.3);
+}
+
+.eliminar{
+    background: #c62828;
+}
+
+.eliminar:hover{
+    background: #b71c1c;
+}
+
+.editar{
+    background: #ff9800;
+}
+
+.editar:hover{
+    background: #f57c00;
+}
+
+.seccionERP{
+    display: none;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn{
+    from{opacity: 0; transform: translateY(-10px);}
+    to{opacity: 1; transform: translateY(0);}
+}
+
+.usuario-item, .producto-item{
+    background: rgba(28, 49, 58, 0.8);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid #00c853;
+}
+
+.registro{
+    background: rgba(28, 49, 58, 0.8);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border-left: 4px solid #00c853;
+}
+
+.botones-registro{
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.botones-registro button{
+    width: auto;
+    padding: 5px 15px;
+    margin: 0;
+}
+
+.checkbox-container{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.checkbox-container input{
+    width: auto;
+    margin: 0;
+}
+
+.variante-badge{
+    background: #00c853;
+    color: white;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.producto-variante{
+    margin-left: 20px;
+    border-left: 3px solid #00c853;
+    padding-left: 15px;
+}
+
+.estadisticas{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card{
+    background: rgba(13, 71, 161, 0.8);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.stat-number{
+    font-size: 32px;
+    font-weight: bold;
+    color: #00c853;
+    margin: 10px 0;
+}
+
+.filtros{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.tabla-container{
+    overflow-x: auto;
+    background: rgba(28, 49, 58, 0.8);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+th{
+    background: rgba(13, 71, 161, 0.8);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td{
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+tr:hover{
+    background: rgba(255,255,255,0.05);
+}
+
+.grupo-fecha{
+    background: rgba(13, 71, 161, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.total-info{
+    font-size: 14px;
+    color: #a8dadc;
+    margin-top: 5px;
+}
+
+.badge{
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge-success{
+    background: #00c853;
+    color: white;
+}
+
+.badge-warning{
+    background: #ff9800;
+    color: white;
+}
+
+.badge-error{
+    background: #c62828;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .filtros{
+        grid-template-columns: 1fr;
+    }
+    
+    .usuario-item, .producto-item{
+        flex-direction: column;
+        gap: 10px;
+    }
+}
 </style>
 </head>
 <body>
 
 <script>
-if(localStorage.getItem("rol")!=="admin"){
-alert("Acceso solo administrador");
-window.location="index.html";
+if(localStorage.getItem("rol") !== "admin"){
+    alert("Acceso solo administrador");
+    window.location = "index.html";
 }
 </script>
 
-<h2>👑 Panel Administrador</h2>
-<button onclick="cerrarSesion()">Cerrar Sesión</button>
-
-<!-- CREAR USUARIO -->
-<div class="card">
-<h3>👤 Crear Usuario</h3>
-<input type="text" id="nuevoUsuario" placeholder="Usuario">
-<input type="password" id="nuevoPassword" placeholder="Contraseña">
-<select id="rolUsuario">
-<option value="colaborador">Colaborador</option>
-<option value="admin">Administrador</option>
-</select>
-<button onclick="crearUsuario()">Crear Usuario</button>
+<div class="header">
+    <h2>👑 Panel Administrador Eurofert</h2>
+    <button onclick="cerrarSesion()" style="background:#c62828; width:auto;">Cerrar Sesión</button>
 </div>
 
-<!-- CREAR PRODUCTO -->
-<div class="card">
-<h3>📦 Crear / Actualizar Producto</h3>
-<input type="text" id="nombreProducto" placeholder="Nombre Producto" onkeyup="buscarSugerencias()">
-<div id="listaSugerencias" class="sugerencias"></div>
-<input type="number" id="cantidadSistema" placeholder="Cantidad Sistema">
-<button onclick="crearProducto()">Guardar Producto</button>
-<div id="estadoProducto"></div>
+<div class="menuERP">
+    <div class="erpCard" onclick="mostrarSeccion('usuarios')">
+        <div class="iconERP">👥</div>
+        <h3>Usuarios</h3>
+    </div>
+    <div class="erpCard" onclick="mostrarSeccion('productos')">
+        <div class="iconERP">📦</div>
+        <h3>Productos</h3>
+    </div>
+    <div class="erpCard" onclick="mostrarSeccion('asignacion')">
+        <div class="iconERP">📅</div>
+        <h3>Asignación</h3>
+    </div>
+    <div class="erpCard" onclick="mostrarSeccion('inventario')">
+        <div class="iconERP">📊</div>
+        <h3>Inventario</h3>
+    </div>
+    <div class="erpCard" onclick="mostrarSeccion('reportes')">
+        <div class="iconERP">📈</div>
+        <h3>Reportes</h3>
+    </div>
 </div>
 
-<!-- ASIGNAR PRODUCTO -->
-<div class="card">
-<h3>📌 Asignar Producto a Colaborador</h3>
-<select id="selectUsuario"></select>
-<select id="selectProducto"></select>
-<button onclick="asignarProducto()">Asignar</button>
-<div id="estadoAsignacion"></div>
-<h4>📋 Productos Asignados</h4>
-<div id="listaAsignados"></div>
-</div>
+<!-- USUARIOS -->
+<div id="usuarios" class="card seccionERP">
+    <h3>➕ Crear Nuevo Usuario</h3>
+    <input type="text" id="nuevoUsuario" placeholder="Nombre de usuario">
+    <input type="password" id="nuevoPassword" placeholder="Contraseña">
+    <select id="rolUsuario">
+        <option value="colaborador">Colaborador</option>
+        <option value="admin">Administrador</option>
+    </select>
+    <button onclick="crearUsuario()">Crear Usuario</button>
 
-<!-- FILTRO MES -->
-<div class="card">
-<h3>📅 Filtro por Mes</h3>
-<input type="month" id="filtroMes">
-<button onclick="aplicarFiltro()">Aplicar Filtro</button>
-<button onclick="exportarExcel()">Exportar Excel</button>
+    <h3 style="margin-top:30px;">📋 Usuarios Existentes</h3>
+    <div id="listaUsuarios"></div>
 </div>
 
 <!-- PRODUCTOS -->
-<div class="card">
-<h3>📊 Productos</h3>
-<div id="listaProductos"></div>
+<div id="productos" class="card seccionERP">
+    <h3>➕ Crear Nuevo Producto</h3>
+    <input type="text" id="nombreProducto" placeholder="Nombre del producto" list="sugerenciasProductos">
+    <datalist id="sugerenciasProductos"></datalist>
+    <input type="number" id="cantidadSistema" placeholder="Cantidad en sistema">
+
+    <div class="checkbox-container">
+        <input type="checkbox" id="esDuplicado">
+        <label for="esDuplicado">Es una variante de un producto existente</label>
+    </div>
+
+    <button onclick="crearProducto()">Guardar Producto</button>
+
+    <div style="margin: 20px 0;">
+        <input type="text" id="filtroProductos" placeholder="🔍 Buscar productos por nombre..." onkeyup="filtrarProductos()">
+    </div>
+
+    <h3>📋 Productos Existentes</h3>
+    <div id="listaProductos"></div>
+</div>
+
+<!-- ASIGNACION -->
+<div id="asignacion" class="card seccionERP">
+    <h3>📌 Asignar Producto</h3>
+    <input type="date" id="fechaAsignacion">
+    <select id="selectUsuario">
+        <option value="">Cargando usuarios...</option>
+    </select>
+    <select id="selectProducto">
+        <option value="">Cargando productos...</option>
+    </select>
+    <button onclick="asignarProducto()">Asignar Producto</button>
+
+    <h3 style="margin-top:30px;">📋 Asignaciones de Hoy</h3>
+    <div id="asignacionesHoy"></div>
+</div>
+
+<!-- INVENTARIO -->
+<div id="inventario" class="card seccionERP">
+    <h3>🔍 Consultar Inventarios</h3>
+    
+    <div class="filtros">
+        <div>
+            <label>Fecha Inicio:</label>
+            <input type="date" id="fechaInicio" onchange="cargarInventarioPorFecha()">
+        </div>
+        <div>
+            <label>Fecha Fin:</label>
+            <input type="date" id="fechaFin" onchange="cargarInventarioPorFecha()">
+        </div>
+        <div>
+            <label>Usuario:</label>
+            <select id="filtroUsuarioInventario" onchange="cargarInventarioPorFecha()">
+                <option value="">Todos los usuarios</option>
+            </select>
+        </div>
+        <div>
+            <label>Producto:</label>
+            <input type="text" id="filtroProducto" placeholder="Buscar producto..." onkeyup="cargarInventarioPorFecha()">
+        </div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button onclick="cargarInventarioPorFecha()" style="background:#0d47a1;">🔍 Buscar</button>
+        <button onclick="exportarExcel()" style="background:#2e7d32;">📥 Exportar Excel</button>
+        <button onclick="limpiarFiltros()" style="background:#c62828;">🗑️ Limpiar</button>
+    </div>
+
+    <div id="resumenInventario" style="background:#1c313a; padding:15px; border-radius:8px; margin-bottom:20px; display:none;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:10px;">
+            <div><strong>Total registros:</strong> <span id="totalRegistros">0</span></div>
+            <div><strong>Productos únicos:</strong> <span id="totalProductosUnicos">0</span></div>
+            <div><strong>Usuarios activos:</strong> <span id="totalUsuariosActivos">0</span></div>
+        </div>
+    </div>
+
+    <div id="resultadoInventario"></div>
+</div>
+
+<!-- REPORTES -->
+<div id="reportes" class="card seccionERP">
+    <h3>📊 Estadísticas Generales</h3>
+    
+    <div class="estadisticas">
+        <div class="stat-card">
+            <div>Total Usuarios</div>
+            <div class="stat-number" id="totalUsuarios">0</div>
+        </div>
+        <div class="stat-card">
+            <div>Total Productos</div>
+            <div class="stat-number" id="totalProductos">0</div>
+        </div>
+        <div class="stat-card">
+            <div>Asignaciones Hoy</div>
+            <div class="stat-number" id="totalAsignacionesHoy">0</div>
+        </div>
+        <div class="stat-card">
+            <div>Inventarios Mes</div>
+            <div class="stat-number" id="totalInventariosMes">0</div>
+        </div>
+    </div>
+
+    <h3>📈 Top 5 Productos más Inventariados</h3>
+    <div id="topProductos" class="tabla-container"></div>
+
+    <h3 style="margin-top:30px;">📊 Resumen por Usuario</h3>
+    <div id="resumenUsuarios" class="tabla-container"></div>
 </div>
 
 <script>
-
-const firebaseConfig={
-apiKey:"AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
-authDomain:"inventario-eurofert.firebaseapp.com",
-databaseURL:"https://inventario-eurofert-default-rtdb.firebaseio.com",
-projectId:"inventario-eurofert",
-storageBucket:"inventario-eurofert.firebasestorage.app",
-messagingSenderId:"786796692081",
-appId:"1:786796692081:web:c742cfbd1d23c3347f91d0"
+// ============================================
+// CONFIGURACIÓN FIREBASE
+// ============================================
+const firebaseConfig = {
+    apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+    authDomain: "inventario-eurofert.firebaseapp.com",
+    databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
+    projectId: "inventario-eurofert",
+    storageBucket: "inventario-eurofert.firebasestorage.app",
+    messagingSenderId: "786796692081",
+    appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db=firebase.database();
+// Inicializar Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
 
-let productosCache={};
-let filtroMesSeleccionado=null;
+// ============================================
+// VARIABLES GLOBALES
+// ============================================
+let productoEditando = null;
+let todosLosRegistros = [];
 
-function cerrarSesion(){
-localStorage.clear();
-window.location="index.html";
+// ============================================
+// FUNCIONES GENERALES
+// ============================================
+function mostrarSeccion(id) {
+    document.querySelectorAll(".seccionERP").forEach(sec => sec.style.display = "none");
+    document.getElementById(id).style.display = "block";
+    
+    // Cargar datos según la sección
+    if(id === 'usuarios') cargarListaUsuarios();
+    if(id === 'productos') {
+        cargarListaProductos();
+        cargarSugerenciasProductos();
+    }
+    if(id === 'asignacion') {
+        cargarAsignacionesHoy();
+        configurarFechaAsignacion();
+    }
+    if(id === 'inventario') {
+        configurarFechasPorDefecto();
+        cargarFiltrosUsuario();
+    }
+    if(id === 'reportes') cargarEstadisticas();
 }
 
-function crearUsuario(){
-let u=document.getElementById("nuevoUsuario").value.trim();
-let p=document.getElementById("nuevoPassword").value.trim();
-let r=document.getElementById("rolUsuario").value;
-if(!u||!p){alert("Complete campos");return;}
-db.ref("usuarios/"+u).set({password:p,rol:r});
-alert("Usuario creado");
+function cerrarSesion() {
+    localStorage.clear();
+    window.location = "index.html";
 }
 
-function generarID(nombre){
-return nombre.toLowerCase().trim().replace(/\s+/g,"_").replace(/[^\w_]/g,"");
+// ============================================
+// GESTIÓN DE USUARIOS
+// ============================================
+function crearUsuario() {
+    let usuario = document.getElementById("nuevoUsuario").value.trim();
+    let password = document.getElementById("nuevoPassword").value.trim();
+    let rol = document.getElementById("rolUsuario").value;
+
+    if(!usuario || !password) {
+        alert("Complete todos los campos");
+        return;
+    }
+
+    db.ref("usuarios/" + usuario).once("value").then(snapshot => {
+        if(snapshot.exists()) {
+            alert("El usuario ya existe");
+            return;
+        }
+        
+        db.ref("usuarios/" + usuario).set({
+            password: password,
+            rol: rol,
+            fechaCreacion: new Date().toISOString(),
+            intentosFallidos: 0
+        }).then(() => {
+            alert("Usuario creado correctamente");
+            document.getElementById("nuevoUsuario").value = "";
+            document.getElementById("nuevoPassword").value = "";
+            cargarListaUsuarios();
+            cargarFiltrosUsuario();
+            cargarEstadisticas();
+        });
+    });
 }
 
-db.ref("productos").on("value",snapshot=>{
-productosCache={};
-let contenedor=document.getElementById("listaProductos");
-let selectProd=document.getElementById("selectProducto");
-contenedor.innerHTML="";
-selectProd.innerHTML="";
-snapshot.forEach(child=>{
-productosCache[child.key]=child.val();
-contenedor.innerHTML+=`
-<div class="producto" onclick="toggleProducto('${child.key}')">
-${child.val().nombre} (Sistema: ${child.val().sistema})
-</div>
-<div id="registros-${child.key}" style="display:none;"></div>
-`;
-let opt=document.createElement("option");
-opt.value=child.key;
-opt.text=child.val().nombre;
-selectProd.appendChild(opt);
-});
-});
-
-db.ref("usuarios").on("value",snapshot=>{
-let select=document.getElementById("selectUsuario");
-select.innerHTML="";
-snapshot.forEach(child=>{
-if(child.val().rol==="colaborador"){
-let opt=document.createElement("option");
-opt.value=child.key;
-opt.text=child.key;
-select.appendChild(opt);
-}
-});
-});
-
-function crearProducto(){
-let nombre=document.getElementById("nombreProducto").value.trim();
-let sistema=parseInt(document.getElementById("cantidadSistema").value);
-let estado=document.getElementById("estadoProducto");
-estado.innerHTML="";
-if(!nombre||!sistema){estado.innerHTML="<p style='color:red'>Complete campos</p>";return;}
-let id=generarID(nombre);
-
-if(productosCache[id]){
-if(confirm("Producto existe. ¿Actualizar cantidad?")){
-db.ref("productos/"+id).update({sistema:sistema});
-estado.innerHTML="<p style='color:lightgreen'>Cantidad actualizada</p>";
-}
-}else{
-db.ref("productos/"+id).set({nombre:nombre,sistema:sistema});
-estado.innerHTML="<p style='color:lightgreen'>Producto creado</p>";
-}
+function cargarListaUsuarios() {
+    db.ref("usuarios").once("value").then(snapshot => {
+        let container = document.getElementById("listaUsuarios");
+        container.innerHTML = "";
+        
+        snapshot.forEach(child => {
+            let user = child.val();
+            let div = document.createElement("div");
+            div.className = "usuario-item";
+            div.innerHTML = `
+                <div>
+                    <strong>${child.key}</strong> - ${user.rol}
+                    ${user.fechaCreacion ? '<br><small>Creado: ' + new Date(user.fechaCreacion).toLocaleDateString() + '</small>' : ''}
+                </div>
+                <div>
+                    <button class="editar" onclick="editarUsuario('${child.key}')">Editar</button>
+                    <button class="eliminar" onclick="eliminarUsuario('${child.key}')">Eliminar</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    });
 }
 
-function buscarSugerencias(){
-let input=document.getElementById("nombreProducto").value.toLowerCase();
-let lista=document.getElementById("listaSugerencias");
-lista.innerHTML="";
-if(input.length<2)return;
-Object.keys(productosCache).forEach(key=>{
-let p=productosCache[key];
-if(p.nombre.toLowerCase().includes(input)){
-let div=document.createElement("div");
-div.innerText=p.nombre+" (Sistema: "+p.sistema+")";
-div.onclick=function(){
-document.getElementById("nombreProducto").value=p.nombre;
-document.getElementById("cantidadSistema").value=p.sistema;
-lista.innerHTML="";
-};
-lista.appendChild(div);
-}
-});
+function editarUsuario(usuario) {
+    let nuevaPass = prompt("Nueva contraseña para " + usuario);
+    if(nuevaPass && nuevaPass.trim() !== "") {
+        db.ref("usuarios/" + usuario + "/password").set(nuevaPass.trim()).then(() => {
+            alert("Contraseña actualizada");
+            cargarListaUsuarios();
+        });
+    }
 }
 
-function asignarProducto(){
-let usuario=document.getElementById("selectUsuario").value;
-let producto=document.getElementById("selectProducto").value;
-db.ref("asignaciones/"+usuario+"/"+producto).set(true);
-document.getElementById("estadoAsignacion").innerHTML="<p style='color:lightgreen'>Asignado correctamente</p>";
-mostrarAsignados(usuario);
+function eliminarUsuario(usuario) {
+    if(confirm("¿Eliminar usuario " + usuario + "?")) {
+        db.ref("usuarios/" + usuario).remove().then(() => {
+            alert("Usuario eliminado");
+            cargarListaUsuarios();
+            cargarFiltrosUsuario();
+            cargarEstadisticas();
+        });
+    }
 }
 
-function mostrarAsignados(usuario){
-let lista=document.getElementById("listaAsignados");
-lista.innerHTML="";
-db.ref("asignaciones/"+usuario).once("value").then(snapshot=>{
-if(!snapshot.exists()){lista.innerHTML="No tiene productos asignados";return;}
-snapshot.forEach(child=>{
-let id=child.key;
-let nombre=productosCache[id]?.nombre||id;
-lista.innerHTML+=`
-<div class="asignado">
-${nombre}
-<button class="eliminar" onclick="quitarAsignacion('${usuario}','${id}')">Quitar</button>
-</div>`;
-});
-});
+// ============================================
+// GESTIÓN DE PRODUCTOS
+// ============================================
+function crearProducto() {
+    let nombre = document.getElementById("nombreProducto").value.trim();
+    let sistema = parseInt(document.getElementById("cantidadSistema").value);
+    let esDuplicado = document.getElementById("esDuplicado").checked;
+
+    if(!nombre || !sistema) {
+        alert("Complete todos los campos");
+        return;
+    }
+
+    let timestamp = new Date().getTime();
+    let id = nombre.toLowerCase().replace(/\s+/g, "_") + "_" + timestamp;
+
+    if(productoEditando) {
+        id = productoEditando;
+    }
+
+    db.ref("productos/" + id).set({
+        nombre: nombre,
+        sistema: sistema,
+        fechaCreacion: new Date().toISOString(),
+        esVariante: esDuplicado || productoEditando ? true : false,
+        nombreBase: nombre.toLowerCase().replace(/\s+/g, "_")
+    }).then(() => {
+        alert(productoEditando ? "Producto actualizado" : "Producto creado");
+        
+        document.getElementById("nombreProducto").value = "";
+        document.getElementById("cantidadSistema").value = "";
+        document.getElementById("esDuplicado").checked = false;
+        productoEditando = null;
+        
+        cargarListaProductos();
+        cargarSugerenciasProductos();
+        cargarSelectProductos();
+        cargarEstadisticas();
+    });
 }
 
-function quitarAsignacion(usuario,id){
-db.ref("asignaciones/"+usuario+"/"+id).remove();
-mostrarAsignados(usuario);
+function cargarListaProductos(filtro = "") {
+    db.ref("productos").once("value").then(snapshot => {
+        let container = document.getElementById("listaProductos");
+        container.innerHTML = "";
+        
+        let productos = [];
+        snapshot.forEach(child => {
+            let prod = child.val();
+            productos.push({
+                id: child.key,
+                nombre: prod.nombre,
+                sistema: prod.sistema,
+                fecha: prod.fechaCreacion,
+                esVariante: prod.esVariante || false
+            });
+        });
+
+        productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+        if(filtro) {
+            productos = productos.filter(p => 
+                p.nombre.toLowerCase().includes(filtro.toLowerCase())
+            );
+        }
+
+        if(productos.length === 0) {
+            container.innerHTML = "<p>No hay productos que coincidan</p>";
+            return;
+        }
+
+        let productosAgrupados = {};
+        productos.forEach(p => {
+            if(!productosAgrupados[p.nombre]) {
+                productosAgrupados[p.nombre] = [];
+            }
+            productosAgrupados[p.nombre].push(p);
+        });
+
+        for(let nombre in productosAgrupados) {
+            let variantes = productosAgrupados[nombre];
+            
+            if(variantes.length === 1) {
+                let p = variantes[0];
+                container.innerHTML += `
+                    <div class="producto-item">
+                        <div>
+                            <strong>${p.nombre}</strong> - Stock: ${p.sistema}
+                            ${p.fecha ? '<br><small>' + new Date(p.fecha).toLocaleDateString() + '</small>' : ''}
+                        </div>
+                        <div>
+                            <button class="editar" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">Editar</button>
+                            <button class="eliminar" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML += `
+                    <div style="margin-top:15px; background:#0d47a1; padding:10px; border-radius:8px;">
+                        <strong>📦 ${nombre}</strong> <span class="variante-badge">${variantes.length} variantes</span>
+                    </div>
+                `;
+                
+                variantes.forEach((p, index) => {
+                    container.innerHTML += `
+                        <div class="producto-item producto-variante">
+                            <div>
+                                <strong>Variante ${index + 1}:</strong> Stock: ${p.sistema}
+                                ${p.fecha ? '<br><small>' + new Date(p.fecha).toLocaleDateString() + '</small>' : ''}
+                            </div>
+                            <div>
+                                <button class="editar" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">Editar</button>
+                                <button class="eliminar" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+    });
 }
 
-document.getElementById("selectUsuario").addEventListener("change",function(){
-mostrarAsignados(this.value);
-});
-
-function aplicarFiltro(){
-filtroMesSeleccionado=document.getElementById("filtroMes").value;
-alert("Filtro aplicado");
+function filtrarProductos() {
+    let filtro = document.getElementById("filtroProductos").value;
+    cargarListaProductos(filtro);
 }
 
-function toggleProducto(id){
-let cont=document.getElementById("registros-"+id);
-if(cont.style.display==="block"){cont.style.display="none";return;}
-cont.style.display="block";
-cont.innerHTML="Cargando...";
-let mes=filtroMesSeleccionado||new Date().toISOString().substring(0,7);
-db.ref("inventario/"+mes).once("value").then(snapshot=>{
-if(!snapshot.exists()){cont.innerHTML="No hay registros";return;}
-let html="";
-snapshot.forEach(child=>{
-let d=child.val();
-if(generarID(d.producto)===id){
-let fecha=d.fecha.split("T")[0];
-let hora=new Date(d.fecha).toLocaleTimeString();
-html+=`
-<div class="registro">
-${fecha} - ${hora}<br>
-${d.nombre} | F:${d.fisico} M:${d.muestras} C:${d.caducados}
-<button class="eliminar" onclick="eliminarRegistro('${mes}','${child.key}')">Eliminar</button>
-</div>`;
-}
-});
-cont.innerHTML=html||"Sin registros";
-});
+function cargarSugerenciasProductos() {
+    db.ref("productos").once("value").then(snapshot => {
+        let datalist = document.getElementById("sugerenciasProductos");
+        datalist.innerHTML = "";
+        
+        let nombresUnicos = new Set();
+        snapshot.forEach(child => {
+            let prod = child.val();
+            nombresUnicos.add(prod.nombre);
+        });
+        
+        nombresUnicos.forEach(nombre => {
+            let option = document.createElement("option");
+            option.value = nombre;
+            datalist.appendChild(option);
+        });
+    });
 }
 
-function eliminarRegistro(mes,id){
-if(confirm("¿Eliminar registro?")){
-db.ref("inventario/"+mes+"/"+id).remove();
-}
-}
-
-function exportarExcel(){
-let mes=filtroMesSeleccionado||new Date().toISOString().substring(0,7);
-db.ref("inventario/"+mes).once("value").then(snapshot=>{
-if(!snapshot.exists()){alert("No hay datos");return;}
-let csv="Fecha,Hora,Nombre,Producto,Sistema,Fisico,Muestras,Caducados\n";
-snapshot.forEach(child=>{
-let d=child.val();
-let fecha=d.fecha.split("T")[0];
-let hora=new Date(d.fecha).toLocaleTimeString();
-csv+=`${fecha},${hora},${d.nombre},${d.producto},${d.sistema},${d.fisico},${d.muestras},${d.caducados}\n`;
-});
-let blob=new Blob([csv],{type:"text/csv"});
-let link=document.createElement("a");
-link.href=URL.createObjectURL(blob);
-link.download="inventario_"+mes+".csv";
-link.click();
-});
+function editarProducto(id, nombre, sistema) {
+    document.getElementById("nombreProducto").value = nombre;
+    document.getElementById("cantidadSistema").value = sistema;
+    document.getElementById("esDuplicado").checked = true;
+    productoEditando = id;
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    alert("Editando producto. Haz clic en 'Guardar Producto' para confirmar.");
 }
 
+function eliminarProducto(id) {
+    if(confirm("¿Eliminar producto?")) {
+        db.ref("productos/" + id).remove().then(() => {
+            alert("Producto eliminado");
+            cargarListaProductos();
+            cargarSugerenciasProductos();
+            cargarSelectProductos();
+            cargarEstadisticas();
+        });
+    }
+}
+
+// ============================================
+// ASIGNACIONES
+// ============================================
+function configurarFechaAsignacion() {
+    document.getElementById("fechaAsignacion").value = new Date().toISOString().split("T")[0];
+}
+
+function cargarFiltrosUsuario() {
+    db.ref("usuarios").once("value").then(snapshot => {
+        // Select para asignaciones
+        let selectAsignacion = document.getElementById("selectUsuario");
+        selectAsignacion.innerHTML = "<option value=''>Seleccionar usuario</option>";
+        
+        // Select para filtro de inventario
+        let selectInventario = document.getElementById("filtroUsuarioInventario");
+        selectInventario.innerHTML = "<option value=''>Todos los usuarios</option>";
+        
+        snapshot.forEach(child => {
+            if(child.val().rol === "colaborador") {
+                let opt1 = document.createElement("option");
+                opt1.value = child.key;
+                opt1.text = child.key;
+                selectAsignacion.appendChild(opt1);
+                
+                let opt2 = document.createElement("option");
+                opt2.value = child.key;
+                opt2.text = child.key;
+                selectInventario.appendChild(opt2);
+            }
+        });
+    });
+}
+
+function cargarSelectProductos() {
+    db.ref("productos").once("value").then(snapshot => {
+        let select = document.getElementById("selectProducto");
+        select.innerHTML = "<option value=''>Seleccionar producto</option>";
+        
+        let productos = [];
+        snapshot.forEach(child => {
+            let prod = child.val();
+            productos.push({
+                id: child.key,
+                nombre: prod.nombre,
+                sistema: prod.sistema
+            });
+        });
+        
+        productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        
+        productos.forEach(p => {
+            let option = document.createElement("option");
+            option.value = p.id;
+            option.text = `${p.nombre} (Stock: ${p.sistema})`;
+            select.appendChild(option);
+        });
+    });
+}
+
+function asignarProducto() {
+    let fecha = document.getElementById("fechaAsignacion").value;
+    let usuario = document.getElementById("selectUsuario").value;
+    let producto = document.getElementById("selectProducto").value;
+
+    if(!fecha || !usuario || !producto) {
+        alert("Seleccione fecha, usuario y producto");
+        return;
+    }
+
+    db.ref("productos/" + producto).once("value").then(snap => {
+        let productoData = snap.val();
+        
+        db.ref("asignaciones/" + fecha + "/" + usuario + "/" + producto).set({
+            asignado: true,
+            nombreProducto: productoData.nombre,
+            stockSistema: productoData.sistema,
+            fechaAsignacion: new Date().toISOString()
+        }).then(() => {
+            alert("Producto asignado correctamente");
+            cargarAsignacionesHoy();
+        });
+    });
+}
+
+function cargarAsignacionesHoy() {
+    let fechaHoy = new Date().toISOString().split("T")[0];
+    db.ref("asignaciones/" + fechaHoy).once("value").then(snapshot => {
+        let container = document.getElementById("asignacionesHoy");
+        container.innerHTML = "";
+        
+        if(!snapshot.exists()) {
+            container.innerHTML = "<p>No hay asignaciones para hoy</p>";
+            return;
+        }
+        
+        snapshot.forEach(userSnap => {
+            let usuario = userSnap.key;
+            userSnap.forEach(prodSnap => {
+                let producto = prodSnap.key;
+                let data = prodSnap.val();
+                
+                container.innerHTML += `
+                    <div class="registro">
+                        <div><strong>👤 ${usuario}</strong></div>
+                        <div>📦 ${data.nombreProducto || producto}</div>
+                        <div>📊 Stock: ${data.stockSistema || 'N/A'}</div>
+                        <button class="eliminar" onclick="eliminarAsignacion('${fechaHoy}','${usuario}','${producto}')">Eliminar</button>
+                    </div>
+                `;
+            });
+        });
+    });
+}
+
+function eliminarAsignacion(fecha, usuario, producto) {
+    if(confirm("¿Eliminar asignación?")) {
+        db.ref("asignaciones/" + fecha + "/" + usuario + "/" + producto).remove().then(() => {
+            cargarAsignacionesHoy();
+        });
+    }
+}
+
+// ============================================
+// INVENTARIO - VISTA POR FECHA (CORREGIDO)
+// ============================================
+function configurarFechasPorDefecto() {
+    let hoy = new Date();
+    let hace7Dias = new Date();
+    hace7Dias.setDate(hace7Dias.getDate() - 7);
+    
+    document.getElementById("fechaInicio").value = hace7Dias.toISOString().split("T")[0];
+    document.getElementById("fechaFin").value = hoy.toISOString().split("T")[0];
+}
+
+function cargarInventarioPorFecha() {
+    let fechaInicio = document.getElementById("fechaInicio").value;
+    let fechaFin = document.getElementById("fechaFin").value;
+    let filtroUsuario = document.getElementById("filtroUsuarioInventario").value;
+    let filtroProducto = document.getElementById("filtroProducto").value.toLowerCase();
+    
+    if(!fechaInicio || !fechaFin) {
+        alert("Seleccione fechas de inicio y fin");
+        return;
+    }
+
+    let cont = document.getElementById("resultadoInventario");
+    cont.innerHTML = "<p>Cargando registros...</p>";
+    
+    let inicio = new Date(fechaInicio);
+    inicio.setHours(0,0,0,0);
+    let fin = new Date(fechaFin);
+    fin.setHours(23,59,59,999);
+
+    let meses = obtenerMesesEntreFechas(inicio, fin);
+    
+    let promesas = meses.map(mes => 
+        db.ref("inventario/" + mes).once("value")
+    );
+
+    Promise.all(promesas).then(results => {
+        todosLosRegistros = [];
+        
+        results.forEach(snapshot => {
+            if(snapshot.exists()) {
+                snapshot.forEach(child => {
+                    let registro = child.val();
+                    let fechaRegistro = new Date(registro.fecha);
+                    
+                    if(fechaRegistro >= inicio && fechaRegistro <= fin) {
+                        if(filtroUsuario && registro.nombre !== filtroUsuario) return;
+                        if(filtroProducto && !registro.producto.toLowerCase().includes(filtroProducto)) return;
+                        
+                        // Obtener el mes del registro de la referencia actual
+                        let mesRegistro = snapshot.ref.key; // Esta es la forma correcta de obtener el mes
+                        
+                        todosLosRegistros.push({
+                            key: child.key,
+                            mes: mesRegistro, // Guardamos el mes correctamente
+                            ...registro
+                        });
+                    }
+                });
+            }
+        });
+
+        todosLosRegistros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        
+        mostrarResultadosAgrupados();
+        actualizarResumen();
+        
+    }).catch(error => {
+        console.error("Error:", error);
+        cont.innerHTML = `<p class="error">Error cargando datos: ${error.message}</p>`;
+    });
+}
+
+function obtenerMesesEntreFechas(inicio, fin) {
+    let meses = [];
+    let fechaActual = new Date(inicio);
+    
+    while(fechaActual <= fin) {
+        let anio = fechaActual.getFullYear();
+        let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+        let mesStr = `${anio}-${mes}`;
+        
+        if(!meses.includes(mesStr)) {
+            meses.push(mesStr);
+        }
+        
+        fechaActual.setMonth(fechaActual.getMonth() + 1);
+    }
+    
+    return meses;
+}
+
+function mostrarResultadosAgrupados() {
+    let cont = document.getElementById("resultadoInventario");
+    
+    if(todosLosRegistros.length === 0) {
+        cont.innerHTML = "<p>No hay registros en el rango de fechas seleccionado</p>";
+        document.getElementById("resumenInventario").style.display = "none";
+        return;
+    }
+
+    let registrosPorFecha = {};
+    todosLosRegistros.forEach(registro => {
+        let fecha = registro.fecha.split("T")[0];
+        if(!registrosPorFecha[fecha]) {
+            registrosPorFecha[fecha] = [];
+        }
+        registrosPorFecha[fecha].push(registro);
+    });
+
+    document.getElementById("resumenInventario").style.display = "block";
+
+    let html = "";
+    let fechas = Object.keys(registrosPorFecha).sort().reverse();
+    
+    fechas.forEach(fecha => {
+        let registros = registrosPorFecha[fecha];
+        let fechaObj = new Date(fecha);
+        let fechaLegible = fechaObj.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        let totalDia = registros.length;
+        let stockTotalDia = registros.reduce((sum, r) => sum + r.sistema, 0);
+        let fisicoTotalDia = registros.reduce((sum, r) => sum + r.fisico, 0);
+        let muestrasTotalDia = registros.reduce((sum, r) => sum + r.muestras, 0);
+        let caducadosTotalDia = registros.reduce((sum, r) => sum + r.caducados, 0);
+        
+        html += `
+            <div style="background:#1c313a; border-radius:10px; margin-bottom:25px; overflow:hidden;">
+                <div style="background:#0d47a1; padding:15px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleDia('${fecha}')">
+                    <div>
+                        <h3 style="margin:0; text-transform:capitalize;">📅 ${fechaLegible}</h3>
+                        <div style="font-size:14px; margin-top:5px; color:#a8dadc;">
+                            ${totalDia} registros | Stock: ${stockTotalDia} | Físico: ${fisicoTotalDia} | Muestras: ${muestrasTotalDia} | Caducados: ${caducadosTotalDia}
+                        </div>
+                    </div>
+                    <div>
+                        <span style="font-size:20px;" id="btn-${fecha}">▼</span>
+                    </div>
+                </div>
+                
+                <div id="dia-${fecha}" style="padding:15px; display:block;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Usuario</th>
+                                <th>Producto</th>
+                                <th>Stock</th>
+                                <th>Físico</th>
+                                <th>Muestras</th>
+                                <th>Caducados</th>
+                                <th>Total</th>
+                                <th>Diff</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+        
+        registros.forEach(r => {
+            let hora = new Date(r.fecha).toLocaleTimeString('es-ES');
+            let total = r.fisico + r.muestras + r.caducados;
+            let diferencia = total - r.sistema;
+            let estadoColor = diferencia === 0 ? '#00c853' : '#ff9800';
+            let estadoTexto = diferencia === 0 ? '✓' : diferencia;
+            
+            html += `
+                <tr>
+                    <td>${hora}</td>
+                    <td><strong>${r.nombre}</strong></td>
+                    <td>${r.producto}</td>
+                    <td style="color:#00c853; font-weight:bold;">${r.sistema}</td>
+                    <td>${r.fisico}</td>
+                    <td>${r.muestras}</td>
+                    <td>${r.caducados}</td>
+                    <td style="font-weight:bold;">${total}</td>
+                    <td style="color:${estadoColor}; font-weight:bold;">${estadoTexto}</td>
+                    <td>
+                        <button class="eliminar" onclick="eliminarRegistro('${r.mes}','${r.key}')" style="width:auto; padding:5px 10px;">🗑️</button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    });
+    
+    cont.innerHTML = html;
+}
+
+function toggleDia(fecha) {
+    let div = document.getElementById(`dia-${fecha}`);
+    let btn = document.getElementById(`btn-${fecha}`);
+    
+    if(div.style.display === "none") {
+        div.style.display = "block";
+        btn.innerHTML = "▼";
+    } else {
+        div.style.display = "none";
+        btn.innerHTML = "▶";
+    }
+}
+
+function actualizarResumen() {
+    document.getElementById("totalRegistros").textContent = todosLosRegistros.length;
+    
+    let productosUnicos = new Set(todosLosRegistros.map(r => r.producto));
+    document.getElementById("totalProductosUnicos").textContent = productosUnicos.size;
+    
+    let usuariosUnicos = new Set(todosLosRegistros.map(r => r.nombre));
+    document.getElementById("totalUsuariosActivos").textContent = usuariosUnicos.size;
+}
+
+function exportarExcel() {
+    if(todosLosRegistros.length === 0) {
+        alert("No hay datos para exportar");
+        return;
+    }
+    
+    let csv = "Fecha,Hora,Usuario,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Diferencia\n";
+    
+    todosLosRegistros.forEach(r => {
+        let fecha = new Date(r.fecha).toLocaleDateString('es-ES');
+        let hora = new Date(r.fecha).toLocaleTimeString('es-ES');
+        let total = r.fisico + r.muestras + r.caducados;
+        let diferencia = total - r.sistema;
+        
+        csv += `${fecha},${hora},${r.nombre},${r.producto},${r.sistema},${r.fisico},${r.muestras},${r.caducados},${total},${diferencia}\n`;
+    });
+    
+    let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    let url = window.URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = `inventario_${document.getElementById("fechaInicio").value}_a_${document.getElementById("fechaFin").value}.csv`;
+    a.click();
+}
+
+function limpiarFiltros() {
+    document.getElementById("fechaInicio").value = "";
+    document.getElementById("fechaFin").value = "";
+    document.getElementById("filtroUsuarioInventario").value = "";
+    document.getElementById("filtroProducto").value = "";
+    document.getElementById("resultadoInventario").innerHTML = "";
+    document.getElementById("resumenInventario").style.display = "none";
+}
+
+function eliminarRegistro(mes, id) {
+    if(confirm("¿Eliminar registro?")) {
+        db.ref("inventario/" + mes + "/" + id).remove().then(() => {
+            alert("Registro eliminado");
+            cargarInventarioPorFecha(); // Recargar con los mismos filtros
+        }).catch(error => {
+            alert("Error al eliminar: " + error.message);
+        });
+    }
+}
+
+// ============================================
+// REPORTES Y ESTADÍSTICAS
+// ============================================
+function cargarEstadisticas() {
+    let fechaHoy = new Date().toISOString().split("T")[0];
+    let mesActual = new Date().toISOString().substring(0,7);
+
+    Promise.all([
+        db.ref("usuarios").once("value"),
+        db.ref("productos").once("value"),
+        db.ref("asignaciones/" + fechaHoy).once("value"),
+        db.ref("inventario/" + mesActual).once("value")
+    ]).then(([users, prods, asigs, invs]) => {
+        document.getElementById("totalUsuarios").textContent = users.numChildren();
+        document.getElementById("totalProductos").textContent = prods.numChildren();
+        
+        let totalAsignaciones = 0;
+        asigs.forEach(user => totalAsignaciones += user.numChildren());
+        document.getElementById("totalAsignacionesHoy").textContent = totalAsignaciones;
+        
+        document.getElementById("totalInventariosMes").textContent = invs.numChildren();
+        
+        // Top productos
+        let conteoProductos = {};
+        invs.forEach(child => {
+            let prod = child.val().producto;
+            conteoProductos[prod] = (conteoProductos[prod] || 0) + 1;
+        });
+        
+        let topProductos = Object.entries(conteoProductos)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+        
+        let topHtml = "<table><tr><th>Producto</th><th>Veces</th></tr>";
+        topProductos.forEach(([prod, count]) => {
+            topHtml += `<tr><td>${prod}</td><td>${count}</td></tr>`;
+        });
+        topHtml += "</table>";
+        
+        document.getElementById("topProductos").innerHTML = topProductos.length ? topHtml : "<p>Sin datos</p>";
+        
+        // Resumen por usuario
+        let resumenUsuarios = {};
+        invs.forEach(child => {
+            let inv = child.val();
+            if(!resumenUsuarios[inv.nombre]) {
+                resumenUsuarios[inv.nombre] = {
+                    total: 0,
+                };
+            }
+            resumenUsuarios[inv.nombre].total++;
+        });
+        
+        let userHtml = "<table><tr><th>Usuario</th><th>Inventarios</th></tr>";
+        Object.entries(resumenUsuarios).forEach(([user, data]) => {
+            userHtml += `<tr><td>${user}</td><td>${data.total}</td></tr>`;
+        });
+        userHtml += "</table>";
+        
+        document.getElementById("resumenUsuarios").innerHTML = userHtml;
+    });
+}
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+function inicializar() {
+    cargarListaUsuarios();
+    cargarListaProductos();
+    cargarSugerenciasProductos();
+    cargarFiltrosUsuario();
+    cargarSelectProductos();
+    cargarAsignacionesHoy();
+    configurarFechaAsignacion();
+    configurarFechasPorDefecto();
+    cargarEstadisticas();
+    mostrarSeccion('usuarios');
+}
+
+// Ejecutar inicialización cuando la página cargue
+window.onload = inicializar;
 </script>
+
 </body>
 </html>
