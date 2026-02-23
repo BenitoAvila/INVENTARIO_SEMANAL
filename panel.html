@@ -78,7 +78,7 @@ margin-top:10px;
 // 🔒 VALIDAR SESIÓN
 if(!localStorage.getItem("usuario")){
 alert("Debe iniciar sesión");
-window.location="login.html";
+window.location="index.html";
 }
 
 // 🔥 FIREBASE CONFIG
@@ -98,7 +98,7 @@ const db = firebase.database();
 // 🔹 Cerrar sesión
 function cerrarSesion(){
 localStorage.clear();
-window.location="login.html";
+window.location="index.html";
 }
 
 // 🔹 Cargar productos

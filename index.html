@@ -35,9 +35,14 @@ button{
 background:#00c853;
 color:white;
 font-weight:bold;
+cursor:pointer;
+}
+button:hover{
+opacity:0.9;
 }
 #error{
 color:#ff5252;
+margin-top:5px;
 }
 </style>
 </head>
@@ -56,6 +61,10 @@ color:#ff5252;
 
 <script>
 
+// 🔥 LIMPIAR SESIÓN AL CARGAR LOGIN
+localStorage.clear();
+
+// 🔥 CONFIG FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
     authDomain: "inventario-eurofert.firebaseapp.com",
@@ -71,32 +80,48 @@ const db = firebase.database();
 
 function login(){
 
-let usuario = document.getElementById("usuario").value;
-let password = document.getElementById("password").value;
+let usuario = document.getElementById("usuario").value.trim();
+let password = document.getElementById("password").value.trim();
+let error = document.getElementById("error");
+error.innerText = "";
 
-db.ref("usuarios/" + usuario).once("value", snapshot=>{
+// 🔎 Validar campos vacíos
+if(usuario === "" || password === ""){
+error.innerText = "Complete usuario y contraseña";
+return;
+}
+
+// 🔎 Buscar usuario en Firebase
+db.ref("usuarios/" + usuario).once("value")
+.then(snapshot => {
 
 if(!snapshot.exists()){
-document.getElementById("error").innerText="Usuario no existe";
+error.innerText = "Usuario no existe";
 return;
 }
 
 let data = snapshot.val();
 
 if(data.password !== password){
-document.getElementById("error").innerText="Contraseña incorrecta";
+error.innerText = "Contraseña incorrecta";
 return;
 }
 
+// ✅ Guardar sesión
 localStorage.setItem("usuario", usuario);
 localStorage.setItem("rol", data.rol);
 
+// 🚀 Redirigir según rol
 if(data.rol === "admin"){
-window.location="admin.html";
+window.location.href = "admin.html";
 }else{
-window.location="panel.html";
+window.location.href = "panel.html";
 }
 
+})
+.catch(err=>{
+error.innerText = "Error de conexión";
+console.error(err);
 });
 
 }
