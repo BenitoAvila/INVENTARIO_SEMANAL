@@ -2,11 +2,10 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Panel Colaborador</title>
+<title>Panel Colaborador - Inventario</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 
 <style>
 body{
@@ -35,26 +34,27 @@ font-weight:bold;
 cursor:pointer;
 }
 button:hover{
-background:#00a843;
-}
-#estado{
-margin-top:10px;
+opacity:0.9;
 }
 .ok{
 background:#2e7d32;
 padding:8px;
 border-radius:6px;
+margin-top:10px;
 }
 .error{
 background:#c62828;
 padding:8px;
 border-radius:6px;
+margin-top:10px;
 }
 </style>
 </head>
 <body>
 
 <h2>📦 Panel Colaborador - Inventario</h2>
+
+<button onclick="cerrarSesion()">Cerrar Sesión</button>
 
 <div class="card">
 
@@ -75,7 +75,13 @@ border-radius:6px;
 
 <script>
 
-// 🔥 CONFIGURACIÓN FIREBASE
+// 🔒 VALIDAR SESIÓN
+if(!localStorage.getItem("usuario")){
+alert("Debe iniciar sesión");
+window.location="login.html";
+}
+
+// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
     apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
     authDomain: "inventario-eurofert.firebaseapp.com",
@@ -89,28 +95,32 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// 🔹 Cargar productos creados por admin
-db.ref("productos").on("value", snapshot => {
+// 🔹 Cerrar sesión
+function cerrarSesion(){
+localStorage.clear();
+window.location="login.html";
+}
 
-let select = document.getElementById("productoSelect");
-select.innerHTML = "";
+// 🔹 Cargar productos
+db.ref("productos").on("value", snapshot=>{
+
+let select=document.getElementById("productoSelect");
+select.innerHTML="";
 
 if(!snapshot.exists()){
-select.innerHTML = "<option>No hay productos creados</option>";
+select.innerHTML="<option>No hay productos creados</option>";
 return;
 }
 
-snapshot.forEach(child => {
+snapshot.forEach(child=>{
+let data=child.val();
 
-let data = child.val();
-
-let option = document.createElement("option");
-option.value = data.nombre;
-option.text = data.nombre + " (Sistema: " + data.sistema + ")";
+let option=document.createElement("option");
+option.value=data.nombre;
+option.text=data.nombre + " (Sistema: " + data.sistema + ")";
 option.setAttribute("data-sistema", data.sistema);
 
 select.appendChild(option);
-
 });
 
 });
@@ -118,62 +128,62 @@ select.appendChild(option);
 // 🔹 Guardar inventario
 function guardar(){
 
-let estado = document.getElementById("estado");
-estado.innerHTML = "";
+let estado=document.getElementById("estado");
+estado.innerHTML="";
 
-let select = document.getElementById("productoSelect");
+let nombreColaborador=localStorage.getItem("usuario");
 
-if(select.selectedOptions.length === 0 || select.value === ""){
-estado.innerHTML = '<div class="error">Seleccione producto</div>';
+if(!nombreColaborador){
+estado.innerHTML='<div class="error">Sesión no válida. Vuelva a iniciar sesión.</div>';
 return;
 }
 
-let producto = select.value;
-let sistema = parseInt(select.selectedOptions[0].getAttribute("data-sistema"));
+let select=document.getElementById("productoSelect");
 
-let fisico = parseInt(document.getElementById("fisico").value) || 0;
-let muestras = parseInt(document.getElementById("muestras").value) || 0;
-let caducados = parseInt(document.getElementById("caducados").value) || 0;
+if(select.value===""){
+estado.innerHTML='<div class="error">Seleccione producto</div>';
+return;
+}
 
-let total = fisico + muestras + caducados;
+let producto=select.value;
+let sistema=parseInt(select.selectedOptions[0].getAttribute("data-sistema"));
+
+let fisico=parseInt(document.getElementById("fisico").value)||0;
+let muestras=parseInt(document.getElementById("muestras").value)||0;
+let caducados=parseInt(document.getElementById("caducados").value)||0;
+
+let total=fisico+muestras+caducados;
 
 // 🔎 Validar que cuadre
-if(sistema !== total){
-estado.innerHTML = '<div class="error">❌ Inventario no cuadra</div>';
+if(total!==sistema){
+estado.innerHTML='<div class="error">❌ Inventario no cuadra</div>';
 return;
 }
 
-// 🔹 Obtener nombre del usuario logueado
-let usuario = firebase.auth().currentUser;
+// 📅 Guardar por mes
+let fechaISO=new Date().toISOString();
+let mes=fechaISO.substring(0,7);
 
-if(!usuario){
-estado.innerHTML = '<div class="error">Sesión no válida. Vuelva a iniciar sesión.</div>';
-return;
-}
-
-let nombreColaborador = usuario.email.split("@")[0];
-
-// 🔥 Guardar en Firebase
-db.ref("inventario").push({
-fecha: new Date().toISOString(),
-nombre: nombreColaborador,
-producto: producto,
-sistema: sistema,
-fisico: fisico,
-muestras: muestras,
-caducados: caducados
+db.ref("inventario/"+mes).push({
+fecha:fechaISO,
+nombre:nombreColaborador,
+producto:producto,
+sistema:sistema,
+fisico:fisico,
+muestras:muestras,
+caducados:caducados
 })
 .then(()=>{
 
-estado.innerHTML = '<div class="ok">✅ Inventario enviado correctamente</div>';
+estado.innerHTML='<div class="ok">✅ Inventario enviado correctamente</div>';
 
-document.getElementById("fisico").value = "";
-document.getElementById("muestras").value = "";
-document.getElementById("caducados").value = "";
+document.getElementById("fisico").value="";
+document.getElementById("muestras").value="";
+document.getElementById("caducados").value="";
 
 })
 .catch(error=>{
-estado.innerHTML = '<div class="error">Error al guardar: ' + error.message + '</div>';
+estado.innerHTML='<div class="error">Error al guardar: '+error.message+'</div>';
 });
 
 }
