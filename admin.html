@@ -50,17 +50,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -80,7 +69,7 @@
             margin: 0 auto;
         }
 
-        /* ===== HEADER CON NOTIFICACIONES ===== */
+        /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
             padding: 15px 25px;
@@ -122,7 +111,6 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            position: relative;
         }
 
         /* ===== NOTIFICACIONES ===== */
@@ -154,6 +142,12 @@
             animation: pulse 1s infinite;
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
         .notification-dropdown {
             position: absolute;
             top: 50px;
@@ -179,6 +173,24 @@
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             position: sticky;
             top: 0;
+            z-index: 2;
+        }
+
+        .notification-header h4 {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mark-read {
+            font-size: 12px;
+            color: var(--primary-light);
+            cursor: pointer;
+        }
+
+        .mark-read:hover {
+            text-decoration: underline;
         }
 
         .notification-item {
@@ -202,16 +214,6 @@
             color: var(--light);
             opacity: 0.7;
             margin-top: 5px;
-        }
-
-        .mark-read {
-            font-size: 12px;
-            color: var(--primary-light);
-            cursor: pointer;
-        }
-
-        .mark-read:hover {
-            text-decoration: underline;
         }
 
         /* ===== MENÚ ===== */
@@ -474,13 +476,12 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            animation: slideIn 0.3s;
+            animation: fadeIn 0.3s;
             border-left: 4px solid var(--primary);
         }
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
-        .toast.warning { border-left-color: var(--warning); }
 
         /* ===== SECCIONES ===== */
         .seccion {
@@ -501,11 +502,6 @@
             
             .menu-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .notification-dropdown {
-                width: 300px;
-                right: -50px;
             }
             
             .btn {
@@ -786,8 +782,6 @@
     let usuario = localStorage.getItem("usuario");
     let rol = localStorage.getItem("rol");
     let todosLosRegistros = [];
-    let notificaciones = [];
-    let notificacionesNoLeidas = 0;
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -801,39 +795,92 @@
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 
     // ============================================
-    // SISTEMA DE NOTIFICACIONES
+    // FUNCIONES DE UTILIDAD
     // ============================================
+    function mostrarLoading(mostrar) {
+        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
+    }
+
+    function mostrarToast(titulo, mensaje, tipo = 'success') {
+        let container = document.getElementById('toastContainer');
+        let toastId = 'toast_' + Date.now();
+        
+        let toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        toast.id = toastId;
+        
+        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas ${icono}"></i></div>
+            <div class="toast-content">
+                <div class="toast-title">${titulo}</div>
+                <div class="toast-message">${mensaje}</div>
+            </div>
+            <div class="toast-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </div>
+        `;
+        
+        container.appendChild(toast);
+        setTimeout(() => {
+            let elemento = document.getElementById(toastId);
+            if (elemento) elemento.remove();
+        }, 4000);
+    }
+
+    // ============================================
+    // SISTEMA DE NOTIFICACIONES - OPTIMIZADO
+    // ============================================
+    let notificaciones = [];
+    let notificacionesNoLeidas = 0;
+    let ultimaNotificacionId = null;
+
     function inicializarNotificaciones() {
-        // Escuchar nuevos inventarios
+        // Cargar notificaciones guardadas
+        cargarNotificacionesGuardadas();
+        
+        // Escuchar SOLO nuevos inventarios (no al cargar)
         let mesActual = new Date().toISOString().substring(0, 7);
         
+        // Usar child_added solo para nuevos elementos
         db.ref("inventario/" + mesActual).on("child_added", (snapshot) => {
             let nuevoInventario = snapshot.val();
+            let notificacionId = snapshot.key;
+            
+            // Verificar si ya procesamos esta notificación
+            if (ultimaNotificacionId === notificacionId) return;
+            
             let fecha = new Date(nuevoInventario.fecha);
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
             
-            if (fecha >= hoy) {
-                crearNotificacion({
-                    titulo: '📦 Nuevo inventario',
-                    mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
-                    usuario: nuevoInventario.nombre,
-                    producto: nuevoInventario.producto,
-                    fisico: nuevoInventario.fisico,
-                    muestras: nuevoInventario.muestras,
-                    caducados: nuevoInventario.caducados,
-                    fecha: nuevoInventario.fecha
-                });
+            // Solo notificar si es de hoy y no es una recarga
+            if (fecha >= hoy && notificacionId !== ultimaNotificacionId) {
+                ultimaNotificacionId = notificacionId;
+                
+                // Verificar si ya existe esta notificación
+                let existe = notificaciones.some(n => n.id === notificacionId);
+                if (!existe) {
+                    crearNotificacion({
+                        id: notificacionId,
+                        titulo: '📦 Nuevo inventario',
+                        mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
+                        usuario: nuevoInventario.nombre,
+                        producto: nuevoInventario.producto,
+                        fisico: nuevoInventario.fisico,
+                        muestras: nuevoInventario.muestras,
+                        caducados: nuevoInventario.caducados,
+                        fecha: nuevoInventario.fecha
+                    });
+                }
             }
         });
-        
-        cargarNotificacionesGuardadas();
     }
 
     function crearNotificacion(datos) {
-        let id = Date.now() + Math.random().toString(36).substr(2, 9);
         let notificacion = {
-            id: id,
+            id: datos.id || Date.now() + Math.random().toString(36).substr(2, 9),
             ...datos,
             leida: false,
             timestamp: new Date().toISOString()
@@ -842,9 +889,17 @@
         notificaciones.unshift(notificacion);
         notificacionesNoLeidas++;
         
+        // Limitar a 50 notificaciones máximo
+        if (notificaciones.length > 50) {
+            notificaciones = notificaciones.slice(0, 50);
+        }
+        
         localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
+        
+        // Mostrar toast de nueva notificación
+        mostrarToast('Nueva notificación', datos.mensaje, 'info');
     }
 
     function cargarNotificacionesGuardadas() {
@@ -854,7 +909,6 @@
                 notificaciones = JSON.parse(guardadas);
                 notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
                 actualizarBadgeNotificaciones();
-                mostrarNotificaciones();
             }
         } catch (error) {
             console.error("Error cargando notificaciones:", error);
@@ -863,14 +917,17 @@
 
     function toggleNotifications() {
         let dropdown = document.getElementById("notificationDropdown");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-        if (dropdown.style.display === "block") {
-            mostrarNotificaciones();
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            if (dropdown.style.display === "block") {
+                mostrarNotificaciones();
+            }
         }
     }
 
     function mostrarNotificaciones() {
         let container = document.getElementById("notificacionesLista");
+        if (!container) return;
         
         if (notificaciones.length === 0) {
             container.innerHTML = '<p style="text-align:center; padding:20px;">No hay notificaciones</p>';
@@ -895,15 +952,21 @@
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
             notificacion.leida = true;
-            notificacionesNoLeidas--;
+            notificacionesNoLeidas = Math.max(0, notificacionesNoLeidas - 1);
             localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
             actualizarBadgeNotificaciones();
             mostrarNotificaciones();
             
-            // Ir a inventario
+            // Cerrar dropdown
+            let dropdown = document.getElementById("notificationDropdown");
+            if (dropdown) dropdown.style.display = "none";
+            
+            // Ir a inventario y filtrar
             mostrarSeccion('inventario');
-            document.getElementById("filtroUsuario").value = notificacion.usuario;
-            cargarInventario();
+            setTimeout(() => {
+                document.getElementById("filtroUsuario").value = notificacion.usuario;
+                cargarInventario();
+            }, 100);
         }
     }
 
@@ -918,54 +981,10 @@
 
     function actualizarBadgeNotificaciones() {
         let badge = document.getElementById("notificationCount");
-        badge.textContent = notificacionesNoLeidas;
-        badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
-    }
-
-    // Cerrar dropdown al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        let dropdown = document.getElementById("notificationDropdown");
-        let bell = document.querySelector('.notification-bell');
-        
-        if (bell && !bell.contains(e.target) && dropdown && !dropdown.contains(e.target)) {
-            dropdown.style.display = "none";
+        if (badge) {
+            badge.textContent = notificacionesNoLeidas;
+            badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
         }
-    });
-
-    // ============================================
-    // FUNCIONES DE UTILIDAD
-    // ============================================
-    function mostrarLoading(mostrar) {
-        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
-    }
-
-    function mostrarToast(titulo, mensaje, tipo = 'success') {
-        let container = document.getElementById('toastContainer');
-        let toastId = 'toast_' + Date.now();
-        
-        let toast = document.createElement('div');
-        toast.className = `toast ${tipo}`;
-        toast.id = toastId;
-        
-        let icono = tipo === 'success' ? 'fa-check-circle' : 
-                    tipo === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
-        
-        toast.innerHTML = `
-            <div class="toast-icon"><i class="fas ${icono}"></i></div>
-            <div class="toast-content">
-                <div class="toast-title">${titulo}</div>
-                <div class="toast-message">${mensaje}</div>
-            </div>
-            <div class="toast-close" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </div>
-        `;
-        
-        container.appendChild(toast);
-        setTimeout(() => {
-            let elemento = document.getElementById(toastId);
-            if (elemento) elemento.remove();
-        }, 4000);
     }
 
     function mostrarSeccion(seccion) {
@@ -1216,7 +1235,7 @@
     }
 
     // ============================================
-    // ASIGNACIONES
+    // ASIGNACIONES - CORREGIDO
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
@@ -1271,14 +1290,26 @@
         let producto = document.getElementById("selectProducto").value;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
 
-        if (!fecha || !usuario || !producto) {
-            mostrarToast('Error', 'Complete todos los campos', 'error');
+        // Validaciones
+        if (!fecha) {
+            mostrarToast('Error', 'Seleccione una fecha', 'error');
+            return;
+        }
+        
+        if (!usuario) {
+            mostrarToast('Error', 'Seleccione un usuario', 'error');
+            return;
+        }
+        
+        if (!producto) {
+            mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
         }
 
         mostrarLoading(true);
 
         try {
+            // Obtener datos del producto
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) {
                 mostrarToast('Error', 'Producto no encontrado', 'error');
@@ -1287,6 +1318,7 @@
 
             let productoData = prodSnap.val();
             
+            // Guardar asignación
             await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                 asignado: true,
                 nombreProducto: productoData.nombre,
@@ -1296,18 +1328,20 @@
                 productoId: producto
             });
             
-            mostrarToast('Éxito', 'Producto asignado', 'success');
+            mostrarToast('Éxito', 'Producto asignado correctamente', 'success');
             
+            // Limpiar selección
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
             document.getElementById("permitirMultiples").checked = false;
             
+            // Recargar asignaciones
             await cargarAsignacionesHoy();
             await cargarDashboard();
             
         } catch (error) {
             console.error("Error en asignación:", error);
-            mostrarToast('Error', 'Error al asignar', 'error');
+            mostrarToast('Error', 'Error al asignar producto', 'error');
         } finally {
             mostrarLoading(false);
         }
@@ -1438,6 +1472,7 @@
             let fin = new Date(fechaFin);
             let registros = [];
 
+            // Obtener meses entre fechas
             let meses = [];
             let fechaActual = new Date(inicio);
             while (fechaActual <= fin) {
@@ -1546,6 +1581,7 @@
     // INICIALIZACIÓN
     // ============================================
     mostrarSeccion('dashboard');
+    // Inicializar notificaciones
     inicializarNotificaciones();
 </script>
 
