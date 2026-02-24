@@ -948,7 +948,8 @@
         `).join('');
     }
 
-    function verNotificacion(id) {
+        
+        function verNotificacion(id) {
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
             notificacion.leida = true;
@@ -961,12 +962,30 @@
             let dropdown = document.getElementById("notificationDropdown");
             if (dropdown) dropdown.style.display = "none";
             
-            // Ir a inventario y filtrar
+            // Ir a inventario
             mostrarSeccion('inventario');
+            
+            // Extraer la fecha de la notificación
+            let fechaNotificacion = new Date(notificacion.fecha).toISOString().split('T')[0];
+            
+            // Configurar los filtros
+            document.getElementById("fechaInicio").value = fechaNotificacion;
+            document.getElementById("fechaFin").value = fechaNotificacion;
+            document.getElementById("filtroUsuario").value = notificacion.usuario;
+            
+            // Forzar la búsqueda después de un pequeño retraso
             setTimeout(() => {
-                document.getElementById("filtroUsuario").value = notificacion.usuario;
+                // Limpiar resultados anteriores
+                document.getElementById("resultadoInventario").innerHTML = "<p class='text-center'>Buscando inventario...</p>";
+                
+                // Llamar a la función de búsqueda
                 cargarInventario();
-            }, 100);
+                
+                // Mostrar mensaje de confirmación
+                mostrarToast('Filtrado aplicado', 
+                    `Mostrando inventario de ${notificacion.usuario}`, 
+                    'success');
+            }, 300);
         }
     }
 
