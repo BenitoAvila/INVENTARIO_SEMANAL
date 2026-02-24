@@ -50,6 +50,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -69,7 +80,7 @@
             margin: 0 auto;
         }
 
-        /* ===== HEADER ===== */
+        /* ===== HEADER CON NOTIFICACIONES ===== */
         .header {
             background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
             padding: 15px 25px;
@@ -111,6 +122,96 @@
             display: flex;
             align-items: center;
             gap: 20px;
+            position: relative;
+        }
+
+        /* ===== NOTIFICACIONES ===== */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--white);
+            transition: transform 0.3s;
+        }
+
+        .notification-bell:hover {
+            transform: scale(1.1);
+            color: var(--primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: var(--white);
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+            animation: pulse 1s infinite;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 350px;
+            background: var(--darker);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .notification-header {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--secondary);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            position: sticky;
+            top: 0;
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(0,200,83,0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: var(--light);
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .mark-read {
+            font-size: 12px;
+            color: var(--primary-light);
+            cursor: pointer;
+        }
+
+        .mark-read:hover {
+            text-decoration: underline;
         }
 
         /* ===== MENÚ ===== */
@@ -373,12 +474,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            animation: fadeIn 0.3s;
+            animation: slideIn 0.3s;
             border-left: 4px solid var(--primary);
         }
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
 
         /* ===== SECCIONES ===== */
         .seccion {
@@ -401,6 +503,11 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            .notification-dropdown {
+                width: 300px;
+                right: -50px;
+            }
+            
             .btn {
                 width: 100%;
             }
@@ -418,7 +525,7 @@
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Header -->
+    <!-- Header con Notificaciones -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-crown"></i>
@@ -426,6 +533,23 @@
             <span class="logo-badge">ADMIN</span>
         </div>
         <div class="user-info">
+            <!-- Sistema de Notificaciones -->
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">0</span>
+            </div>
+            
+            <!-- Dropdown de Notificaciones -->
+            <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-header">
+                    <h4><i class="fas fa-bell"></i> Notificaciones</h4>
+                    <span class="mark-read" onclick="marcarTodasLeidas()">Marcar todas</span>
+                </div>
+                <div id="notificacionesLista">
+                    <p style="text-align:center; padding:20px;">Cargando...</p>
+                </div>
+            </div>
+
             <div class="user-details">
                 <div class="user-name" id="userName">Admin</div>
                 <div class="user-date" id="currentDate"></div>
@@ -662,6 +786,8 @@
     let usuario = localStorage.getItem("usuario");
     let rol = localStorage.getItem("rol");
     let todosLosRegistros = [];
+    let notificaciones = [];
+    let notificacionesNoLeidas = 0;
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -673,6 +799,138 @@
 
     document.getElementById('userName').textContent = usuario;
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+
+    // ============================================
+    // SISTEMA DE NOTIFICACIONES
+    // ============================================
+    function inicializarNotificaciones() {
+        // Escuchar nuevos inventarios
+        let mesActual = new Date().toISOString().substring(0, 7);
+        
+        db.ref("inventario/" + mesActual).on("child_added", (snapshot) => {
+            let nuevoInventario = snapshot.val();
+            let fecha = new Date(nuevoInventario.fecha);
+            let hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            
+            if (fecha >= hoy) {
+                crearNotificacion({
+                    titulo: '📦 Nuevo inventario',
+                    mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
+                    usuario: nuevoInventario.nombre,
+                    producto: nuevoInventario.producto,
+                    fisico: nuevoInventario.fisico,
+                    muestras: nuevoInventario.muestras,
+                    caducados: nuevoInventario.caducados,
+                    fecha: nuevoInventario.fecha
+                });
+            }
+        });
+        
+        cargarNotificacionesGuardadas();
+    }
+
+    function crearNotificacion(datos) {
+        let id = Date.now() + Math.random().toString(36).substr(2, 9);
+        let notificacion = {
+            id: id,
+            ...datos,
+            leida: false,
+            timestamp: new Date().toISOString()
+        };
+        
+        notificaciones.unshift(notificacion);
+        notificacionesNoLeidas++;
+        
+        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        actualizarBadgeNotificaciones();
+        mostrarNotificaciones();
+    }
+
+    function cargarNotificacionesGuardadas() {
+        try {
+            let guardadas = localStorage.getItem('notificaciones');
+            if (guardadas) {
+                notificaciones = JSON.parse(guardadas);
+                notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
+                actualizarBadgeNotificaciones();
+                mostrarNotificaciones();
+            }
+        } catch (error) {
+            console.error("Error cargando notificaciones:", error);
+        }
+    }
+
+    function toggleNotifications() {
+        let dropdown = document.getElementById("notificationDropdown");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        if (dropdown.style.display === "block") {
+            mostrarNotificaciones();
+        }
+    }
+
+    function mostrarNotificaciones() {
+        let container = document.getElementById("notificacionesLista");
+        
+        if (notificaciones.length === 0) {
+            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay notificaciones</p>';
+            return;
+        }
+        
+        container.innerHTML = notificaciones.slice(0, 20).map(n => `
+            <div class="notification-item ${n.leida ? '' : 'unread'}" onclick="verNotificacion('${n.id}')">
+                <div style="display:flex; gap:10px;">
+                    <div style="font-size:20px;">📦</div>
+                    <div style="flex:1;">
+                        <div style="font-weight:bold;">${n.titulo}</div>
+                        <div style="font-size:13px; margin:5px 0;">${n.mensaje}</div>
+                        <div class="notification-time">${new Date(n.fecha).toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function verNotificacion(id) {
+        let notificacion = notificaciones.find(n => n.id === id);
+        if (notificacion) {
+            notificacion.leida = true;
+            notificacionesNoLeidas--;
+            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+            actualizarBadgeNotificaciones();
+            mostrarNotificaciones();
+            
+            // Ir a inventario
+            mostrarSeccion('inventario');
+            document.getElementById("filtroUsuario").value = notificacion.usuario;
+            cargarInventario();
+        }
+    }
+
+    function marcarTodasLeidas() {
+        notificaciones.forEach(n => n.leida = true);
+        notificacionesNoLeidas = 0;
+        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        actualizarBadgeNotificaciones();
+        mostrarNotificaciones();
+        mostrarToast('Éxito', 'Notificaciones marcadas como leídas', 'success');
+    }
+
+    function actualizarBadgeNotificaciones() {
+        let badge = document.getElementById("notificationCount");
+        badge.textContent = notificacionesNoLeidas;
+        badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
+    }
+
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        let dropdown = document.getElementById("notificationDropdown");
+        let bell = document.querySelector('.notification-bell');
+        
+        if (bell && !bell.contains(e.target) && dropdown && !dropdown.contains(e.target)) {
+            dropdown.style.display = "none";
+        }
+    });
 
     // ============================================
     // FUNCIONES DE UTILIDAD
@@ -689,7 +947,8 @@
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
         
-        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        let icono = tipo === 'success' ? 'fa-check-circle' : 
+                    tipo === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
         
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
@@ -957,7 +1216,7 @@
     }
 
     // ============================================
-    // ASIGNACIONES - CORREGIDO
+    // ASIGNACIONES
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
@@ -1012,26 +1271,14 @@
         let producto = document.getElementById("selectProducto").value;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
 
-        // Validaciones
-        if (!fecha) {
-            mostrarToast('Error', 'Seleccione una fecha', 'error');
-            return;
-        }
-        
-        if (!usuario) {
-            mostrarToast('Error', 'Seleccione un usuario', 'error');
-            return;
-        }
-        
-        if (!producto) {
-            mostrarToast('Error', 'Seleccione un producto', 'error');
+        if (!fecha || !usuario || !producto) {
+            mostrarToast('Error', 'Complete todos los campos', 'error');
             return;
         }
 
         mostrarLoading(true);
 
         try {
-            // Obtener datos del producto
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) {
                 mostrarToast('Error', 'Producto no encontrado', 'error');
@@ -1040,7 +1287,6 @@
 
             let productoData = prodSnap.val();
             
-            // Guardar asignación
             await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                 asignado: true,
                 nombreProducto: productoData.nombre,
@@ -1050,20 +1296,18 @@
                 productoId: producto
             });
             
-            mostrarToast('Éxito', 'Producto asignado correctamente', 'success');
+            mostrarToast('Éxito', 'Producto asignado', 'success');
             
-            // Limpiar selección
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
             document.getElementById("permitirMultiples").checked = false;
             
-            // Recargar asignaciones
             await cargarAsignacionesHoy();
             await cargarDashboard();
             
         } catch (error) {
             console.error("Error en asignación:", error);
-            mostrarToast('Error', 'Error al asignar producto', 'error');
+            mostrarToast('Error', 'Error al asignar', 'error');
         } finally {
             mostrarLoading(false);
         }
@@ -1194,7 +1438,6 @@
             let fin = new Date(fechaFin);
             let registros = [];
 
-            // Obtener meses entre fechas
             let meses = [];
             let fechaActual = new Date(inicio);
             while (fechaActual <= fin) {
@@ -1303,6 +1546,7 @@
     // INICIALIZACIÓN
     // ============================================
     mostrarSeccion('dashboard');
+    inicializarNotificaciones();
 </script>
 
 </body>
