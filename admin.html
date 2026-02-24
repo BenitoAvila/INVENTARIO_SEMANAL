@@ -1473,7 +1473,7 @@
         }
     }
 
-    async function cargarInventario() {
+        async function cargarInventario() {
         let fechaInicio = document.getElementById("fechaInicio").value;
         let fechaFin = document.getElementById("fechaFin").value;
         let filtroUsuario = document.getElementById("filtroUsuario").value;
@@ -1484,22 +1484,32 @@
         }
 
         let cont = document.getElementById("resultadoInventario");
-        cont.innerHTML = "<p class='text-center'>Cargando...</p>";
+        cont.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
 
         try {
+            // Crear fechas con hora 00:00:00 para inicio y 23:59:59 para fin
             let inicio = new Date(fechaInicio);
+            inicio.setHours(0, 0, 0, 0);
+            
             let fin = new Date(fechaFin);
+            fin.setHours(23, 59, 59, 999);
+
+            console.log("Buscando entre:", inicio.toISOString(), "y", fin.toISOString());
+            console.log("Filtro usuario:", filtroUsuario);
+
             let registros = [];
 
-            // Obtener meses entre fechas
+            // Obtener meses entre fechas (últimos 3 meses para simplificar)
             let meses = [];
-            let fechaActual = new Date(inicio);
-            while (fechaActual <= fin) {
+            let fechaActual = new Date();
+            for (let i = 0; i < 3; i++) {
                 let anio = fechaActual.getFullYear();
                 let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
                 meses.push(`${anio}-${mes}`);
-                fechaActual.setMonth(fechaActual.getMonth() + 1);
+                fechaActual.setMonth(fechaActual.getMonth() - 1);
             }
+
+            console.log("Meses a buscar:", meses);
 
             for (let mes of meses) {
                 let snapshot = await db.ref("inventario/" + mes).once("value");
@@ -1507,20 +1517,28 @@
                     snapshot.forEach(child => {
                         let reg = child.val();
                         let fechaReg = new Date(reg.fecha);
+                        
+                        // Comparar fechas correctamente
                         if (fechaReg >= inicio && fechaReg <= fin) {
                             if (!filtroUsuario || reg.nombre === filtroUsuario) {
-                                registros.push({ key: child.key, mes: mes, ...reg });
+                                registros.push({ 
+                                    key: child.key, 
+                                    mes: mes, 
+                                    ...reg 
+                                });
                             }
                         }
                     });
                 }
             }
 
+            console.log("Registros encontrados:", registros.length);
+
             registros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
             todosLosRegistros = registros;
 
             if (registros.length === 0) {
-                cont.innerHTML = "<p class='text-center'>No hay registros</p>";
+                cont.innerHTML = "<p class='text-center'>📭 No hay registros en el rango seleccionado</p>";
                 return;
             }
 
@@ -1541,7 +1559,13 @@
                 <tbody>`;
             
             registros.forEach(r => {
-                let fecha = new Date(r.fecha).toLocaleString();
+                let fecha = new Date(r.fecha).toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
                 let total = r.fisico + r.muestras + r.caducados;
                 let cuadra = total === r.sistema;
                 
@@ -1549,11 +1573,11 @@
                     <td>${fecha}</td>
                     <td><strong>${r.nombre}</strong></td>
                     <td>${r.producto}</td>
-                    <td>${r.sistema}</td>
+                    <td><span class="badge badge-primary">${r.sistema}</span></td>
                     <td>${r.fisico}</td>
                     <td>${r.muestras}</td>
                     <td>${r.caducados}</td>
-                    <td>${total}</td>
+                    <td><strong>${total}</strong></td>
                     <td><span class="badge ${cuadra ? 'badge-success' : 'badge-danger'}">${cuadra ? 'OK' : 'Error'}</span></td>
                 </tr>`;
             });
@@ -1562,7 +1586,7 @@
             
         } catch (error) {
             console.error("Error cargando inventario:", error);
-            cont.innerHTML = "<p class='text-center'>Error cargando inventario</p>";
+            cont.innerHTML = "<p class='text-center text-danger'>Error cargando inventario</p>";
         }
     }
 
