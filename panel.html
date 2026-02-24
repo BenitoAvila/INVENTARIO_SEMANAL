@@ -582,6 +582,30 @@
             font-weight: bold;
         }
 
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
         /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
@@ -618,32 +642,6 @@
         .toast-title { font-weight: bold; margin-bottom: 4px; font-size: 14px; }
         .toast-message { font-size: 12px; opacity: 0.9; }
         .toast-close { cursor: pointer; opacity: 0.7; padding: 4px; }
-
-        /* ===== INDICADOR DE ESTADO ===== */
-        .estado-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        .estado-badge i {
-            font-size: 14px;
-        }
-
-        .estado-badge.completado {
-            background: rgba(46, 125, 50, 0.2);
-            border: 1px solid var(--success);
-        }
-
-        .estado-badge.pendiente {
-            background: rgba(255, 152, 0, 0.2);
-            border: 1px solid var(--warning);
-        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
@@ -708,6 +706,11 @@
 <div class="container">
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
 
     <!-- Header -->
     <div class="header">
@@ -886,24 +889,55 @@
         appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    // Inicializar Firebase con manejo de errores
+    let db;
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+    } catch (error) {
+        console.error("Error inicializando Firebase:", error);
     }
-    const db = firebase.database();
 
     // ============================================
     // VARIABLES GLOBALES
     // ============================================
-    let usuario = localStorage.getItem("usuario");
-    let fechaHoy = new Date().toISOString().split("T")[0];
-    let mesActual = new Date().toISOString().substring(0, 7);
+    let usuario = null;
+    let fechaHoy = null;
+    let mesActual = null;
     let productoSeleccionado = null;
-    let productosPendientes = []; // Solo productos no respondidos
+    let productosPendientes = [];
     let productosEnviadosHoy = new Set();
+    let intervaloActualizacion = null;
+    let intentosReconexion = 0;
+    const MAX_INTENTOS = 5;
+
+    // ============================================
+    // VERIFICAR SESIÓN AL INICIAR
+    // ============================================
+    function verificarSesion() {
+        usuario = localStorage.getItem("usuario");
+        if (!usuario) {
+            mostrarToast('Sesión expirada', 'Por favor, inicie sesión nuevamente', 'error');
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 2000);
+            return false;
+        }
+        
+        fechaHoy = new Date().toISOString().split("T")[0];
+        mesActual = new Date().toISOString().substring(0, 7);
+        return true;
+    }
 
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
+    function mostrarLoading(mostrar = true) {
+        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
+    }
+
     function mostrarToast(titulo, mensaje, tipo = 'success') {
         let container = document.getElementById('toastContainer');
         let toastId = 'toast_' + Date.now();
@@ -936,90 +970,125 @@
     }
 
     function formatearFechaCorta(fechaISO) {
-        let fecha = new Date(fechaISO);
-        return fecha.toLocaleDateString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
+        try {
+            let fecha = new Date(fechaISO);
+            return fecha.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch (error) {
+            return fechaISO;
+        }
+    }
+
+    function manejarError(error, mensaje = 'Error inesperado') {
+        console.error(error);
+        
+        if (error.code === 'PERMISSION_DENIED') {
+            mostrarToast('Error', 'No tiene permisos para esta operación', 'error');
+        } else if (error.code === 'NETWORK_ERROR') {
+            mostrarToast('Error de red', 'Verifique su conexión', 'error');
+            if (intentosReconexion < MAX_INTENTOS) {
+                intentosReconexion++;
+                setTimeout(() => {
+                    recargarDatos();
+                }, 5000 * intentosReconexion);
+            }
+        } else {
+            mostrarToast('Error', mensaje, 'error');
+        }
     }
 
     // ============================================
     // FUNCIONES DE INTERFAZ
     // ============================================
     function actualizarFecha() {
-        let fecha = new Date();
-        document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-        document.getElementById('currentDate').textContent = fecha.toLocaleDateString('es-ES', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-        document.getElementById('userName').textContent = usuario || 'Colaborador';
+        try {
+            let fecha = new Date();
+            document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            });
+            document.getElementById('currentDate').textContent = fecha.toLocaleDateString('es-ES', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+            });
+            document.getElementById('userName').textContent = usuario || 'Colaborador';
+        } catch (error) {
+            console.error("Error actualizando fecha:", error);
+        }
     }
 
     function calcularTotal() {
-        let fisico = parseInt(document.getElementById("fisico").value) || 0;
-        let muestras = parseInt(document.getElementById("muestras").value) || 0;
-        let caducados = parseInt(document.getElementById("caducados").value) || 0;
-        let total = fisico + muestras + caducados;
-        
-        document.getElementById("totalCalculado").textContent = total;
-        
-        if (productoSeleccionado) {
-            let stock = productoSeleccionado.stock;
-            let diferencia = total - stock;
-            let comparacion = document.getElementById("comparacionStock");
+        try {
+            let fisico = parseInt(document.getElementById("fisico").value) || 0;
+            let muestras = parseInt(document.getElementById("muestras").value) || 0;
+            let caducados = parseInt(document.getElementById("caducados").value) || 0;
+            let total = fisico + muestras + caducados;
             
-            if (diferencia === 0) {
-                comparacion.innerHTML = `✓ Cuadra exactamente`;
-                comparacion.style.color = 'var(--success)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--success), var(--primary))';
-            } else if (diferencia > 0) {
-                comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
-                comparacion.style.color = 'var(--warning)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), var(--warning-dark))';
-            } else {
-                comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
-                comparacion.style.color = 'var(--danger)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), var(--danger-dark))';
+            document.getElementById("totalCalculado").textContent = total;
+            
+            if (productoSeleccionado) {
+                let stock = productoSeleccionado.stock;
+                let diferencia = total - stock;
+                let comparacion = document.getElementById("comparacionStock");
+                
+                if (diferencia === 0) {
+                    comparacion.innerHTML = `✓ Cuadra exactamente`;
+                    comparacion.style.color = 'var(--success)';
+                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--success), var(--primary))';
+                } else if (diferencia > 0) {
+                    comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
+                    comparacion.style.color = 'var(--warning)';
+                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), var(--warning-dark))';
+                } else {
+                    comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
+                    comparacion.style.color = 'var(--danger)';
+                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), var(--danger-dark))';
+                }
             }
+            
+            return total;
+        } catch (error) {
+            console.error("Error calculando total:", error);
+            return 0;
         }
-        
-        return total;
     }
 
     function cambiarProducto() {
-        let select = document.getElementById("productoSelect");
-        let selectedOption = select.options[select.selectedIndex];
-        
-        if (selectedOption && selectedOption.value) {
-            let nombre = selectedOption.getAttribute("data-nombre");
-            let stock = selectedOption.getAttribute("data-stock");
-            let productoId = selectedOption.value;
+        try {
+            let select = document.getElementById("productoSelect");
+            let selectedOption = select.options[select.selectedIndex];
             
-            document.getElementById("productoNombre").textContent = nombre;
-            document.getElementById("productoStock").textContent = stock;
-            document.getElementById("productoInfo").style.display = "flex";
-            
-            productoSeleccionado = {
-                id: productoId,
-                nombre: nombre,
-                stock: parseInt(stock)
-            };
-            
-            // Resetear campos
-            document.getElementById("fisico").value = "0";
-            document.getElementById("muestras").value = "0";
-            document.getElementById("caducados").value = "0";
-            calcularTotal();
-        } else {
-            document.getElementById("productoInfo").style.display = "none";
-            productoSeleccionado = null;
+            if (selectedOption && selectedOption.value) {
+                let nombre = selectedOption.getAttribute("data-nombre");
+                let stock = selectedOption.getAttribute("data-stock");
+                let productoId = selectedOption.value;
+                
+                document.getElementById("productoNombre").textContent = nombre;
+                document.getElementById("productoStock").textContent = stock;
+                document.getElementById("productoInfo").style.display = "flex";
+                
+                productoSeleccionado = {
+                    id: productoId,
+                    nombre: nombre,
+                    stock: parseInt(stock)
+                };
+                
+                // Resetear campos
+                document.getElementById("fisico").value = "0";
+                document.getElementById("muestras").value = "0";
+                document.getElementById("caducados").value = "0";
+                calcularTotal();
+            } else {
+                document.getElementById("productoInfo").style.display = "none";
+                productoSeleccionado = null;
+            }
+        } catch (error) {
+            manejarError(error, 'Error al cambiar producto');
         }
     }
 
@@ -1027,186 +1096,218 @@
     // FILTRO EN TIEMPO REAL
     // ============================================
     function filtrarProductos() {
-        let buscador = document.getElementById("buscadorProducto");
-        let filtro = buscador.value.toLowerCase();
-        let select = document.getElementById("productoSelect");
-        let noResultados = document.getElementById("noResultados");
-        let sinPendientes = document.getElementById("sinPendientes");
-        
-        let opciones = select.options;
-        let visibles = 0;
-        
-        for (let i = 1; i < opciones.length; i++) {
-            let option = opciones[i];
-            let texto = option.text.toLowerCase();
-            if (texto.includes(filtro)) {
-                option.style.display = "";
-                visibles++;
-            } else {
-                option.style.display = "none";
+        try {
+            let buscador = document.getElementById("buscadorProducto");
+            let filtro = buscador.value.toLowerCase();
+            let select = document.getElementById("productoSelect");
+            let noResultados = document.getElementById("noResultados");
+            let sinPendientes = document.getElementById("sinPendientes");
+            
+            let opciones = select.options;
+            let visibles = 0;
+            
+            for (let i = 1; i < opciones.length; i++) {
+                let option = opciones[i];
+                let texto = option.text.toLowerCase();
+                if (texto.includes(filtro)) {
+                    option.style.display = "";
+                    visibles++;
+                } else {
+                    option.style.display = "none";
+                }
             }
+            
+            noResultados.style.display = visibles === 0 && productosPendientes.length > 0 ? "block" : "none";
+        } catch (error) {
+            console.error("Error filtrando productos:", error);
         }
-        
-        noResultados.style.display = visibles === 0 && productosPendientes.length > 0 ? "block" : "none";
     }
 
     // ============================================
     // CARGAR SOLO PRODUCTOS PENDIENTES
     // ============================================
-    function cargarProductosPendientes() {
-        return new Promise((resolve, reject) => {
-            Promise.all([
+    async function cargarProductosPendientes() {
+        if (!db) {
+            manejarError(new Error('Base de datos no inicializada'), 'Error de conexión');
+            return;
+        }
+
+        mostrarLoading(true);
+        
+        try {
+            const [snapshotAsignaciones, snapshotEnvios] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
                 db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]).then(([snapshotAsignaciones, snapshotEnvios]) => {
-                let select = document.getElementById("productoSelect");
-                let buscador = document.getElementById("buscadorProducto");
-                let sinPendientes = document.getElementById("sinPendientes");
-                let productSelector = document.getElementById("productSelector");
-                
-                select.innerHTML = "";
-                productosPendientes = [];
-                
-                // Opción por defecto
-                let defaultOption = document.createElement("option");
-                defaultOption.value = "";
-                defaultOption.textContent = "Seleccione un producto...";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                select.appendChild(defaultOption);
+            ]);
 
-                if (!snapshotAsignaciones.exists()) {
-                    sinPendientes.style.display = "block";
-                    select.style.display = "none";
-                    document.getElementById("buscadorProducto").style.display = "none";
-                    resolve([]);
-                    return;
+            let select = document.getElementById("productoSelect");
+            let buscador = document.getElementById("buscadorProducto");
+            let sinPendientes = document.getElementById("sinPendientes");
+            let productSelector = document.getElementById("productSelector");
+            
+            select.innerHTML = "";
+            productosPendientes = [];
+            
+            // Opción por defecto
+            let defaultOption = document.createElement("option");
+            defaultOption.value = "";
+            defaultOption.textContent = "Seleccione un producto...";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
+
+            if (!snapshotAsignaciones.exists()) {
+                sinPendientes.style.display = "block";
+                select.style.display = "none";
+                document.getElementById("buscadorProducto").style.display = "none";
+                return;
+            }
+
+            // Registrar productos ya enviados hoy
+            productosEnviadosHoy.clear();
+            snapshotEnvios.forEach(child => {
+                let envio = child.val();
+                let fechaEnvio = envio.fecha.split("T")[0];
+                if (fechaEnvio === fechaHoy) {
+                    productosEnviadosHoy.add(envio.productoId);
                 }
+            });
 
-                // Registrar productos ya enviados hoy
-                productosEnviadosHoy.clear();
-                snapshotEnvios.forEach(child => {
-                    let envio = child.val();
-                    let fechaEnvio = envio.fecha.split("T")[0];
-                    if (fechaEnvio === fechaHoy) {
-                        productosEnviadosHoy.add(envio.productoId);
-                    }
-                });
+            let asignaciones = snapshotAsignaciones.val();
+            let productosIds = Object.keys(asignaciones);
 
-                let asignaciones = snapshotAsignaciones.val();
-                let productosIds = Object.keys(asignaciones);
-                let opciones = [];
-
-                let promesas = productosIds.map(productoId => {
-                    return db.ref("productos/" + productoId).once("value").then(prodSnap => {
-                        if (prodSnap.exists()) {
-                            let data = prodSnap.val();
-                            let asignacionData = asignaciones[productoId];
-                            let stockSistema = asignacionData.stockSistema || data.sistema;
+            // Cargar productos en paralelo
+            await Promise.all(productosIds.map(async productoId => {
+                try {
+                    let prodSnap = await db.ref("productos/" + productoId).once("value");
+                    if (prodSnap.exists()) {
+                        let data = prodSnap.val();
+                        let asignacionData = asignaciones[productoId];
+                        let stockSistema = asignacionData.stockSistema || data.sistema;
+                        
+                        let yaEnviado = productosEnviadosHoy.has(productoId);
+                        
+                        // Solo agregar al select si NO ha sido enviado
+                        if (!yaEnviado) {
+                            let option = document.createElement("option");
+                            option.value = productoId;
+                            option.textContent = `${data.nombre} (Stock: ${stockSistema})`;
+                            option.setAttribute("data-nombre", data.nombre);
+                            option.setAttribute("data-stock", stockSistema);
+                            option.setAttribute("data-id", productoId);
                             
-                            let yaEnviado = productosEnviadosHoy.has(productoId);
+                            select.appendChild(option);
                             
-                            // Solo agregar al select si NO ha sido enviado
-                            if (!yaEnviado) {
-                                let option = document.createElement("option");
-                                option.value = productoId;
-                                option.textContent = `${data.nombre} (Stock: ${stockSistema})`;
-                                option.setAttribute("data-nombre", data.nombre);
-                                option.setAttribute("data-stock", stockSistema);
-                                option.setAttribute("data-id", productoId);
-                                
-                                select.appendChild(option);
-                                
-                                productosPendientes.push({
-                                    id: productoId,
-                                    nombre: data.nombre,
-                                    stock: stockSistema
-                                });
-                            }
+                            productosPendientes.push({
+                                id: productoId,
+                                nombre: data.nombre,
+                                stock: stockSistema
+                            });
                         }
-                    });
-                });
-
-                Promise.all(promesas).then(() => {
-                    if (productosPendientes.length === 0) {
-                        // No hay productos pendientes
-                        sinPendientes.style.display = "block";
-                        select.style.display = "none";
-                        document.getElementById("buscadorProducto").style.display = "none";
-                    } else {
-                        // Hay productos pendientes
-                        sinPendientes.style.display = "none";
-                        select.style.display = "block";
-                        document.getElementById("buscadorProducto").style.display = "block";
-                        
-                        // Ordenar alfabéticamente
-                        let options = Array.from(select.options).slice(1);
-                        options.sort((a, b) => a.textContent.localeCompare(b.textContent));
-                        options.forEach(option => select.appendChild(option));
-                        
-                        if (buscador) buscador.value = "";
-                        
-                        // Seleccionar el primer producto por defecto
-                        select.selectedIndex = 1;
-                        cambiarProducto();
                     }
-                    
-                    resolve(productosPendientes);
-                }).catch(reject);
+                } catch (error) {
+                    console.error("Error cargando producto:", productoId, error);
+                }
+            }));
 
-            }).catch(reject);
-        });
+            if (productosPendientes.length === 0) {
+                // No hay productos pendientes
+                sinPendientes.style.display = "block";
+                select.style.display = "none";
+                document.getElementById("buscadorProducto").style.display = "none";
+            } else {
+                // Hay productos pendientes
+                sinPendientes.style.display = "none";
+                select.style.display = "block";
+                document.getElementById("buscadorProducto").style.display = "block";
+                
+                // Ordenar alfabéticamente
+                let options = Array.from(select.options).slice(1);
+                options.sort((a, b) => a.textContent.localeCompare(b.textContent));
+                options.forEach(option => select.appendChild(option));
+                
+                if (buscador) buscador.value = "";
+                
+                // Seleccionar el primer producto por defecto
+                if (options.length > 0) {
+                    select.selectedIndex = 1;
+                    cambiarProducto();
+                }
+            }
+            
+            intentosReconexion = 0; // Resetear intentos de reconexión
+            
+        } catch (error) {
+            manejarError(error, 'Error cargando productos');
+        } finally {
+            mostrarLoading(false);
+        }
     }
 
     // ============================================
     // CARGAR DASHBOARD
     // ============================================
-    function cargarDashboard() {
-        db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value").then(snapAsignaciones => {
+    async function cargarDashboard() {
+        if (!db) return;
+        
+        try {
+            const [snapAsignaciones, snapEnvios] = await Promise.all([
+                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+            ]);
+
             let totalAsignaciones = snapAsignaciones.exists() ? snapAsignaciones.numChildren() : 0;
             
-            db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value").then(snapEnvios => {
-                let completadosHoy = 0;
-                let precisos = 0;
-                let totalEnvios = 0;
+            let completadosHoy = 0;
+            let precisos = 0;
+            let totalEnvios = 0;
+            
+            snapEnvios.forEach(child => {
+                let envio = child.val();
+                let fechaEnvio = envio.fecha.split("T")[0];
                 
-                snapEnvios.forEach(child => {
-                    let envio = child.val();
-                    let fechaEnvio = envio.fecha.split("T")[0];
-                    
-                    if (fechaEnvio === fechaHoy) {
-                        completadosHoy++;
-                    }
-                    
-                    let total = envio.fisico + envio.muestras + envio.caducados;
-                    if (total === envio.sistema) {
-                        precisos++;
-                    }
-                    totalEnvios++;
-                });
+                if (fechaEnvio === fechaHoy) {
+                    completadosHoy++;
+                }
                 
-                document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-                document.getElementById("totalCompletados").textContent = completadosHoy;
-                
-                let precisionPorcentaje = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
-                document.getElementById("precision").textContent = precisionPorcentaje + '%';
-                
-                document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones} completados`;
-                let progreso = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 : 0;
-                document.getElementById("progresoBarra").style.width = progreso + '%';
-                document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
+                let total = envio.fisico + envio.muestras + envio.caducados;
+                if (total === envio.sistema) {
+                    precisos++;
+                }
+                totalEnvios++;
             });
-        });
+            
+            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
+            document.getElementById("totalCompletados").textContent = completadosHoy;
+            
+            let precisionPorcentaje = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
+            document.getElementById("precision").textContent = precisionPorcentaje + '%';
+            
+            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones} completados`;
+            let progreso = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 : 0;
+            document.getElementById("progresoBarra").style.width = progreso + '%';
+            document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
+            
+        } catch (error) {
+            manejarError(error, 'Error cargando dashboard');
+        }
     }
 
     // ============================================
     // CARGAR PENDIENTES
     // ============================================
-    function cargarPendientes() {
+    async function cargarPendientes() {
+        if (!db) return;
+        
         let container = document.getElementById("pendientesContainer");
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando pendientes...</p>";
 
-        db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value").then(snapAsignaciones => {
+        try {
+            const [snapAsignaciones, snapEnvios] = await Promise.all([
+                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+            ]);
+
             if (!snapAsignaciones.exists()) {
                 container.innerHTML = "<p class='text-center'>✅ No tienes asignaciones pendientes</p>";
                 return;
@@ -1215,89 +1316,95 @@
             let asignaciones = snapAsignaciones.val();
             let productosIds = Object.keys(asignaciones);
 
-            db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value").then(snapEnvios => {
-                let productosEnviados = new Set();
-                
-                snapEnvios.forEach(child => {
-                    let envio = child.val();
-                    let fechaEnvio = envio.fecha.split("T")[0];
-                    if (fechaEnvio === fechaHoy) {
-                        productosEnviados.add(envio.productoId);
-                    }
-                });
-
-                let promesas = productosIds.map(productoId => {
-                    return db.ref("productos/" + productoId).once("value").then(prodSnap => {
-                        if (prodSnap.exists()) {
-                            let data = prodSnap.val();
-                            let yaEnviado = productosEnviados.has(productoId);
-                            
-                            // Solo mostrar pendientes (no enviados)
-                            if (!yaEnviado) {
-                                return {
-                                    id: productoId,
-                                    nombre: data.nombre,
-                                    stock: asignaciones[productoId].stockSistema || data.sistema
-                                };
-                            }
-                        }
-                        return null;
-                    });
-                });
-
-                Promise.all(promesas).then(resultados => {
-                    let pendientes = resultados.filter(p => p !== null);
-
-                    if (pendientes.length === 0) {
-                        container.innerHTML = "<p class='text-center'>✅ ¡Completaste todos tus productos de hoy!</p>";
-                        return;
-                    }
-
-                    let html = `<table>
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Stock</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-                    
-                    pendientes.forEach(p => {
-                        html += `<tr>
-                            <td><strong>${p.nombre}</strong></td>
-                            <td><span class="badge badge-primary">${p.stock}</span></td>
-                            <td><span class="badge badge-warning">PENDIENTE</span></td>
-                        </tr>`;
-                    });
-                    html += `</tbody></table>`;
-                    container.innerHTML = html;
-                });
+            let productosEnviados = new Set();
+            
+            snapEnvios.forEach(child => {
+                let envio = child.val();
+                let fechaEnvio = envio.fecha.split("T")[0];
+                if (fechaEnvio === fechaHoy) {
+                    productosEnviados.add(envio.productoId);
+                }
             });
-        });
+
+            let pendientes = [];
+
+            await Promise.all(productosIds.map(async productoId => {
+                try {
+                    let prodSnap = await db.ref("productos/" + productoId).once("value");
+                    if (prodSnap.exists()) {
+                        let data = prodSnap.val();
+                        let yaEnviado = productosEnviados.has(productoId);
+                        
+                        // Solo mostrar pendientes (no enviados)
+                        if (!yaEnviado) {
+                            pendientes.push({
+                                id: productoId,
+                                nombre: data.nombre,
+                                stock: asignaciones[productoId].stockSistema || data.sistema
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error cargando producto:", productoId, error);
+                }
+            }));
+
+            if (pendientes.length === 0) {
+                container.innerHTML = "<p class='text-center'>✅ ¡Completaste todos tus productos de hoy!</p>";
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            pendientes.forEach(p => {
+                html += `<tr>
+                    <td><strong>${p.nombre}</strong></td>
+                    <td><span class="badge badge-primary">${p.stock}</span></td>
+                    <td><span class="badge badge-warning">PENDIENTE</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) {
+            manejarError(error, 'Error cargando pendientes');
+            container.innerHTML = `<p class='text-center text-danger'>Error cargando datos</p>`;
+        }
     }
 
     // ============================================
     // CARGAR HISTORIAL
     // ============================================
-    function cargarHistorial() {
+    async function cargarHistorial() {
+        if (!db) return;
+        
         let container = document.getElementById("historialContainer");
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando historial...</p>";
 
-        let meses = [];
-        for (let i = 0; i <= 2; i++) {
-            let fecha = new Date();
-            fecha.setMonth(fecha.getMonth() - i);
-            let anio = fecha.getFullYear();
-            let mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-            meses.push(`${anio}-${mes}`);
-        }
+        try {
+            let meses = [];
+            for (let i = 0; i <= 2; i++) {
+                let fecha = new Date();
+                fecha.setMonth(fecha.getMonth() - i);
+                let anio = fecha.getFullYear();
+                let mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+                meses.push(`${anio}-${mes}`);
+            }
 
-        let promesas = meses.map(mes => 
-            db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value")
-        );
+            let results = await Promise.all(
+                meses.map(mes => 
+                    db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value")
+                )
+            );
 
-        Promise.all(promesas).then(results => {
             let todosEnvios = [];
             
             results.forEach(snap => {
@@ -1359,15 +1466,22 @@
             html += `</tbody></table>`;
             
             container.innerHTML = html;
-        }).catch(error => {
-            container.innerHTML = `<p class='text-center text-danger'>Error: ${error.message}</p>`;
-        });
+            
+        } catch (error) {
+            manejarError(error, 'Error cargando historial');
+            container.innerHTML = `<p class='text-center text-danger'>Error cargando historial</p>`;
+        }
     }
 
     // ============================================
     // ENVIAR INVENTARIO
     // ============================================
-    function enviarInventario() {
+    async function enviarInventario() {
+        if (!db || !usuario) {
+            mostrarToast('Error', 'Sesión no válida', 'error');
+            return;
+        }
+
         let btnEnviar = document.getElementById("btnEnviar");
 
         if (!productoSeleccionado) {
@@ -1389,30 +1503,37 @@
         btnEnviar.disabled = true;
         btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
-        let fechaCompleta = new Date().toISOString();
-        let mes = fechaCompleta.substring(0, 7);
+        try {
+            let fechaCompleta = new Date().toISOString();
+            let mes = fechaCompleta.substring(0, 7);
 
-        let datos = {
-            nombre: usuario,
-            producto: productoSeleccionado.nombre,
-            productoId: productoSeleccionado.id,
-            sistema: productoSeleccionado.stock,
-            fisico: fisico,
-            muestras: muestras,
-            caducados: caducados,
-            fecha: fechaCompleta,
-            total: total,
-            cuadra: total === productoSeleccionado.stock
-        };
+            let datos = {
+                nombre: usuario,
+                producto: productoSeleccionado.nombre,
+                productoId: productoSeleccionado.id,
+                sistema: productoSeleccionado.stock,
+                fisico: fisico,
+                muestras: muestras,
+                caducados: caducados,
+                fecha: fechaCompleta,
+                total: total,
+                cuadra: total === productoSeleccionado.stock
+            };
 
-        db.ref("inventario/" + mes).push(datos).then(() => {
+            await db.ref("inventario/" + mes).push(datos);
+            
             mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
             
             // Actualizar productos enviados
             productosEnviadosHoy.add(productoSeleccionado.id);
             
-            // Recargar productos pendientes (esto eliminará el producto del selector)
-            cargarProductosPendientes();
+            // Recargar todos los datos
+            await Promise.all([
+                cargarProductosPendientes(),
+                cargarDashboard(),
+                cargarPendientes(),
+                cargarHistorial()
+            ]);
             
             // Resetear campos
             document.getElementById("fisico").value = "0";
@@ -1420,54 +1541,97 @@
             document.getElementById("caducados").value = "0";
             calcularTotal();
             
-            // Recargar datos
-            cargarDashboard();
-            cargarPendientes();
-            cargarHistorial();
-            
-        }).catch(error => {
-            mostrarToast('Error', 'Error al guardar: ' + error.message, 'error');
-        }).finally(() => {
+        } catch (error) {
+            manejarError(error, 'Error al guardar inventario');
+        } finally {
             btnEnviar.disabled = false;
             btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
-        });
+        }
+    }
+
+    // ============================================
+    // RECARGAR DATOS
+    // ============================================
+    async function recargarDatos() {
+        if (!verificarSesion()) return;
+        
+        mostrarLoading(true);
+        try {
+            await Promise.all([
+                cargarProductosPendientes(),
+                cargarDashboard(),
+                cargarPendientes(),
+                cargarHistorial()
+            ]);
+            mostrarToast('Actualizado', 'Datos actualizados correctamente', 'success');
+        } catch (error) {
+            manejarError(error, 'Error al recargar datos');
+        } finally {
+            mostrarLoading(false);
+        }
     }
 
     // ============================================
     // CERRAR SESIÓN
     // ============================================
     function cerrarSesion() {
+        if (intervaloActualizacion) {
+            clearInterval(intervaloActualizacion);
+        }
+        
         mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
         setTimeout(() => {
             localStorage.clear();
-            window.location = "index.html";
+            window.location.href = "index.html";
         }, 1500);
     }
 
     // ============================================
     // INICIALIZACIÓN
     // ============================================
-    function inicializar() {
+    async function inicializar() {
+        if (!verificarSesion()) return;
+        
         actualizarFecha();
         
-        Promise.all([
-            cargarProductosPendientes(),
-            cargarDashboard(),
-            cargarPendientes(),
-            cargarHistorial()
-        ]).catch(error => {
-            console.error("Error en inicialización:", error);
-            mostrarToast('Error', 'Error al cargar datos', 'error');
-        });
-        
-        // Actualizar cada 30 segundos
-        setInterval(() => {
-            cargarDashboard();
-            cargarPendientes();
-        }, 30000);
+        try {
+            await recargarDatos();
+            
+            // Configurar intervalo de actualización (cada 30 segundos)
+            if (intervaloActualizacion) {
+                clearInterval(intervaloActualizacion);
+            }
+            
+            intervaloActualizacion = setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    recargarDatos();
+                }
+            }, 30000);
+            
+        } catch (error) {
+            manejarError(error, 'Error al inicializar');
+        }
     }
 
-    window.onload = inicializar;
+    // Manejar visibilidad de la página
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && usuario) {
+            recargarDatos();
+        }
+    });
+
+    // Manejar errores no capturados
+    window.addEventListener('error', (event) => {
+        console.error('Error global:', event.error);
+        mostrarToast('Error', 'Ocurrió un error inesperado', 'error');
+    });
+
+    // Iniciar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializar);
+    } else {
+        inicializar();
+    }
 </script>
 
 </body>
