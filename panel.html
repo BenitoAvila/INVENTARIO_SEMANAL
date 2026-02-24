@@ -2,41 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eurofert Pro - Panel Colaborador</title>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
-    <!-- Librerías -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ===== MANTENER LOS ESTILOS EXACTAMENTE COMO ESTABAN ===== */
+        /* ===== VARIABLES ===== */
         :root {
             --primary: #00c853;
             --primary-dark: #00a844;
-            --primary-light: #5efc82;
             --secondary: #0d47a1;
             --secondary-dark: #0a3a7a;
-            --secondary-light: #5472d3;
             --danger: #c62828;
-            --danger-dark: #8e0000;
             --warning: #ff9800;
-            --warning-dark: #c66900;
             --success: #2e7d32;
-            --info: #00acc1;
             --dark: #1e3c72;
-            --darker: #0f1a24;
             --dark-light: #2a5298;
             --light: #f5f5f5;
-            --light-dark: #e0e0e0;
-            --gray: #9e9e9e;
             --white: #ffffff;
-            --black: #000000;
             --shadow: 0 8px 20px rgba(0,0,0,0.3);
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
             --border-radius: 12px;
             --border-radius-sm: 8px;
         }
@@ -45,7 +35,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         @keyframes fadeIn {
@@ -53,113 +42,68 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--dark), var(--dark-light));
             color: var(--white);
             min-height: 100vh;
-            margin: 0;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: 20px;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 16px;
         }
 
         .header {
-            background: linear-gradient(135deg, rgba(13,71,161,0.98), rgba(13,71,161,0.95));
-            backdrop-filter: blur(10px);
-            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            padding: 15px 25px;
             border-radius: var(--border-radius);
-            margin-bottom: 16px;
+            margin-bottom: 25px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
             border-bottom: 3px solid var(--primary);
             animation: fadeIn 0.5s ease;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .logo i {
-            font-size: 28px;
+            font-size: 32px;
             color: var(--primary);
-            animation: pulse 2s infinite;
         }
 
         .logo-text {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--white), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--white);
         }
 
         .logo-badge {
             background: var(--primary);
-            color: var(--white);
-            padding: 4px 8px;
+            padding: 4px 10px;
             border-radius: 20px;
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 12px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .user-details {
-            text-align: right;
-        }
-
-        .user-name {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .user-role {
-            font-size: 11px;
-            color: var(--primary-light);
-        }
-
-        .user-date {
-            font-size: 11px;
-            color: var(--primary-light);
+            gap: 20px;
         }
 
         .btn {
-            padding: 12px 20px;
+            padding: 12px 25px;
             border-radius: var(--border-radius-sm);
             border: none;
             font-weight: 600;
@@ -168,11 +112,7 @@
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
-            min-height: 44px;
-            -webkit-appearance: none;
-            appearance: none;
         }
 
         .btn-primary {
@@ -180,9 +120,9 @@
             color: var(--white);
         }
 
-        .btn-primary:active {
+        .btn-primary:hover {
             background: var(--primary-dark);
-            transform: scale(0.98);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -190,106 +130,106 @@
             color: var(--white);
         }
 
-        .btn-danger:active {
-            background: var(--danger-dark);
-            transform: scale(0.98);
-        }
-
         .btn-block {
             width: 100%;
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
         .card {
             background: rgba(32, 58, 67, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
             border-radius: var(--border-radius);
-            margin-bottom: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
             animation: fadeIn 0.5s ease;
-            box-shadow: var(--shadow);
         }
 
         .card-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 2px solid rgba(255,255,255,0.1);
         }
 
         .card-header h3 {
             color: var(--light);
-            font-size: 18px;
+            font-size: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .card-header h3 i {
             color: var(--primary);
-            font-size: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0,200,83,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
         }
 
         .product-selector {
             background: rgba(13,71,161,0.3);
             border-radius: var(--border-radius);
-            padding: 16px;
-            margin-bottom: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
         .search-container {
             position: relative;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
         .search-icon {
             position: absolute;
-            left: 12px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--primary);
-            font-size: 14px;
-            z-index: 1;
         }
 
         .product-search {
             width: 100%;
-            padding: 14px 14px 14px 40px;
+            padding: 15px 15px 15px 45px;
             border-radius: var(--border-radius-sm);
             border: 2px solid transparent;
             background: rgba(255,255,255,0.1);
             color: var(--white);
             font-size: 16px;
-            transition: all 0.3s;
-            -webkit-appearance: none;
-            appearance: none;
         }
 
         .product-search:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(255,255,255,0.15);
-        }
-
-        .product-search::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .product-dropdown {
-            position: relative;
-            width: 100%;
-            max-height: 200px;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
         .product-select-custom {
@@ -300,201 +240,106 @@
             background: rgba(255,255,255,0.15);
             color: var(--white);
             font-size: 15px;
-            cursor: pointer;
             min-height: 44px;
         }
 
         .product-select-custom option {
-            background: var(--darker);
+            background: var(--dark);
             color: var(--white);
-            padding: 12px;
-            min-height: 44px;
+            padding: 10px;
         }
 
         .product-info-card {
             background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
             border-radius: var(--border-radius);
-            padding: 16px;
-            margin-top: 12px;
+            padding: 20px;
+            margin-top: 15px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
             justify-content: space-between;
             align-items: center;
-            animation: slideIn 0.3s ease;
         }
 
         .product-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
-            word-break: break-word;
-        }
-
-        .product-name i {
-            color: var(--primary);
+            gap: 10px;
         }
 
         .product-stock {
             background: rgba(0,200,83,0.2);
-            padding: 8px 16px;
+            padding: 10px 20px;
             border-radius: 30px;
-            font-size: 16px;
-            font-weight: bold;
-            white-space: nowrap;
+            font-size: 18px;
         }
 
         .product-stock span {
             color: var(--primary);
-            font-size: 22px;
-            margin-left: 6px;
-        }
-
-        .no-results {
-            padding: 15px;
-            text-align: center;
-            color: var(--light);
-            background: rgba(255,255,255,0.05);
-            border-radius: var(--border-radius-sm);
-            margin-top: 10px;
-        }
-
-        .mensaje-completado {
-            background: rgba(46, 125, 50, 0.2);
-            border: 2px solid var(--success);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .mensaje-completado i {
-            font-size: 48px;
-            color: var(--success);
-            margin-bottom: 10px;
-        }
-
-        .mensaje-completado h4 {
-            color: var(--success);
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-left: 10px;
         }
 
         .conteo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin: 16px 0;
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .conteo-card {
             background: rgba(28, 49, 58, 0.8);
             border-radius: var(--border-radius);
-            padding: 16px;
+            padding: 20px;
             text-align: center;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .conteo-card:active {
-            transform: scale(0.98);
-        }
-
-        .conteo-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .conteo-card label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--light);
-            font-weight: 500;
-            font-size: 13px;
         }
 
         .conteo-card input {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             text-align: center;
             font-size: 20px;
-            font-weight: bold;
             border: none;
             border-radius: var(--border-radius-sm);
             background: rgba(255,255,255,0.1);
             color: var(--white);
-            -webkit-appearance: none;
-            appearance: none;
         }
-
-        .conteo-card.fisico { border-left: 4px solid #2196f3; }
-        .conteo-card.muestras { border-left: 4px solid #ff9800; }
-        .conteo-card.caducados { border-left: 4px solid #f44336; }
 
         .total-card {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             border-radius: var(--border-radius);
-            padding: 16px;
+            padding: 20px;
             text-align: center;
-            margin: 16px 0;
-            transition: all 0.3s;
-        }
-
-        .total-label {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.9;
-            margin-bottom: 8px;
+            margin: 20px 0;
         }
 
         .total-value {
-            font-size: 40px;
+            font-size: 48px;
             font-weight: bold;
-        }
-
-        .total-comparison {
-            font-size: 13px;
-            margin-top: 8px;
-            padding: 6px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.1);
         }
 
         .table-container {
             overflow-x: auto;
             border-radius: var(--border-radius);
             background: rgba(28, 49, 58, 0.8);
-            margin-top: 12px;
-            -webkit-overflow-scrolling: touch;
+            margin-top: 15px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             color: var(--white);
-            min-width: 300px;
         }
 
         th {
             background: var(--secondary);
             padding: 12px;
             text-align: left;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            white-space: nowrap;
         }
 
         td {
             padding: 10px 12px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 13px;
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.05);
         }
 
         .badge {
@@ -503,28 +348,18 @@
             font-size: 11px;
             font-weight: bold;
             display: inline-block;
-            white-space: nowrap;
         }
 
-        .badge-success { background: var(--success); color: var(--white); }
-        .badge-warning { background: var(--warning); color: var(--white); }
-        .badge-danger { background: var(--danger); color: var(--white); }
-        .badge-primary { background: var(--primary); color: var(--white); }
-        .badge-info { background: var(--info); color: var(--white); }
+        .badge-success { background: var(--success); }
+        .badge-warning { background: var(--warning); }
+        .badge-primary { background: var(--primary); }
 
         .progress-container {
-            margin: 16px 0;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin: 20px 0;
         }
 
         .progress-bar {
-            height: 8px;
+            height: 10px;
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
             overflow: hidden;
@@ -533,49 +368,21 @@
         .progress-fill {
             height: 100%;
             background: var(--primary);
-            border-radius: 10px;
             transition: width 0.5s ease;
         }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(13,71,161,0.9), rgba(13,71,161,0.7));
+        .mensaje-completado {
+            background: rgba(46,125,50,0.2);
+            border: 2px solid var(--success);
             border-radius: var(--border-radius);
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 30px;
+            text-align: center;
         }
 
-        .stat-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(0,200,83,0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: var(--primary);
-            flex-shrink: 0;
-        }
-
-        .stat-info h4 {
-            font-size: 12px;
-            color: var(--light);
-            margin-bottom: 4px;
-        }
-
-        .stat-number {
-            font-size: 20px;
-            font-weight: bold;
+        .mensaje-completado i {
+            font-size: 48px;
+            color: var(--success);
+            margin-bottom: 15px;
         }
 
         .loading-overlay {
@@ -589,7 +396,6 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(5px);
         }
 
         .loading-spinner {
@@ -603,64 +409,59 @@
 
         .toast-container {
             position: fixed;
-            top: 16px;
-            right: 16px;
-            left: 16px;
+            top: 20px;
+            right: 20px;
             z-index: 9999;
-            pointer-events: none;
             max-width: 400px;
-            margin: 0 auto;
         }
 
         .toast {
-            background: var(--darker);
+            background: var(--dark);
             color: var(--white);
-            padding: 14px 16px;
+            padding: 15px 20px;
             border-radius: var(--border-radius);
             margin-bottom: 10px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s;
+            gap: 15px;
+            animation: fadeIn 0.3s;
             border-left: 4px solid var(--primary);
-            pointer-events: auto;
         }
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
-        .toast.warning { border-left-color: var(--warning); }
 
-        .toast-icon { font-size: 20px; }
-        .toast-content { flex: 1; }
-        .toast-title { font-weight: bold; margin-bottom: 4px; font-size: 14px; }
-        .toast-message { font-size: 12px; opacity: 0.9; }
-        .toast-close { cursor: pointer; opacity: 0.7; padding: 4px; }
-
-        @media (max-width: 480px) {
-            .container { padding: 10px; }
-            .header { flex-direction: column; align-items: stretch; text-align: center; }
-            .logo { justify-content: center; }
-            .user-info { justify-content: center; }
-            .user-details { text-align: center; }
-            .btn { width: 100%; }
-            .card-header { flex-direction: column; align-items: flex-start; }
-            .product-info-card { flex-direction: column; text-align: center; }
-            .product-stock { width: 100%; text-align: center; }
-            .conteo-grid { grid-template-columns: 1fr; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            th, td { padding: 8px; font-size: 12px; }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .product-info-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .conteo-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
     </div>
 
+    <!-- Header -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-boxes"></i>
@@ -670,7 +471,6 @@
         <div class="user-info">
             <div class="user-details">
                 <div class="user-name" id="userName">Cargando...</div>
-                <div class="user-role">Colaborador</div>
                 <div class="user-date" id="currentDate"></div>
             </div>
             <button class="btn btn-danger" onclick="cerrarSesion()">
@@ -679,6 +479,7 @@
         </div>
     </div>
 
+    <!-- Dashboard Cards -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-tasks"></i></div>
@@ -703,31 +504,27 @@
         </div>
     </div>
 
+    <!-- Card Principal: Conteo -->
     <div class="card">
         <div class="card-header">
-            <h3><i class="fas fa-clipboard-list"></i> Realizar Conteo Diario</h3>
+            <h3><i class="fas fa-clipboard-list"></i> Realizar Conteo</h3>
             <div class="badge badge-primary" id="fechaActual"></div>
         </div>
 
-        <div class="product-selector" id="productSelector">
+        <!-- Selector de Producto -->
+        <div class="product-selector">
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto pendiente..." onkeyup="filtrarProductos()" autocomplete="off">
+                <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
             </div>
 
-            <div class="product-dropdown">
-                <select class="product-select-custom" id="productoSelect" onchange="cambiarProducto()" size="4">
-                    <option value="">Cargando productos pendientes...</option>
-                </select>
-            </div>
-
-            <div id="noResultados" class="no-results" style="display: none;">
-                <i class="fas fa-exclamation-circle"></i> No se encontraron productos pendientes
-            </div>
+            <select class="product-select-custom" id="productoSelect" onchange="cambiarProducto()" size="4">
+                <option value="">Cargando productos...</option>
+            </select>
 
             <div id="sinPendientes" class="mensaje-completado" style="display: none;">
                 <i class="fas fa-check-circle"></i>
-                <h4>¡Todos los productos han sido completados!</h4>
+                <h4>¡Todos los productos completados!</h4>
                 <p>Has respondido todas tus asignaciones del día.</p>
             </div>
 
@@ -742,30 +539,29 @@
             </div>
         </div>
 
+        <!-- Campos de Conteo -->
         <div class="conteo-grid">
-            <div class="conteo-card fisico">
-                <div class="conteo-icon"><i class="fas fa-hand-holding-heart"></i></div>
+            <div class="conteo-card">
                 <label>Físico</label>
                 <input type="number" id="fisico" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
             </div>
-            <div class="conteo-card muestras">
-                <div class="conteo-icon"><i class="fas fa-gift"></i></div>
+            <div class="conteo-card">
                 <label>Muestras</label>
                 <input type="number" id="muestras" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
             </div>
-            <div class="conteo-card caducados">
-                <div class="conteo-icon"><i class="fas fa-trash-alt"></i></div>
+            <div class="conteo-card">
                 <label>Caducados</label>
                 <input type="number" id="caducados" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
             </div>
         </div>
 
+        <!-- Total -->
         <div class="total-card" id="totalCard">
-            <div class="total-label">Total Contado</div>
             <div class="total-value" id="totalCalculado">0</div>
-            <div class="total-comparison" id="comparacionStock">vs Stock: 0</div>
+            <div id="comparacionStock">vs Stock: 0</div>
         </div>
 
+        <!-- Progreso -->
         <div class="progress-container">
             <div class="progress-header">
                 <span>Progreso del día</span>
@@ -776,14 +572,16 @@
             </div>
         </div>
 
+        <!-- Botón Enviar -->
         <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
             <i class="fas fa-paper-plane"></i> Enviar Inventario
         </button>
     </div>
 
+    <!-- Pendientes -->
     <div class="card">
         <div class="card-header">
-            <h3><i class="fas fa-clock"></i> Productos Pendientes</h3>
+            <h3><i class="fas fa-clock"></i> Pendientes</h3>
             <div class="badge badge-warning" id="pendientesCount">0</div>
         </div>
         <div id="pendientesContainer" class="table-container">
@@ -791,9 +589,10 @@
         </div>
     </div>
 
+    <!-- Historial -->
     <div class="card">
         <div class="card-header">
-            <h3><i class="fas fa-history"></i> Historial de Envíos</h3>
+            <h3><i class="fas fa-history"></i> Historial</h3>
             <div class="badge badge-primary">Últimos 10</div>
         </div>
         <div id="historialContainer" class="table-container">
@@ -816,6 +615,7 @@
         appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
     };
 
+    // Inicializar Firebase
     let db;
     try {
         if (!firebase.apps.length) {
@@ -829,80 +629,46 @@
     // ============================================
     // VARIABLES GLOBALES
     // ============================================
-    let usuario = null;
-    let rol = null;
-    let fechaHoy = null;
-    let mesActual = null;
+    let usuario = localStorage.getItem("usuario");
+    let rol = localStorage.getItem("rol");
+    let fechaHoy = new Date().toISOString().split("T")[0];
+    let mesActual = new Date().toISOString().substring(0, 7);
     let productoSeleccionado = null;
     let productosPendientes = [];
     let productosEnviadosHoy = new Set();
-    let intervaloActualizacion = null;
 
     // ============================================
-    // VERIFICAR SESIÓN - CORREGIDO (SIN REDIRECCIÓN A ADMIN)
+    // VERIFICAR SESIÓN
     // ============================================
-    function verificarSesion() {
-        try {
-            usuario = localStorage.getItem("usuario");
-            rol = localStorage.getItem("rol");
-            
-            console.log("Verificando sesión - Usuario:", usuario, "Rol:", rol);
-            
-            if (!usuario) {
-                console.log("No hay usuario, redirigiendo a login");
-                mostrarToast('Sesión expirada', 'Por favor, inicie sesión nuevamente', 'error');
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 2000);
-                return false;
-            }
-            
-            // SOLO VERIFICAMOS QUE SEA COLABORADOR, NO REDIRIGIMOS
-            if (rol !== "colaborador") {
-                console.log("Rol incorrecto, debe ser colaborador");
-                mostrarToast('Error', 'Acceso no autorizado', 'error');
-                setTimeout(() => {
-                    window.location.href = "index.html";
-                }, 2000);
-                return false;
-            }
-            
-            // Actualizar fechas
-            fechaHoy = new Date().toISOString().split("T")[0];
-            mesActual = new Date().toISOString().substring(0, 7);
-            
-            // Mostrar nombre de usuario
-            document.getElementById('userName').textContent = usuario;
-            
-            return true;
-            
-        } catch (error) {
-            console.error("Error verificando sesión:", error);
-            return false;
-        }
+    if (!usuario) {
+        alert("Debe iniciar sesión");
+        window.location.href = "index.html";
     }
+
+    if (rol === "admin") {
+        window.location.href = "admin.html";
+    }
+
+    document.getElementById('userName').textContent = usuario;
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+    document.getElementById('fechaActual').textContent = new Date().toLocaleDateString();
 
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
-    function mostrarLoading(mostrar = true) {
-        let overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
+    function mostrarLoading(mostrar) {
+        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
     function mostrarToast(titulo, mensaje, tipo = 'success') {
         let container = document.getElementById('toastContainer');
-        if (!container) return;
-        
         let toastId = 'toast_' + Date.now();
         
         let toast = document.createElement('div');
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
         
-        let icono = tipo === 'success' ? 'fa-check-circle' : 
-                    tipo === 'error' ? 'fa-exclamation-circle' : 
-                    tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
         
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
@@ -916,205 +682,134 @@
         `;
         
         container.appendChild(toast);
-        
         setTimeout(() => {
             let elemento = document.getElementById(toastId);
             if (elemento) elemento.remove();
         }, 4000);
     }
 
-    function manejarError(error, mensaje = 'Error inesperado') {
-        console.error(error);
-        mostrarToast('Error', mensaje, 'error');
-    }
-
-    function actualizarFecha() {
-        try {
-            let fecha = new Date();
-            document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', { 
-                day: '2-digit', month: '2-digit', year: 'numeric' 
-            });
-            document.getElementById('currentDate').textContent = fecha.toLocaleDateString('es-ES', { 
-                day: '2-digit', month: '2-digit', year: 'numeric' 
-            });
-        } catch (error) {
-            console.error("Error actualizando fecha:", error);
-        }
-    }
-
+    // ============================================
+    // FUNCIONES DE INTERFAZ
+    // ============================================
     function calcularTotal() {
-        try {
-            let fisico = parseInt(document.getElementById("fisico").value) || 0;
-            let muestras = parseInt(document.getElementById("muestras").value) || 0;
-            let caducados = parseInt(document.getElementById("caducados").value) || 0;
-            let total = fisico + muestras + caducados;
-            
-            document.getElementById("totalCalculado").textContent = total;
-            
-            if (productoSeleccionado) {
-                let stock = productoSeleccionado.stock;
-                let diferencia = total - stock;
-                let comparacion = document.getElementById("comparacionStock");
-                
-                if (diferencia === 0) {
-                    comparacion.innerHTML = `✓ Cuadra exactamente`;
-                    comparacion.style.color = 'var(--success)';
-                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--success), var(--primary))';
-                } else if (diferencia > 0) {
-                    comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
-                    comparacion.style.color = 'var(--warning)';
-                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), var(--warning-dark))';
-                } else {
-                    comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
-                    comparacion.style.color = 'var(--danger)';
-                    document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), var(--danger-dark))';
-                }
-            }
-            
-            return total;
-        } catch (error) {
-            console.error("Error calculando total:", error);
-            return 0;
+        let fisico = parseInt(document.getElementById("fisico").value) || 0;
+        let muestras = parseInt(document.getElementById("muestras").value) || 0;
+        let caducados = parseInt(document.getElementById("caducados").value) || 0;
+        let total = fisico + muestras + caducados;
+        
+        document.getElementById("totalCalculado").textContent = total;
+        
+        if (productoSeleccionado) {
+            let diferencia = total - productoSeleccionado.stock;
+            document.getElementById("comparacionStock").innerHTML = 
+                diferencia === 0 ? '✓ Cuadra exactamente' : 
+                diferencia > 0 ? `⚠ Sobrante: +${diferencia}` : `❌ Faltante: ${diferencia}`;
         }
+        
+        return total;
     }
 
     function cambiarProducto() {
-        try {
-            let select = document.getElementById("productoSelect");
-            let selectedOption = select.options[select.selectedIndex];
+        let select = document.getElementById("productoSelect");
+        let selectedOption = select.options[select.selectedIndex];
+        
+        if (selectedOption && selectedOption.value) {
+            productoSeleccionado = {
+                id: selectedOption.value,
+                nombre: selectedOption.getAttribute("data-nombre"),
+                stock: parseInt(selectedOption.getAttribute("data-stock"))
+            };
             
-            if (selectedOption && selectedOption.value) {
-                let nombre = selectedOption.getAttribute("data-nombre");
-                let stock = selectedOption.getAttribute("data-stock");
-                let productoId = selectedOption.value;
-                
-                document.getElementById("productoNombre").textContent = nombre;
-                document.getElementById("productoStock").textContent = stock;
-                document.getElementById("productoInfo").style.display = "flex";
-                
-                productoSeleccionado = {
-                    id: productoId,
-                    nombre: nombre,
-                    stock: parseInt(stock)
-                };
-                
-                document.getElementById("fisico").value = "0";
-                document.getElementById("muestras").value = "0";
-                document.getElementById("caducados").value = "0";
-                calcularTotal();
-            } else {
-                document.getElementById("productoInfo").style.display = "none";
-                productoSeleccionado = null;
-            }
-        } catch (error) {
-            manejarError(error, 'Error al cambiar producto');
+            document.getElementById("productoNombre").textContent = productoSeleccionado.nombre;
+            document.getElementById("productoStock").textContent = productoSeleccionado.stock;
+            document.getElementById("productoInfo").style.display = "flex";
+            
+            document.getElementById("fisico").value = "0";
+            document.getElementById("muestras").value = "0";
+            document.getElementById("caducados").value = "0";
+            calcularTotal();
         }
     }
 
     function filtrarProductos() {
-        try {
-            let buscador = document.getElementById("buscadorProducto");
-            let filtro = buscador.value.toLowerCase();
-            let select = document.getElementById("productoSelect");
-            let noResultados = document.getElementById("noResultados");
-            
-            let opciones = select.options;
-            let visibles = 0;
-            
-            for (let i = 1; i < opciones.length; i++) {
-                let option = opciones[i];
-                let texto = option.text.toLowerCase();
-                if (texto.includes(filtro)) {
-                    option.style.display = "";
-                    visibles++;
-                } else {
-                    option.style.display = "none";
-                }
-            }
-            
-            noResultados.style.display = visibles === 0 && productosPendientes.length > 0 ? "block" : "none";
-        } catch (error) {
-            console.error("Error filtrando productos:", error);
+        let filtro = document.getElementById("buscadorProducto").value.toLowerCase();
+        let select = document.getElementById("productoSelect");
+        
+        for (let i = 1; i < select.options.length; i++) {
+            let option = select.options[i];
+            option.style.display = option.text.toLowerCase().includes(filtro) ? "" : "none";
         }
     }
 
     // ============================================
-    // CARGAR PRODUCTOS PENDIENTES
+    // CARGAR PRODUCTOS ASIGNADOS
     // ============================================
-    async function cargarProductosPendientes() {
-        if (!db || !usuario) return;
-
+    async function cargarProductosAsignados() {
         mostrarLoading(true);
         
         try {
-            const [snapshotAsignaciones, snapshotEnvios] = await Promise.all([
-                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
-                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]);
-
+            console.log("Cargando asignaciones para:", usuario, "fecha:", fechaHoy);
+            
+            // Obtener asignaciones
+            const asignacionesSnap = await db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value");
+            
             let select = document.getElementById("productoSelect");
             let sinPendientes = document.getElementById("sinPendientes");
             
-            select.innerHTML = "";
+            select.innerHTML = "<option value=''>Seleccione un producto...</option>";
             productosPendientes = [];
-            
-            let defaultOption = document.createElement("option");
-            defaultOption.value = "";
-            defaultOption.textContent = "Seleccione un producto...";
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
-            select.appendChild(defaultOption);
 
-            if (!snapshotAsignaciones.exists()) {
+            if (!asignacionesSnap.exists()) {
+                console.log("No hay asignaciones para hoy");
                 sinPendientes.style.display = "block";
                 select.style.display = "none";
                 document.getElementById("buscadorProducto").style.display = "none";
                 return;
             }
 
+            // Obtener productos ya enviados hoy
+            const enviosSnap = await db.ref("inventario/" + mesActual)
+                .orderByChild("nombre")
+                .equalTo(usuario)
+                .once("value");
+            
             productosEnviadosHoy.clear();
-            snapshotEnvios.forEach(child => {
+            enviosSnap.forEach(child => {
                 let envio = child.val();
-                let fechaEnvio = envio.fecha.split("T")[0];
-                if (fechaEnvio === fechaHoy) {
+                if (envio.fecha.split("T")[0] === fechaHoy) {
                     productosEnviadosHoy.add(envio.productoId);
                 }
             });
 
-            let asignaciones = snapshotAsignaciones.val();
+            let asignaciones = asignacionesSnap.val();
             let productosIds = Object.keys(asignaciones);
+            
+            console.log("Productos asignados:", productosIds);
 
-            await Promise.all(productosIds.map(async productoId => {
-                try {
-                    let prodSnap = await db.ref("productos/" + productoId).once("value");
-                    if (prodSnap.exists()) {
-                        let data = prodSnap.val();
-                        let asignacionData = asignaciones[productoId];
-                        let stockSistema = asignacionData.stockSistema || data.sistema;
+            // Cargar cada producto
+            for (let productoId of productosIds) {
+                let prodSnap = await db.ref("productos/" + productoId).once("value");
+                if (prodSnap.exists()) {
+                    let data = prodSnap.val();
+                    let asignacion = asignaciones[productoId];
+                    let stock = asignacion.stockSistema || data.sistema;
+                    
+                    if (!productosEnviadosHoy.has(productoId)) {
+                        let option = document.createElement("option");
+                        option.value = productoId;
+                        option.textContent = `${data.nombre} (Stock: ${stock})`;
+                        option.setAttribute("data-nombre", data.nombre);
+                        option.setAttribute("data-stock", stock);
+                        select.appendChild(option);
                         
-                        let yaEnviado = productosEnviadosHoy.has(productoId);
-                        
-                        if (!yaEnviado) {
-                            let option = document.createElement("option");
-                            option.value = productoId;
-                            option.textContent = `${data.nombre} (Stock: ${stockSistema})`;
-                            option.setAttribute("data-nombre", data.nombre);
-                            option.setAttribute("data-stock", stockSistema);
-                            option.setAttribute("data-id", productoId);
-                            
-                            select.appendChild(option);
-                            
-                            productosPendientes.push({
-                                id: productoId,
-                                nombre: data.nombre,
-                                stock: stockSistema
-                            });
-                        }
+                        productosPendientes.push({
+                            id: productoId,
+                            nombre: data.nombre,
+                            stock: stock
+                        });
                     }
-                } catch (error) {
-                    console.error("Error cargando producto:", productoId, error);
                 }
-            }));
+            }
 
             if (productosPendientes.length === 0) {
                 sinPendientes.style.display = "block";
@@ -1125,20 +820,14 @@
                 select.style.display = "block";
                 document.getElementById("buscadorProducto").style.display = "block";
                 
-                let options = Array.from(select.options).slice(1);
-                options.sort((a, b) => a.textContent.localeCompare(b.textContent));
-                options.forEach(option => select.appendChild(option));
-                
-                document.getElementById("buscadorProducto").value = "";
-                
-                if (options.length > 0) {
-                    select.selectedIndex = 1;
-                    cambiarProducto();
-                }
+                // Seleccionar primer producto
+                select.selectedIndex = 1;
+                cambiarProducto();
             }
             
         } catch (error) {
-            manejarError(error, 'Error cargando productos');
+            console.error("Error cargando productos:", error);
+            mostrarToast('Error', 'Error al cargar productos', 'error');
         } finally {
             mostrarLoading(false);
         }
@@ -1148,48 +837,42 @@
     // CARGAR DASHBOARD
     // ============================================
     async function cargarDashboard() {
-        if (!db || !usuario) return;
-        
         try {
-            const [snapAsignaciones, snapEnvios] = await Promise.all([
+            const [asignacionesSnap, enviosSnap] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
                 db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
             ]);
 
-            let totalAsignaciones = snapAsignaciones.exists() ? snapAsignaciones.numChildren() : 0;
+            let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
             
             let completadosHoy = 0;
             let precisos = 0;
             let totalEnvios = 0;
             
-            snapEnvios.forEach(child => {
+            enviosSnap.forEach(child => {
                 let envio = child.val();
-                let fechaEnvio = envio.fecha.split("T")[0];
-                
-                if (fechaEnvio === fechaHoy) {
+                if (envio.fecha.split("T")[0] === fechaHoy) {
                     completadosHoy++;
                 }
                 
                 let total = envio.fisico + envio.muestras + envio.caducados;
-                if (total === envio.sistema) {
-                    precisos++;
-                }
+                if (total === envio.sistema) precisos++;
                 totalEnvios++;
             });
-            
+
             document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
             document.getElementById("totalCompletados").textContent = completadosHoy;
             
-            let precisionPorcentaje = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
-            document.getElementById("precision").textContent = precisionPorcentaje + '%';
+            let precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
+            document.getElementById("precision").textContent = precision + '%';
             
-            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones} completados`;
+            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
             let progreso = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 : 0;
             document.getElementById("progresoBarra").style.width = progreso + '%';
             document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
             
         } catch (error) {
-            manejarError(error, 'Error cargando dashboard');
+            console.error("Error cargando dashboard:", error);
         }
     }
 
@@ -1197,84 +880,55 @@
     // CARGAR PENDIENTES
     // ============================================
     async function cargarPendientes() {
-        if (!db || !usuario) return;
-        
         let container = document.getElementById("pendientesContainer");
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando pendientes...</p>";
-
+        
         try {
-            const [snapAsignaciones, snapEnvios] = await Promise.all([
+            const [asignacionesSnap, enviosSnap] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
                 db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
             ]);
 
-            if (!snapAsignaciones.exists()) {
-                container.innerHTML = "<p class='text-center'>✅ No tienes asignaciones pendientes</p>";
+            if (!asignacionesSnap.exists()) {
+                container.innerHTML = "<p class='text-center'>No hay asignaciones</p>";
                 return;
             }
 
-            let asignaciones = snapAsignaciones.val();
-            let productosIds = Object.keys(asignaciones);
-
-            let productosEnviados = new Set();
-            
-            snapEnvios.forEach(child => {
+            let enviadosHoy = new Set();
+            enviosSnap.forEach(child => {
                 let envio = child.val();
-                let fechaEnvio = envio.fecha.split("T")[0];
-                if (fechaEnvio === fechaHoy) {
-                    productosEnviados.add(envio.productoId);
+                if (envio.fecha.split("T")[0] === fechaHoy) {
+                    enviadosHoy.add(envio.productoId);
                 }
             });
 
             let pendientes = [];
-
-            await Promise.all(productosIds.map(async productoId => {
-                try {
-                    let prodSnap = await db.ref("productos/" + productoId).once("value");
-                    if (prodSnap.exists()) {
-                        let data = prodSnap.val();
-                        let yaEnviado = productosEnviados.has(productoId);
-                        
-                        if (!yaEnviado) {
-                            pendientes.push({
-                                id: productoId,
-                                nombre: data.nombre,
-                                stock: asignaciones[productoId].stockSistema || data.sistema
-                            });
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error cargando producto:", productoId, error);
+            let asignaciones = asignacionesSnap.val();
+            
+            for (let productoId in asignaciones) {
+                let prodSnap = await db.ref("productos/" + productoId).once("value");
+                if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
+                    let data = prodSnap.val();
+                    pendientes.push({
+                        nombre: data.nombre,
+                        stock: asignaciones[productoId].stockSistema || data.sistema
+                    });
                 }
-            }));
+            }
 
             if (pendientes.length === 0) {
-                container.innerHTML = "<p class='text-center'>✅ ¡Completaste todos tus productos de hoy!</p>";
+                container.innerHTML = "<p class='text-center'>✅ ¡Todo completado!</p>";
                 return;
             }
 
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Stock</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Producto</th><th>Stock</th></tr></thead><tbody>`;
             pendientes.forEach(p => {
-                html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td><span class="badge badge-primary">${p.stock}</span></td>
-                    <td><span class="badge badge-warning">PENDIENTE</span></td>
-                </tr>`;
+                html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.stock}</span></td></tr>`;
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando pendientes');
+            console.error("Error cargando pendientes:", error);
         }
     }
 
@@ -1282,91 +936,61 @@
     // CARGAR HISTORIAL
     // ============================================
     async function cargarHistorial() {
-        if (!db || !usuario) return;
-        
         let container = document.getElementById("historialContainer");
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando historial...</p>";
-
+        
         try {
             let meses = [];
-            for (let i = 0; i <= 2; i++) {
+            for (let i = 0; i < 3; i++) {
                 let fecha = new Date();
                 fecha.setMonth(fecha.getMonth() - i);
-                let anio = fecha.getFullYear();
-                let mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-                meses.push(`${anio}-${mes}`);
+                meses.push(fecha.toISOString().substring(0, 7));
             }
-
-            let results = await Promise.all(
-                meses.map(mes => 
-                    db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value")
-                )
-            );
 
             let todosEnvios = [];
             
-            results.forEach(snap => {
-                snap.forEach(child => {
+            for (let mes of meses) {
+                let snapshot = await db.ref("inventario/" + mes)
+                    .orderByChild("nombre")
+                    .equalTo(usuario)
+                    .once("value");
+                
+                snapshot.forEach(child => {
                     let envio = child.val();
-                    let total = envio.fisico + envio.muestras + envio.caducados;
-                    let diferencia = total - envio.sistema;
-                    
                     todosEnvios.push({
                         fecha: new Date(envio.fecha).toLocaleDateString(),
                         producto: envio.producto,
                         sistema: envio.sistema,
                         fisico: envio.fisico,
                         muestras: envio.muestras,
-                        caducados: envio.caducados,
-                        total: total,
-                        cuadra: diferencia === 0
+                        caducados: envio.caducados
                     });
                 });
-            });
+            }
 
             todosEnvios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
             if (todosEnvios.length === 0) {
-                container.innerHTML = "<p class='text-center'>📭 No hay envíos</p>";
+                container.innerHTML = "<p class='text-center'>No hay envíos</p>";
                 return;
             }
 
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Producto</th>
-                        <th>Stock</th>
-                        <th>Físico</th>
-                        <th>Muestras</th>
-                        <th>Caducados</th>
-                        <th>Total</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>`;
+            let html = `<table><thead><tr><th>Fecha</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th></tr></thead><tbody>`;
             
             todosEnvios.slice(0, 10).forEach(e => {
-                let estadoColor = e.cuadra ? 'badge-success' : 'badge-danger';
-                let estadoIcono = e.cuadra ? 'fa-check-circle' : 'fa-exclamation-triangle';
-                
                 html += `<tr>
                     <td>${e.fecha}</td>
-                    <td><strong>${e.producto}</strong></td>
-                    <td><span class="badge badge-primary">${e.sistema}</span></td>
+                    <td>${e.producto}</td>
+                    <td>${e.sistema}</td>
                     <td>${e.fisico}</td>
                     <td>${e.muestras}</td>
                     <td>${e.caducados}</td>
-                    <td><strong>${e.total}</strong></td>
-                    <td><span class="badge ${estadoColor}"><i class="fas ${estadoIcono}"></i> ${e.cuadra ? 'OK' : 'Error'}</span></td>
                 </tr>`;
             });
             html += `</tbody></table>`;
-            
             container.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando historial');
+            console.error("Error cargando historial:", error);
         }
     }
 
@@ -1374,13 +998,6 @@
     // ENVIAR INVENTARIO
     // ============================================
     async function enviarInventario() {
-        if (!db || !usuario) {
-            mostrarToast('Error', 'Sesión no válida', 'error');
-            return;
-        }
-
-        let btnEnviar = document.getElementById("btnEnviar");
-
         if (!productoSeleccionado) {
             mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
@@ -1391,20 +1008,19 @@
         let caducados = parseInt(document.getElementById("caducados").value) || 0;
         let total = fisico + muestras + caducados;
 
-        if (total !== productoSeleccionado.stock) {
-            if (!confirm(`⚠ El total (${total}) no coincide con el stock (${productoSeleccionado.stock}). ¿Desea continuar?`)) {
-                return;
-            }
+        // Verificar si permite múltiples
+        let asignacionSnap = await db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoSeleccionado.id}`).once("value");
+        let permitirMultiples = asignacionSnap.val()?.permitirMultiples || false;
+
+        if (total !== productoSeleccionado.stock && !permitirMultiples) {
+            if (!confirm(`El total no coincide. ¿Continuar?`)) return;
         }
 
-        btnEnviar.disabled = true;
-        btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        mostrarLoading(true);
+        document.getElementById("btnEnviar").disabled = true;
 
         try {
-            let fechaCompleta = new Date().toISOString();
-            let mes = fechaCompleta.substring(0, 7);
-
-            let datos = {
+            await db.ref("inventario/" + mesActual).push({
                 nombre: usuario,
                 producto: productoSeleccionado.nombre,
                 productoId: productoSeleccionado.id,
@@ -1412,19 +1028,15 @@
                 fisico: fisico,
                 muestras: muestras,
                 caducados: caducados,
-                fecha: fechaCompleta,
-                total: total,
-                cuadra: total === productoSeleccionado.stock
-            };
+                fecha: new Date().toISOString()
+            });
 
-            await db.ref("inventario/" + mes).push(datos);
-            
-            mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
+            mostrarToast('Éxito', 'Inventario enviado', 'success');
             
             productosEnviadosHoy.add(productoSeleccionado.id);
             
             await Promise.all([
-                cargarProductosPendientes(),
+                cargarProductosAsignados(),
                 cargarDashboard(),
                 cargarPendientes(),
                 cargarHistorial()
@@ -1436,31 +1048,11 @@
             calcularTotal();
             
         } catch (error) {
-            manejarError(error, 'Error al guardar inventario');
-        } finally {
-            btnEnviar.disabled = false;
-            btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
-        }
-    }
-
-    // ============================================
-    // RECARGAR DATOS
-    // ============================================
-    async function recargarDatos() {
-        if (!verificarSesion()) return;
-        
-        mostrarLoading(true);
-        try {
-            await Promise.all([
-                cargarProductosPendientes(),
-                cargarDashboard(),
-                cargarPendientes(),
-                cargarHistorial()
-            ]);
-        } catch (error) {
-            manejarError(error, 'Error al recargar datos');
+            console.error("Error:", error);
+            mostrarToast('Error', 'Error al enviar', 'error');
         } finally {
             mostrarLoading(false);
+            document.getElementById("btnEnviar").disabled = false;
         }
     }
 
@@ -1468,65 +1060,23 @@
     // CERRAR SESIÓN
     // ============================================
     function cerrarSesion() {
-        if (intervaloActualizacion) {
-            clearInterval(intervaloActualizacion);
-        }
-        
-        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
-        setTimeout(() => {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }, 1500);
+        localStorage.clear();
+        window.location.href = "index.html";
     }
 
     // ============================================
-    // INICIALIZACIÓN - CORREGIDA
+    // INICIALIZACIÓN
     // ============================================
     async function inicializar() {
-        console.log("Inicializando panel colaborador...");
-        
-        // Verificar sesión primero
-        if (!verificarSesion()) {
-            console.log("Verificación de sesión falló");
-            return;
-        }
-        
-        actualizarFecha();
-        
-        try {
-            await recargarDatos();
-            
-            if (intervaloActualizacion) {
-                clearInterval(intervaloActualizacion);
-            }
-            
-            intervaloActualizacion = setInterval(() => {
-                if (document.visibilityState === 'visible') {
-                    recargarDatos();
-                }
-            }, 30000);
-            
-        } catch (error) {
-            manejarError(error, 'Error al inicializar');
-        }
+        await Promise.all([
+            cargarProductosAsignados(),
+            cargarDashboard(),
+            cargarPendientes(),
+            cargarHistorial()
+        ]);
     }
 
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && usuario) {
-            recargarDatos();
-        }
-    });
-
-    window.addEventListener('error', (event) => {
-        console.error('Error global:', event.error);
-        mostrarToast('Error', 'Ocurrió un error inesperado', 'error');
-    });
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializar);
-    } else {
-        inicializar();
-    }
+    inicializar();
 </script>
 
 </body>

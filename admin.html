@@ -2,15 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eurofert Pro - Panel Administrador</title>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
     
-    <!-- Librerías -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -32,12 +31,8 @@
             --darker: #0f1a24;
             --dark-light: #2a5298;
             --light: #f5f5f5;
-            --light-dark: #e0e0e0;
-            --gray: #9e9e9e;
             --white: #ffffff;
-            --black: #000000;
             --shadow: 0 8px 20px rgba(0,0,0,0.3);
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.1);
             --border-radius: 12px;
             --border-radius-sm: 8px;
         }
@@ -47,7 +42,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         /* ===== ANIMACIONES ===== */
@@ -56,55 +50,37 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
         /* ===== ESTILOS GENERALES ===== */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, var(--dark), var(--dark-light));
             color: var(--white);
             min-height: 100vh;
             margin: 0;
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding: 20px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 16px;
         }
 
         /* ===== HEADER ===== */
         .header {
-            background: linear-gradient(135deg, rgba(13,71,161,0.98), rgba(13,71,161,0.95));
-            backdrop-filter: blur(10px);
-            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            padding: 15px 25px;
             border-radius: var(--border-radius);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
             border-bottom: 3px solid var(--primary);
             animation: fadeIn 0.5s ease;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
 
         .logo {
@@ -116,139 +92,37 @@
         .logo i {
             font-size: 32px;
             color: var(--primary);
-            animation: pulse 2s infinite;
         }
 
         .logo-text {
             font-size: 24px;
             font-weight: bold;
-            background: linear-gradient(135deg, var(--white), var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--white);
         }
 
         .logo-badge {
             background: var(--primary);
-            color: var(--white);
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .user-details {
-            text-align: right;
-        }
-
-        .user-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-role {
-            font-size: 12px;
-            color: var(--primary-light);
-        }
-
-        /* ===== NOTIFICACIONES ===== */
-        .notification-bell {
-            position: relative;
-            cursor: pointer;
-            font-size: 24px;
-            color: var(--white);
-            transition: transform 0.3s;
-        }
-
-        .notification-bell:hover {
-            transform: scale(1.1);
-            color: var(--primary);
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--danger);
-            color: var(--white);
-            font-size: 11px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 50%;
-            min-width: 18px;
-            text-align: center;
-            animation: pulse 1s infinite;
-        }
-
-        .notification-dropdown {
-            position: absolute;
-            top: 60px;
-            right: 20px;
-            width: 350px;
-            max-width: 90vw;
-            background: var(--darker);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 1001;
-            display: none;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .notification-header {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--secondary);
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-        }
-
-        .notification-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            transition: background 0.3s;
-            cursor: pointer;
-        }
-
-        .notification-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .notification-item.unread {
-            background: rgba(0,200,83,0.1);
-            border-left: 3px solid var(--primary);
-        }
-
-        .notification-time {
-            font-size: 11px;
-            color: var(--light);
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        /* ===== MENÚ PRINCIPAL ===== */
+        /* ===== MENÚ ===== */
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
 
         .menu-card {
             background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
             border-radius: var(--border-radius);
             padding: 20px;
             text-align: center;
@@ -261,80 +135,19 @@
             transform: translateY(-5px);
             background: rgba(255,255,255,0.15);
             border-color: var(--primary);
-            box-shadow: 0 10px 25px rgba(0,200,83,0.2);
         }
 
         .menu-icon {
-            font-size: 40px;
+            font-size: 32px;
             color: var(--primary);
             margin-bottom: 10px;
         }
 
-        .menu-card h3 {
-            font-size: 16px;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .menu-card p {
-            font-size: 12px;
-            color: var(--light);
-            opacity: 0.8;
-        }
-
-        /* ===== DASHBOARD CARDS ===== */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, rgba(13,71,161,0.9), rgba(13,71,161,0.7));
-            border-radius: var(--border-radius);
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(0,200,83,0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--primary);
-        }
-
-        .stat-info h4 {
-            font-size: 13px;
-            color: var(--light);
-            margin-bottom: 5px;
-        }
-
-        .stat-number {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .stat-trend {
-            font-size: 11px;
-            color: var(--primary-light);
-            margin-top: 3px;
-        }
-
-        /* ===== CARDS DE SECCIONES ===== */
+        /* ===== CARDS ===== */
         .card {
             background: rgba(32, 58, 67, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 20px;
             border-radius: var(--border-radius);
+            padding: 25px;
             margin-bottom: 20px;
             border: 1px solid rgba(255,255,255,0.1);
             animation: fadeIn 0.5s ease;
@@ -342,8 +155,6 @@
 
         .card-header {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
@@ -353,10 +164,10 @@
 
         .card-header h3 {
             color: var(--light);
-            font-size: 18px;
+            font-size: 20px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .card-header h3 i {
@@ -393,9 +204,14 @@
             background: rgba(255,255,255,0.15);
         }
 
+        select.form-control option {
+            background: var(--darker);
+            color: var(--white);
+        }
+
         /* ===== BOTONES ===== */
         .btn {
-            padding: 12px 20px;
+            padding: 12px 25px;
             border-radius: var(--border-radius-sm);
             border: none;
             font-weight: 600;
@@ -406,7 +222,6 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            min-height: 44px;
         }
 
         .btn-primary {
@@ -417,7 +232,6 @@
         .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,200,83,0.3);
         }
 
         .btn-danger {
@@ -427,7 +241,6 @@
 
         .btn-danger:hover {
             background: var(--danger-dark);
-            transform: translateY(-2px);
         }
 
         .btn-warning {
@@ -435,17 +248,8 @@
             color: var(--white);
         }
 
-        .btn-warning:hover {
-            background: var(--warning-dark);
-        }
-
         .btn-block {
             width: 100%;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         /* ===== TABLAS ===== */
@@ -454,14 +258,12 @@
             border-radius: var(--border-radius);
             background: rgba(28, 49, 58, 0.8);
             margin-top: 15px;
-            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             color: var(--white);
-            min-width: 600px;
         }
 
         th {
@@ -470,32 +272,15 @@
             text-align: left;
             font-weight: 600;
             font-size: 13px;
-            text-transform: uppercase;
-            white-space: nowrap;
         }
 
         td {
             padding: 10px 12px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 13px;
         }
 
         tr:hover {
             background: rgba(255,255,255,0.05);
-        }
-
-        /* ===== ITEMS DE LISTA ===== */
-        .usuario-item, .producto-item, .asignacion-item {
-            background: rgba(28, 49, 58, 0.8);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--primary);
         }
 
         /* ===== BADGES ===== */
@@ -505,24 +290,48 @@
             font-size: 11px;
             font-weight: bold;
             display: inline-block;
-            white-space: nowrap;
         }
 
-        .badge-success { background: var(--success); color: var(--white); }
-        .badge-warning { background: var(--warning); color: var(--white); }
-        .badge-danger { background: var(--danger); color: var(--white); }
-        .badge-primary { background: var(--primary); color: var(--white); }
-        .badge-info { background: var(--info); color: var(--white); }
+        .badge-success { background: var(--success); }
+        .badge-warning { background: var(--warning); }
+        .badge-danger { background: var(--danger); }
+        .badge-primary { background: var(--primary); }
 
-        /* ===== FILTROS ===== */
-        .filtros-grid {
+        /* ===== DASHBOARD ===== */
+        .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* ===== LOADING OVERLAY ===== */
+        .stat-card {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            border-radius: var(--border-radius);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(0,200,83,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* ===== LOADING ===== */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -534,7 +343,6 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(5px);
         }
 
         .loading-spinner {
@@ -551,79 +359,26 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            left: 20px;
             z-index: 9999;
-            pointer-events: none;
             max-width: 400px;
-            margin: 0 auto;
         }
 
         .toast {
             background: var(--darker);
             color: var(--white);
-            padding: 14px 16px;
+            padding: 15px 20px;
             border-radius: var(--border-radius);
             margin-bottom: 10px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 12px;
-            animation: slideIn 0.3s;
+            gap: 15px;
+            animation: fadeIn 0.3s;
             border-left: 4px solid var(--primary);
-            pointer-events: auto;
         }
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
-        .toast.warning { border-left-color: var(--warning); }
-
-        .toast-icon { font-size: 20px; }
-        .toast-content { flex: 1; }
-        .toast-title { font-weight: bold; margin-bottom: 4px; font-size: 14px; }
-        .toast-message { font-size: 12px; opacity: 0.9; }
-        .toast-close { cursor: pointer; opacity: 0.7; padding: 4px; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-
-            .logo {
-                justify-content: center;
-            }
-
-            .user-info {
-                justify-content: center;
-            }
-
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filtros-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .usuario-item, .producto-item, .asignacion-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
 
         /* ===== SECCIONES ===== */
         .seccion {
@@ -632,6 +387,23 @@
 
         .seccion.active {
             display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -650,30 +422,13 @@
     <div class="header">
         <div class="logo">
             <i class="fas fa-crown"></i>
-            <span class="logo-text">EUROFERT</span>
+            <span class="logo-text">EUROFERT ADMIN</span>
             <span class="logo-badge">ADMIN</span>
         </div>
         <div class="user-info">
-            <!-- Notificaciones -->
-            <div class="notification-bell" onclick="toggleNotifications()">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge" id="notificationCount">0</span>
-            </div>
-            
-            <!-- Dropdown Notificaciones -->
-            <div class="notification-dropdown" id="notificationDropdown">
-                <div class="notification-header">
-                    <h4><i class="fas fa-bell"></i> Notificaciones</h4>
-                    <span class="mark-read" onclick="marcarTodasLeidas()" style="cursor:pointer; font-size:12px;">✓ Marcar todas</span>
-                </div>
-                <div id="notificacionesLista">
-                    <p style="text-align:center; padding:20px;">Cargando...</p>
-                </div>
-            </div>
-
             <div class="user-details">
                 <div class="user-name" id="userName">Admin</div>
-                <div class="user-role" id="currentDate"></div>
+                <div class="user-date" id="currentDate"></div>
             </div>
             <button class="btn btn-danger" onclick="cerrarSesion()">
                 <i class="fas fa-sign-out-alt"></i> Salir
@@ -686,43 +441,32 @@
         <div class="menu-card" onclick="mostrarSeccion('dashboard')">
             <div class="menu-icon"><i class="fas fa-chart-pie"></i></div>
             <h3>Dashboard</h3>
-            <p>Visión general</p>
         </div>
         <div class="menu-card" onclick="mostrarSeccion('usuarios')">
             <div class="menu-icon"><i class="fas fa-users"></i></div>
             <h3>Usuarios</h3>
-            <p>Gestionar colaboradores</p>
         </div>
         <div class="menu-card" onclick="mostrarSeccion('productos')">
             <div class="menu-icon"><i class="fas fa-boxes"></i></div>
             <h3>Productos</h3>
-            <p>Catálogo y stock</p>
         </div>
         <div class="menu-card" onclick="mostrarSeccion('asignaciones')">
             <div class="menu-icon"><i class="fas fa-tasks"></i></div>
             <h3>Asignaciones</h3>
-            <p>Asignar productos</p>
         </div>
         <div class="menu-card" onclick="mostrarSeccion('inventario')">
             <div class="menu-icon"><i class="fas fa-clipboard-list"></i></div>
             <h3>Inventario</h3>
-            <p>Ver respuestas</p>
-        </div>
-        <div class="menu-card" onclick="mostrarSeccion('reportes')">
-            <div class="menu-icon"><i class="fas fa-chart-line"></i></div>
-            <h3>Reportes</h3>
-            <p>Estadísticas</p>
         </div>
     </div>
 
-    <!-- Dashboard Cards -->
-    <div class="dashboard-grid" id="seccion-dashboard" style="display: none;">
+    <!-- Dashboard -->
+    <div id="seccion-dashboard" class="dashboard-grid" style="display: none;">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-users"></i></div>
             <div class="stat-info">
-                <h4>Usuarios Activos</h4>
+                <h4>Usuarios</h4>
                 <div class="stat-number" id="totalUsuarios">0</div>
-                <div class="stat-trend" id="usuariosHoy">+0 hoy</div>
             </div>
         </div>
         <div class="stat-card">
@@ -730,28 +474,25 @@
             <div class="stat-info">
                 <h4>Productos</h4>
                 <div class="stat-number" id="totalProductos">0</div>
-                <div class="stat-trend" id="productosVariantes">0 variantes</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-tasks"></i></div>
             <div class="stat-info">
                 <h4>Asignaciones Hoy</h4>
-                <div class="stat-number" id="totalAsignacionesHoy">0</div>
-                <div class="stat-trend" id="asignacionesPendientes">Pendientes: 0</div>
+                <div class="stat-number" id="totalAsignaciones">0</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
             <div class="stat-info">
                 <h4>Respuestas Hoy</h4>
-                <div class="stat-number" id="totalRespuestasHoy">0</div>
-                <div class="stat-trend" id="respuestasPorcentaje">0% completado</div>
+                <div class="stat-number" id="totalRespuestas">0</div>
             </div>
         </div>
     </div>
 
-    <!-- SECCIÓN USUARIOS -->
+    <!-- USUARIOS -->
     <div id="seccion-usuarios" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-user-plus"></i> Crear Usuario</h3>
@@ -776,13 +517,11 @@
             <i class="fas fa-save"></i> Crear Usuario
         </button>
 
-        <div style="margin-top: 30px;">
-            <h4><i class="fas fa-list"></i> Usuarios Existentes</h4>
-            <div id="listaUsuarios" class="table-container"></div>
-        </div>
+        <h4 style="margin-top: 30px;">Usuarios Existentes</h4>
+        <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN PRODUCTOS -->
+    <!-- PRODUCTOS -->
     <div id="seccion-productos" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-box"></i> Crear Producto</h3>
@@ -800,7 +539,7 @@
         <div style="margin: 15px 0;">
             <label style="display: flex; align-items: center; gap: 10px;">
                 <input type="checkbox" id="esDuplicado">
-                <span>Es una variante de un producto existente</span>
+                <span>Es una variante</span>
             </label>
         </div>
 
@@ -809,14 +548,14 @@
         </button>
 
         <div class="form-group" style="margin-top: 20px;">
-            <input type="text" id="filtroProductos" class="form-control" placeholder="🔍 Buscar productos..." onkeyup="filtrarProductos()">
+            <input type="text" id="filtroProductos" class="form-control" placeholder="Buscar productos..." onkeyup="filtrarProductos()">
         </div>
 
-        <h4 style="margin-top: 20px;"><i class="fas fa-list"></i> Productos Existentes</h4>
+        <h4>Productos Existentes</h4>
         <div id="listaProductos" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN ASIGNACIONES -->
+    <!-- ASIGNACIONES -->
     <div id="seccion-asignaciones" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-calendar-alt"></i> Asignar Producto</h3>
@@ -826,12 +565,14 @@
             <label>Fecha</label>
             <input type="date" id="fechaAsignacion" class="form-control">
         </div>
+        
         <div class="form-group">
             <label>Usuario</label>
             <select id="selectUsuario" class="form-control">
                 <option value="">Cargando...</option>
             </select>
         </div>
+        
         <div class="form-group">
             <label>Producto</label>
             <select id="selectProducto" class="form-control">
@@ -850,82 +591,43 @@
             <i class="fas fa-check-circle"></i> Asignar
         </button>
 
-        <h4 style="margin-top: 30px;"><i class="fas fa-tasks"></i> Asignaciones de Hoy</h4>
+        <h4 style="margin-top: 30px;">Asignaciones de Hoy</h4>
         <div id="asignacionesHoy" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN INVENTARIO -->
+    <!-- INVENTARIO -->
     <div id="seccion-inventario" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-search"></i> Consultar Inventario</h3>
         </div>
 
-        <div class="filtros-grid">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
             <div class="form-group">
                 <label>Fecha Inicio</label>
-                <input type="date" id="fechaInicio" class="form-control" onchange="cargarInventario()">
+                <input type="date" id="fechaInicio" class="form-control">
             </div>
             <div class="form-group">
                 <label>Fecha Fin</label>
-                <input type="date" id="fechaFin" class="form-control" onchange="cargarInventario()">
+                <input type="date" id="fechaFin" class="form-control">
             </div>
             <div class="form-group">
                 <label>Usuario</label>
-                <select id="filtroUsuario" class="form-control" onchange="cargarInventario()">
+                <select id="filtroUsuario" class="form-control">
                     <option value="">Todos</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Producto</label>
-                <input type="text" id="filtroProductoInventario" class="form-control" placeholder="Buscar..." onkeyup="cargarInventario()">
-            </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
             <button class="btn btn-primary" onclick="cargarInventario()">
                 <i class="fas fa-search"></i> Buscar
             </button>
             <button class="btn btn-warning" onclick="exportarExcel()">
                 <i class="fas fa-file-excel"></i> Exportar
             </button>
-            <button class="btn btn-danger" onclick="limpiarFiltros()">
-                <i class="fas fa-eraser"></i> Limpiar
-            </button>
-        </div>
-
-        <div id="resumenInventario" style="background: rgba(13,71,161,0.3); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 10px;">
-                <div><strong>Total registros:</strong> <span id="totalRegistros">0</span></div>
-                <div><strong>Productos únicos:</strong> <span id="totalProductosUnicos">0</span></div>
-                <div><strong>Usuarios activos:</strong> <span id="totalUsuariosActivos">0</span></div>
-            </div>
         </div>
 
         <div id="resultadoInventario" class="table-container"></div>
-    </div>
-
-    <!-- SECCIÓN REPORTES -->
-    <div id="seccion-reportes" class="card seccion">
-        <div class="card-header">
-            <h3><i class="fas fa-chart-line"></i> Estadísticas</h3>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
-            <div style="background: rgba(28,49,58,0.8); padding: 20px; border-radius: 10px;">
-                <h4 style="margin-bottom: 15px;">Inventarios por Día</h4>
-                <canvas id="graficoInventarios" style="height: 200px;"></canvas>
-            </div>
-            <div style="background: rgba(28,49,58,0.8); padding: 20px; border-radius: 10px;">
-                <h4 style="margin-bottom: 15px;">Top Productos</h4>
-                <canvas id="graficoTopProductos" style="height: 200px;"></canvas>
-            </div>
-        </div>
-
-        <h4 style="margin: 20px 0 10px;">Top 5 Productos</h4>
-        <div id="topProductos" class="table-container"></div>
-
-        <h4 style="margin: 20px 0 10px;">Resumen por Usuario</h4>
-        <div id="resumenUsuarios" class="table-container"></div>
     </div>
 </div>
 
@@ -943,7 +645,7 @@
         appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
     };
 
-    // Inicializar Firebase con manejo de errores
+    // Inicializar Firebase
     let db;
     try {
         if (!firebase.apps.length) {
@@ -957,41 +659,25 @@
     // ============================================
     // VARIABLES GLOBALES
     // ============================================
-    let usuario = null;
-    let rol = null;
-    let productoEditando = null;
+    let usuario = localStorage.getItem("usuario");
+    let rol = localStorage.getItem("rol");
     let todosLosRegistros = [];
-    let notificaciones = [];
-    let notificacionesNoLeidas = 0;
-    let graficoInventarios = null;
-    let graficoTopProductos = null;
-    let intentosReconexion = 0;
-    const MAX_INTENTOS = 5;
-    let intervaloActualizacion = null;
 
     // ============================================
     // VERIFICAR SESIÓN
     // ============================================
-    function verificarSesion() {
-        usuario = localStorage.getItem("usuario");
-        rol = localStorage.getItem("rol");
-        
-        if (!usuario || rol !== "admin") {
-            mostrarToast('Acceso denegado', 'Debe iniciar sesión como administrador', 'error');
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2000);
-            return false;
-        }
-        
-        document.getElementById('userName').textContent = usuario;
-        return true;
+    if (!usuario || rol !== "admin") {
+        alert("Acceso no autorizado");
+        window.location.href = "index.html";
     }
+
+    document.getElementById('userName').textContent = usuario;
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
 
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
-    function mostrarLoading(mostrar = true) {
+    function mostrarLoading(mostrar) {
         document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
@@ -1003,9 +689,7 @@
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
         
-        let icono = tipo === 'success' ? 'fa-check-circle' : 
-                    tipo === 'error' ? 'fa-exclamation-circle' : 
-                    tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
         
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
@@ -1019,191 +703,30 @@
         `;
         
         container.appendChild(toast);
-        
         setTimeout(() => {
             let elemento = document.getElementById(toastId);
             if (elemento) elemento.remove();
         }, 4000);
     }
 
-    function manejarError(error, mensaje = 'Error inesperado') {
-        console.error(error);
-        
-        if (error && error.code === 'PERMISSION_DENIED') {
-            mostrarToast('Error', 'No tiene permisos para esta operación', 'error');
-        } else if (error && error.code === 'NETWORK_ERROR') {
-            mostrarToast('Error de red', 'Verifique su conexión', 'error');
-            if (intentosReconexion < MAX_INTENTOS) {
-                intentosReconexion++;
-                setTimeout(() => {
-                    recargarTodo();
-                }, 5000 * intentosReconexion);
-            }
-        } else {
-            mostrarToast('Error', mensaje, 'error');
-        }
-    }
-
-    // ============================================
-    // NOTIFICACIONES
-    // ============================================
-    function inicializarNotificaciones() {
-        if (!db) return;
-        
-        let mesActual = new Date().toISOString().substring(0, 7);
-        
-        // Escuchar nuevos inventarios
-        db.ref("inventario/" + mesActual).on("child_added", (snapshot) => {
-            let nuevoInventario = snapshot.val();
-            let fecha = new Date(nuevoInventario.fecha);
-            let hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            
-            if (fecha >= hoy) {
-                crearNotificacion({
-                    tipo: 'inventario',
-                    titulo: '📦 Nuevo inventario',
-                    mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
-                    usuario: nuevoInventario.nombre,
-                    producto: nuevoInventario.producto,
-                    fisico: nuevoInventario.fisico,
-                    muestras: nuevoInventario.muestras,
-                    caducados: nuevoInventario.caducados,
-                    fecha: nuevoInventario.fecha
-                });
-            }
-        });
-        
-        cargarNotificacionesGuardadas();
-    }
-
-    function crearNotificacion(datos) {
-        let id = Date.now() + Math.random().toString(36).substr(2, 9);
-        let notificacion = {
-            id: id,
-            ...datos,
-            leida: false,
-            timestamp: new Date().toISOString()
-        };
-        
-        notificaciones.unshift(notificacion);
-        notificacionesNoLeidas++;
-        
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-        actualizarBadgeNotificaciones();
-        mostrarNotificaciones();
-    }
-
-    function cargarNotificacionesGuardadas() {
-        try {
-            let guardadas = localStorage.getItem('notificaciones');
-            if (guardadas) {
-                notificaciones = JSON.parse(guardadas);
-                notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
-                actualizarBadgeNotificaciones();
-                mostrarNotificaciones();
-            }
-        } catch (error) {
-            console.error("Error cargando notificaciones:", error);
-        }
-    }
-
-    function toggleNotifications() {
-        let dropdown = document.getElementById("notificationDropdown");
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-        if (dropdown.style.display === "block") {
-            mostrarNotificaciones();
-        }
-    }
-
-    function mostrarNotificaciones() {
-        let container = document.getElementById("notificacionesLista");
-        
-        if (notificaciones.length === 0) {
-            container.innerHTML = '<p style="text-align:center; padding:20px;">No hay notificaciones</p>';
-            return;
-        }
-        
-        container.innerHTML = notificaciones.slice(0, 20).map(n => `
-            <div class="notification-item ${n.leida ? '' : 'unread'}" onclick="verNotificacion('${n.id}')">
-                <div style="display:flex; gap:10px;">
-                    <div style="font-size:20px;">${n.tipo === 'inventario' ? '📦' : '🔔'}</div>
-                    <div style="flex:1;">
-                        <div style="font-weight:bold;">${n.titulo}</div>
-                        <div style="font-size:13px; margin:5px 0;">${n.mensaje}</div>
-                        <div class="notification-time">${new Date(n.fecha).toLocaleString()}</div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function verNotificacion(id) {
-        let notificacion = notificaciones.find(n => n.id === id);
-        if (notificacion) {
-            notificacion.leida = true;
-            notificacionesNoLeidas--;
-            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-            actualizarBadgeNotificaciones();
-            mostrarNotificaciones();
-            
-            // Ir a inventario y filtrar
-            mostrarSeccion('inventario');
-            document.getElementById("filtroProductoInventario").value = notificacion.producto;
-            cargarInventario();
-        }
-    }
-
-    function marcarTodasLeidas() {
-        notificaciones.forEach(n => n.leida = true);
-        notificacionesNoLeidas = 0;
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-        actualizarBadgeNotificaciones();
-        mostrarNotificaciones();
-        mostrarToast('Éxito', 'Todas las notificaciones marcadas como leídas', 'success');
-    }
-
-    function actualizarBadgeNotificaciones() {
-        let badge = document.getElementById("notificationCount");
-        badge.textContent = notificacionesNoLeidas;
-        badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
-    }
-
-    // ============================================
-    // NAVEGACIÓN
-    // ============================================
     function mostrarSeccion(seccion) {
-        // Ocultar todas las secciones
         document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
         document.getElementById('seccion-dashboard').style.display = 'none';
         
-        // Mostrar la sección seleccionada
         if (seccion === 'dashboard') {
             document.getElementById('seccion-dashboard').style.display = 'grid';
             cargarDashboard();
         } else {
             document.getElementById(`seccion-${seccion}`).classList.add('active');
-            
-            // Cargar datos según la sección
-            switch(seccion) {
-                case 'usuarios':
-                    cargarUsuarios();
-                    break;
-                case 'productos':
-                    cargarProductos();
-                    break;
-                case 'asignaciones':
-                    cargarSelectores();
-                    cargarAsignacionesHoy();
-                    configurarFechaAsignacion();
-                    break;
-                case 'inventario':
-                    configurarFechasPorDefecto();
-                    cargarFiltrosUsuarios();
-                    break;
-                case 'reportes':
-                    cargarReportes();
-                    break;
+            if (seccion === 'usuarios') cargarUsuarios();
+            if (seccion === 'productos') cargarProductos();
+            if (seccion === 'asignaciones') {
+                cargarSelectoresAsignacion();
+                cargarAsignacionesHoy();
+            }
+            if (seccion === 'inventario') {
+                configurarFechas();
+                cargarFiltrosUsuarios();
             }
         }
     }
@@ -1212,63 +735,32 @@
     // DASHBOARD
     // ============================================
     async function cargarDashboard() {
-        if (!db) return;
-        
         try {
             let fechaHoy = new Date().toISOString().split("T")[0];
             let mesActual = new Date().toISOString().substring(0, 7);
             
-            const [snapUsuarios, snapProductos, snapAsignaciones, snapInventario] = await Promise.all([
+            const [usuarios, productos, asignaciones, inventario] = await Promise.all([
                 db.ref("usuarios").once("value"),
                 db.ref("productos").once("value"),
                 db.ref("asignaciones/" + fechaHoy).once("value"),
                 db.ref("inventario/" + mesActual).once("value")
             ]);
 
-            // Usuarios
-            let totalUsuarios = 0;
-            let usuariosHoy = 0;
-            snapUsuarios.forEach(child => {
-                totalUsuarios++;
-                let user = child.val();
-                if (user.fechaCreacion && user.fechaCreacion.split("T")[0] === fechaHoy) {
-                    usuariosHoy++;
-                }
-            });
+            document.getElementById("totalUsuarios").textContent = usuarios.numChildren();
+            document.getElementById("totalProductos").textContent = productos.numChildren();
             
-            document.getElementById('totalUsuarios').textContent = totalUsuarios;
-            document.getElementById('usuariosHoy').innerHTML = `<i class="fas fa-arrow-up"></i> +${usuariosHoy} hoy`;
-
-            // Productos
-            let totalProductos = snapProductos.numChildren();
-            let variantes = 0;
-            snapProductos.forEach(child => {
-                if (child.val().esVariante) variantes++;
-            });
-            document.getElementById('totalProductos').textContent = totalProductos;
-            document.getElementById('productosVariantes').innerHTML = `<i class="fas fa-copy"></i> ${variantes} variantes`;
-
-            // Asignaciones hoy
             let totalAsignaciones = 0;
-            snapAsignaciones.forEach(user => totalAsignaciones += user.numChildren());
-            document.getElementById('totalAsignacionesHoy').textContent = totalAsignaciones;
-
-            // Respuestas hoy
-            let respuestasHoy = 0;
-            snapInventario.forEach(child => {
-                let inv = child.val();
-                if (inv.fecha.split("T")[0] === fechaHoy) {
-                    respuestasHoy++;
-                }
-            });
-            document.getElementById('totalRespuestasHoy').textContent = respuestasHoy;
+            asignaciones.forEach(u => totalAsignaciones += u.numChildren());
+            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
             
-            let porcentaje = totalAsignaciones > 0 ? Math.round((respuestasHoy / totalAsignaciones) * 100) : 0;
-            document.getElementById('respuestasPorcentaje').innerHTML = `<i class="fas fa-chart-line"></i> ${porcentaje}% completado`;
-            document.getElementById('asignacionesPendientes').innerHTML = `Pendientes: ${totalAsignaciones - respuestasHoy}`;
-
+            let respuestasHoy = 0;
+            inventario.forEach(i => {
+                if (i.val().fecha.split("T")[0] === fechaHoy) respuestasHoy++;
+            });
+            document.getElementById("totalRespuestas").textContent = respuestasHoy;
+            
         } catch (error) {
-            manejarError(error, 'Error cargando dashboard');
+            console.error("Error cargando dashboard:", error);
         }
     }
 
@@ -1276,120 +768,91 @@
     // USUARIOS
     // ============================================
     async function crearUsuario() {
-        if (!db) return;
-        
-        let usuario = document.getElementById("nuevoUsuario").value.trim();
-        let password = document.getElementById("nuevoPassword").value.trim();
+        let user = document.getElementById("nuevoUsuario").value.trim();
+        let pass = document.getElementById("nuevoPassword").value.trim();
         let rol = document.getElementById("rolUsuario").value;
 
-        if (!usuario || !password) {
+        if (!user || !pass) {
             mostrarToast('Error', 'Complete todos los campos', 'error');
             return;
         }
 
         mostrarLoading(true);
-
         try {
-            let snapshot = await db.ref("usuarios/" + usuario).once("value");
-            if (snapshot.exists()) {
+            let exists = await db.ref("usuarios/" + user).once("value");
+            if (exists.exists()) {
                 mostrarToast('Error', 'El usuario ya existe', 'error');
                 return;
             }
             
-            await db.ref("usuarios/" + usuario).set({
-                password: password,
+            await db.ref("usuarios/" + user).set({
+                password: pass,
                 rol: rol,
-                fechaCreacion: new Date().toISOString(),
-                intentosFallidos: 0
+                fechaCreacion: new Date().toISOString()
             });
             
-            mostrarToast('Éxito', 'Usuario creado correctamente', 'success');
+            mostrarToast('Éxito', 'Usuario creado', 'success');
             document.getElementById("nuevoUsuario").value = "";
             document.getElementById("nuevoPassword").value = "";
             cargarUsuarios();
             cargarDashboard();
             
         } catch (error) {
-            manejarError(error, 'Error al crear usuario');
+            mostrarToast('Error', 'Error al crear usuario', 'error');
         } finally {
             mostrarLoading(false);
         }
     }
 
     async function cargarUsuarios() {
-        if (!db) return;
-        
         let container = document.getElementById("listaUsuarios");
-        container.innerHTML = "<p class='text-center'>Cargando...</p>";
-
         try {
             let snapshot = await db.ref("usuarios").once("value");
-            
             if (!snapshot.exists()) {
                 container.innerHTML = "<p class='text-center'>No hay usuarios</p>";
                 return;
             }
 
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Rol</th>
-                        <th>Fecha Creación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody>`;
             snapshot.forEach(child => {
-                let user = child.val();
                 html += `<tr>
                     <td><strong>${child.key}</strong></td>
-                    <td><span class="badge ${user.rol === 'admin' ? 'badge-warning' : 'badge-success'}">${user.rol}</span></td>
-                    <td>${user.fechaCreacion ? new Date(user.fechaCreacion).toLocaleDateString() : '-'}</td>
+                    <td><span class="badge ${child.val().rol === 'admin' ? 'badge-warning' : 'badge-success'}">${child.val().rol}</span></td>
                     <td>
-                        <button class="btn btn-warning" onclick="editarUsuario('${child.key}')" style="padding:5px 10px; margin-right:5px;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger" onclick="eliminarUsuario('${child.key}')" style="padding:5px 10px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="btn btn-warning" onclick="editarUsuario('${child.key}')" style="padding:5px 10px;">Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarUsuario('${child.key}')" style="padding:5px 10px;">Eliminar</button>
                     </td>
                 </tr>`;
             });
             html += `</tbody></table>`;
-            
             container.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando usuarios');
+            container.innerHTML = "<p class='text-center'>Error cargando usuarios</p>";
         }
     }
 
     async function editarUsuario(usuario) {
         let nuevaPass = prompt("Nueva contraseña para " + usuario);
-        if (nuevaPass && nuevaPass.trim() !== "") {
+        if (nuevaPass) {
             try {
-                await db.ref("usuarios/" + usuario + "/password").set(nuevaPass.trim());
+                await db.ref("usuarios/" + usuario + "/password").set(nuevaPass);
                 mostrarToast('Éxito', 'Contraseña actualizada', 'success');
             } catch (error) {
-                manejarError(error, 'Error al actualizar');
+                mostrarToast('Error', 'Error al actualizar', 'error');
             }
         }
     }
 
     async function eliminarUsuario(usuario) {
-        if (confirm("¿Eliminar usuario " + usuario + "?")) {
-            mostrarLoading(true);
+        if (confirm("¿Eliminar usuario?")) {
             try {
                 await db.ref("usuarios/" + usuario).remove();
                 mostrarToast('Éxito', 'Usuario eliminado', 'success');
                 cargarUsuarios();
                 cargarDashboard();
             } catch (error) {
-                manejarError(error, 'Error al eliminar');
-            } finally {
-                mostrarLoading(false);
+                mostrarToast('Error', 'Error al eliminar', 'error');
             }
         }
     }
@@ -1398,8 +861,6 @@
     // PRODUCTOS
     // ============================================
     async function crearProducto() {
-        if (!db) return;
-        
         let nombre = document.getElementById("nombreProducto").value.trim();
         let sistema = parseInt(document.getElementById("cantidadSistema").value);
         let esDuplicado = document.getElementById("esDuplicado").checked;
@@ -1410,44 +871,33 @@
         }
 
         mostrarLoading(true);
-
         try {
-            let timestamp = new Date().getTime();
-            let id = productoEditando || (nombre.toLowerCase().replace(/\s+/g, "_") + "_" + timestamp);
-
+            let id = nombre.toLowerCase().replace(/\s+/g, "_") + "_" + Date.now();
             await db.ref("productos/" + id).set({
                 nombre: nombre,
                 sistema: sistema,
                 fechaCreacion: new Date().toISOString(),
-                esVariante: esDuplicado || productoEditando ? true : false
+                esVariante: esDuplicado
             });
             
-            mostrarToast('Éxito', productoEditando ? 'Producto actualizado' : 'Producto creado', 'success');
-            
+            mostrarToast('Éxito', 'Producto creado', 'success');
             document.getElementById("nombreProducto").value = "";
             document.getElementById("cantidadSistema").value = "";
             document.getElementById("esDuplicado").checked = false;
-            productoEditando = null;
-            
             cargarProductos();
             cargarDashboard();
             
         } catch (error) {
-            manejarError(error, 'Error al guardar producto');
+            mostrarToast('Error', 'Error al crear producto', 'error');
         } finally {
             mostrarLoading(false);
         }
     }
 
     async function cargarProductos(filtro = "") {
-        if (!db) return;
-        
         let container = document.getElementById("listaProductos");
-        container.innerHTML = "<p class='text-center'>Cargando...</p>";
-
         try {
             let snapshot = await db.ref("productos").once("value");
-            
             if (!snapshot.exists()) {
                 container.innerHTML = "<p class='text-center'>No hay productos</p>";
                 return;
@@ -1457,104 +907,66 @@
             snapshot.forEach(child => {
                 let prod = child.val();
                 if (!filtro || prod.nombre.toLowerCase().includes(filtro.toLowerCase())) {
-                    productos.push({
-                        id: child.key,
-                        ...prod
-                    });
+                    productos.push({ id: child.key, ...prod });
                 }
             });
 
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Stock</th>
-                        <th>Variante</th>
-                        <th>Fecha</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Producto</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>`;
             productos.forEach(p => {
                 html += `<tr>
                     <td><strong>${p.nombre}</strong></td>
                     <td><span class="badge badge-primary">${p.sistema}</span></td>
-                    <td>${p.esVariante ? '<span class="badge badge-warning">Sí</span>' : 'No'}</td>
-                    <td>${p.fechaCreacion ? new Date(p.fechaCreacion).toLocaleDateString() : '-'}</td>
                     <td>
-                        <button class="btn btn-warning" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})" style="padding:5px 10px; margin-right:5px;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${p.id}')" style="padding:5px 10px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="btn btn-warning" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})" style="padding:5px 10px;">Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarProducto('${p.id}')" style="padding:5px 10px;">Eliminar</button>
                     </td>
                 </tr>`;
             });
             html += `</tbody></table>`;
-            
             container.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando productos');
+            container.innerHTML = "<p class='text-center'>Error cargando productos</p>";
         }
     }
 
     function filtrarProductos() {
-        let filtro = document.getElementById("filtroProductos").value;
-        cargarProductos(filtro);
+        cargarProductos(document.getElementById("filtroProductos").value);
     }
 
     function editarProducto(id, nombre, sistema) {
         document.getElementById("nombreProducto").value = nombre;
         document.getElementById("cantidadSistema").value = sistema;
         document.getElementById("esDuplicado").checked = true;
-        productoEditando = id;
-        
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        mostrarToast('Info', 'Editando producto. Guarde los cambios', 'info');
+        mostrarToast('Info', 'Editando producto', 'info');
     }
 
     async function eliminarProducto(id) {
         if (confirm("¿Eliminar producto?")) {
-            mostrarLoading(true);
             try {
                 await db.ref("productos/" + id).remove();
                 mostrarToast('Éxito', 'Producto eliminado', 'success');
                 cargarProductos();
                 cargarDashboard();
             } catch (error) {
-                manejarError(error, 'Error al eliminar');
-            } finally {
-                mostrarLoading(false);
+                mostrarToast('Error', 'Error al eliminar', 'error');
             }
         }
     }
 
     // ============================================
-    // ASIGNACIONES
+    // ASIGNACIONES - CORREGIDO
     // ============================================
-    function configurarFechaAsignacion() {
-        document.getElementById("fechaAsignacion").value = new Date().toISOString().split("T")[0];
-    }
-
-    async function cargarSelectores() {
-        if (!db) return;
-        
+    async function cargarSelectoresAsignacion() {
         try {
-            let [snapUsuarios, snapProductos] = await Promise.all([
-                db.ref("usuarios").once("value"),
-                db.ref("productos").once("value")
-            ]);
-
-            // Select de usuarios
+            // Cargar usuarios
+            let usuariosSnap = await db.ref("usuarios").once("value");
             let selectUsuario = document.getElementById("selectUsuario");
-            selectUsuario.innerHTML = "<option value=''>Seleccionar usuario</option>";
+            selectUsuario.innerHTML = "<option value=''>Seleccionar usuario...</option>";
             
-            snapUsuarios.forEach(child => {
+            usuariosSnap.forEach(child => {
                 if (child.val().rol === "colaborador") {
                     let option = document.createElement("option");
                     option.value = child.key;
@@ -1563,12 +975,13 @@
                 }
             });
 
-            // Select de productos
+            // Cargar productos
+            let productosSnap = await db.ref("productos").once("value");
             let selectProducto = document.getElementById("selectProducto");
-            selectProducto.innerHTML = "<option value=''>Seleccionar producto</option>";
+            selectProducto.innerHTML = "<option value=''>Seleccionar producto...</option>";
             
             let productos = [];
-            snapProductos.forEach(child => {
+            productosSnap.forEach(child => {
                 let prod = child.val();
                 productos.push({
                     id: child.key,
@@ -1578,7 +991,6 @@
             });
             
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
             productos.forEach(p => {
                 let option = document.createElement("option");
                 option.value = p.id;
@@ -1586,53 +998,80 @@
                 selectProducto.appendChild(option);
             });
 
+            // Configurar fecha por defecto
+            document.getElementById("fechaAsignacion").value = new Date().toISOString().split("T")[0];
+
         } catch (error) {
-            manejarError(error, 'Error cargando selectores');
+            console.error("Error cargando selectores:", error);
         }
     }
 
     async function asignarProducto() {
-        if (!db) return;
-        
         let fecha = document.getElementById("fechaAsignacion").value;
         let usuario = document.getElementById("selectUsuario").value;
         let producto = document.getElementById("selectProducto").value;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
 
-        if (!fecha || !usuario || !producto) {
-            mostrarToast('Error', 'Seleccione fecha, usuario y producto', 'error');
+        // Validaciones
+        if (!fecha) {
+            mostrarToast('Error', 'Seleccione una fecha', 'error');
+            return;
+        }
+        
+        if (!usuario) {
+            mostrarToast('Error', 'Seleccione un usuario', 'error');
+            return;
+        }
+        
+        if (!producto) {
+            mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
         }
 
         mostrarLoading(true);
 
         try {
+            // Obtener datos del producto
             let prodSnap = await db.ref("productos/" + producto).once("value");
+            if (!prodSnap.exists()) {
+                mostrarToast('Error', 'Producto no encontrado', 'error');
+                return;
+            }
+
             let productoData = prodSnap.val();
             
-            await db.ref("asignaciones/" + fecha + "/" + usuario + "/" + producto).set({
+            // Guardar asignación
+            await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                 asignado: true,
                 nombreProducto: productoData.nombre,
                 stockSistema: productoData.sistema,
                 permitirMultiples: permitirMultiples,
-                fechaAsignacion: new Date().toISOString()
+                fechaAsignacion: new Date().toISOString(),
+                productoId: producto
             });
             
             mostrarToast('Éxito', 'Producto asignado correctamente', 'success');
-            cargarAsignacionesHoy();
+            
+            // Limpiar selección
+            document.getElementById("selectUsuario").value = "";
+            document.getElementById("selectProducto").value = "";
+            document.getElementById("permitirMultiples").checked = false;
+            
+            // Recargar asignaciones
+            await cargarAsignacionesHoy();
+            await cargarDashboard();
             
         } catch (error) {
-            manejarError(error, 'Error al asignar');
+            console.error("Error en asignación:", error);
+            mostrarToast('Error', 'Error al asignar producto', 'error');
         } finally {
             mostrarLoading(false);
         }
     }
 
     async function cargarAsignacionesHoy() {
-        if (!db) return;
-        
         let container = document.getElementById("asignacionesHoy");
-        container.innerHTML = "<p class='text-center'>Cargando...</p>";
+        container.innerHTML = "<p class='text-center'>Cargando asignaciones...</p>";
 
         try {
             let fechaHoy = new Date().toISOString().split("T")[0];
@@ -1654,7 +1093,7 @@
                         producto: data.nombreProducto,
                         stock: data.stockSistema,
                         multiples: data.permitirMultiples ? 'Sí' : 'No',
-                        key: prodSnap.key
+                        productoId: prodSnap.key
                     });
                 });
             });
@@ -1678,7 +1117,7 @@
                     <td><span class="badge badge-primary">${a.stock}</span></td>
                     <td>${a.multiples}</td>
                     <td>
-                        <button class="btn btn-danger" onclick="eliminarAsignacion('${fechaHoy}','${a.usuario}','${a.key}')" style="padding:5px 10px;">
+                        <button class="btn btn-danger" onclick="eliminarAsignacion('${fechaHoy}','${a.usuario}','${a.productoId}')" style="padding:5px 10px;">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -1689,18 +1128,19 @@
             container.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando asignaciones');
+            console.error("Error cargando asignaciones:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando asignaciones</p>";
         }
     }
 
-    async function eliminarAsignacion(fecha, usuario, key) {
+    async function eliminarAsignacion(fecha, usuario, productoId) {
         if (confirm("¿Eliminar asignación?")) {
             try {
-                await db.ref("asignaciones/" + fecha + "/" + usuario + "/" + key).remove();
+                await db.ref(`asignaciones/${fecha}/${usuario}/${productoId}`).remove();
                 mostrarToast('Éxito', 'Asignación eliminada', 'success');
                 cargarAsignacionesHoy();
             } catch (error) {
-                manejarError(error, 'Error al eliminar');
+                mostrarToast('Error', 'Error al eliminar', 'error');
             }
         }
     }
@@ -1708,7 +1148,7 @@
     // ============================================
     // INVENTARIO
     // ============================================
-    function configurarFechasPorDefecto() {
+    function configurarFechas() {
         let hoy = new Date();
         let hace7Dias = new Date();
         hace7Dias.setDate(hace7Dias.getDate() - 7);
@@ -1718,8 +1158,6 @@
     }
 
     async function cargarFiltrosUsuarios() {
-        if (!db) return;
-        
         try {
             let snapshot = await db.ref("usuarios").once("value");
             let select = document.getElementById("filtroUsuario");
@@ -1739,13 +1177,10 @@
     }
 
     async function cargarInventario() {
-        if (!db) return;
-        
         let fechaInicio = document.getElementById("fechaInicio").value;
         let fechaFin = document.getElementById("fechaFin").value;
         let filtroUsuario = document.getElementById("filtroUsuario").value;
-        let filtroProducto = document.getElementById("filtroProductoInventario").value.toLowerCase();
-        
+
         if (!fechaInicio || !fechaFin) {
             mostrarToast('Error', 'Seleccione fechas', 'error');
             return;
@@ -1756,29 +1191,29 @@
 
         try {
             let inicio = new Date(fechaInicio);
-            inicio.setHours(0, 0, 0, 0);
             let fin = new Date(fechaFin);
-            fin.setHours(23, 59, 59, 999);
-
-            let meses = obtenerMesesEntreFechas(inicio, fin);
             let registros = [];
+
+            // Obtener meses entre fechas
+            let meses = [];
+            let fechaActual = new Date(inicio);
+            while (fechaActual <= fin) {
+                let anio = fechaActual.getFullYear();
+                let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+                meses.push(`${anio}-${mes}`);
+                fechaActual.setMonth(fechaActual.getMonth() + 1);
+            }
 
             for (let mes of meses) {
                 let snapshot = await db.ref("inventario/" + mes).once("value");
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
-                        let registro = child.val();
-                        let fechaRegistro = new Date(registro.fecha);
-                        
-                        if (fechaRegistro >= inicio && fechaRegistro <= fin) {
-                            if (filtroUsuario && registro.nombre !== filtroUsuario) return;
-                            if (filtroProducto && !registro.producto.toLowerCase().includes(filtroProducto)) return;
-                            
-                            registros.push({
-                                key: child.key,
-                                mes: mes,
-                                ...registro
-                            });
+                        let reg = child.val();
+                        let fechaReg = new Date(reg.fecha);
+                        if (fechaReg >= inicio && fechaReg <= fin) {
+                            if (!filtroUsuario || reg.nombre === filtroUsuario) {
+                                registros.push({ key: child.key, mes: mes, ...reg });
+                            }
                         }
                     });
                 }
@@ -1789,99 +1224,49 @@
 
             if (registros.length === 0) {
                 cont.innerHTML = "<p class='text-center'>No hay registros</p>";
-                document.getElementById("resumenInventario").style.display = "none";
                 return;
             }
 
-            mostrarResultadosInventario(registros);
-            actualizarResumenInventario(registros);
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Físico</th>
+                        <th>Muestras</th>
+                        <th>Caducados</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            registros.forEach(r => {
+                let fecha = new Date(r.fecha).toLocaleString();
+                let total = r.fisico + r.muestras + r.caducados;
+                let cuadra = total === r.sistema;
+                
+                html += `<tr>
+                    <td>${fecha}</td>
+                    <td><strong>${r.nombre}</strong></td>
+                    <td>${r.producto}</td>
+                    <td>${r.sistema}</td>
+                    <td>${r.fisico}</td>
+                    <td>${r.muestras}</td>
+                    <td>${r.caducados}</td>
+                    <td>${total}</td>
+                    <td><span class="badge ${cuadra ? 'badge-success' : 'badge-danger'}">${cuadra ? 'OK' : 'Error'}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            cont.innerHTML = html;
             
         } catch (error) {
-            manejarError(error, 'Error cargando inventario');
+            console.error("Error cargando inventario:", error);
+            cont.innerHTML = "<p class='text-center'>Error cargando inventario</p>";
         }
-    }
-
-    function obtenerMesesEntreFechas(inicio, fin) {
-        let meses = [];
-        let fechaActual = new Date(inicio);
-        
-        while (fechaActual <= fin) {
-            let anio = fechaActual.getFullYear();
-            let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
-            meses.push(`${anio}-${mes}`);
-            fechaActual.setMonth(fechaActual.getMonth() + 1);
-        }
-        
-        return [...new Set(meses)];
-    }
-
-    function mostrarResultadosInventario(registros) {
-        let cont = document.getElementById("resultadoInventario");
-        
-        let html = `<table>
-            <thead>
-                <tr>
-                    <th>Fecha/Hora</th>
-                    <th>Usuario</th>
-                    <th>Producto</th>
-                    <th>Stock</th>
-                    <th>Físico</th>
-                    <th>Muestras</th>
-                    <th>Caducados</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        
-        registros.forEach(r => {
-            let fecha = new Date(r.fecha).toLocaleString();
-            let total = r.fisico + r.muestras + r.caducados;
-            let diferencia = total - r.sistema;
-            let estadoColor = diferencia === 0 ? 'badge-success' : 'badge-danger';
-            let estadoTexto = diferencia === 0 ? 'OK' : `Diff: ${diferencia}`;
-            
-            html += `<tr>
-                <td>${fecha}</td>
-                <td><strong>${r.nombre}</strong></td>
-                <td>${r.producto}</td>
-                <td><span class="badge badge-primary">${r.sistema}</span></td>
-                <td>${r.fisico}</td>
-                <td>${r.muestras}</td>
-                <td>${r.caducados}</td>
-                <td><strong>${total}</strong></td>
-                <td><span class="badge ${estadoColor}">${estadoTexto}</span></td>
-                <td>
-                    <button class="btn btn-danger" onclick="eliminarRegistro('${r.mes}','${r.key}')" style="padding:5px 10px;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>`;
-        });
-        html += `</tbody></table>`;
-        
-        cont.innerHTML = html;
-    }
-
-    function actualizarResumenInventario(registros) {
-        document.getElementById("resumenInventario").style.display = "block";
-        document.getElementById("totalRegistros").textContent = registros.length;
-        
-        let productosUnicos = new Set(registros.map(r => r.producto));
-        document.getElementById("totalProductosUnicos").textContent = productosUnicos.size;
-        
-        let usuariosUnicos = new Set(registros.map(r => r.nombre));
-        document.getElementById("totalUsuariosActivos").textContent = usuariosUnicos.size;
-    }
-
-    function limpiarFiltros() {
-        document.getElementById("fechaInicio").value = "";
-        document.getElementById("fechaFin").value = "";
-        document.getElementById("filtroUsuario").value = "";
-        document.getElementById("filtroProductoInventario").value = "";
-        document.getElementById("resultadoInventario").innerHTML = "";
-        document.getElementById("resumenInventario").style.display = "none";
     }
 
     function exportarExcel() {
@@ -1890,14 +1275,11 @@
             return;
         }
 
-        let csv = "Fecha,Usuario,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Diferencia\n";
-        
+        let csv = "Fecha,Usuario,Producto,Stock,Físico,Muestras,Caducados,Total,Estado\n";
         todosLosRegistros.forEach(r => {
-            let fecha = new Date(r.fecha).toLocaleString();
             let total = r.fisico + r.muestras + r.caducados;
-            let diferencia = total - r.sistema;
-            
-            csv += `${fecha},${r.nombre},${r.producto},${r.sistema},${r.fisico},${r.muestras},${r.caducados},${total},${diferencia}\n`;
+            let estado = total === r.sistema ? 'OK' : 'ERROR';
+            csv += `${new Date(r.fecha).toLocaleString()},${r.nombre},${r.producto},${r.sistema},${r.fisico},${r.muestras},${r.caducados},${total},${estado}\n`;
         });
 
         let blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -1906,263 +1288,21 @@
         a.href = url;
         a.download = `inventario_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
-        
         mostrarToast('Éxito', 'Archivo exportado', 'success');
     }
 
-    async function eliminarRegistro(mes, id) {
-        if (confirm("¿Eliminar registro?")) {
-            try {
-                await db.ref("inventario/" + mes + "/" + id).remove();
-                mostrarToast('Éxito', 'Registro eliminado', 'success');
-                cargarInventario();
-            } catch (error) {
-                manejarError(error, 'Error al eliminar');
-            }
-        }
-    }
-
     // ============================================
-    // REPORTES
-    // ============================================
-    async function cargarReportes() {
-        if (!db) return;
-        
-        try {
-            let mesActual = new Date().toISOString().substring(0, 7);
-            let snapshot = await db.ref("inventario/" + mesActual).once("value");
-            
-            if (!snapshot.exists()) {
-                document.getElementById("topProductos").innerHTML = "<p class='text-center'>Sin datos</p>";
-                document.getElementById("resumenUsuarios").innerHTML = "<p class='text-center'>Sin datos</p>";
-                return;
-            }
-
-            // Top productos
-            let conteoProductos = {};
-            snapshot.forEach(child => {
-                let prod = child.val().producto;
-                conteoProductos[prod] = (conteoProductos[prod] || 0) + 1;
-            });
-
-            let topProductos = Object.entries(conteoProductos)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
-
-            let htmlTop = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Veces</th>
-                        <th>%</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
-            let total = snapshot.numChildren();
-            topProductos.forEach(([prod, count]) => {
-                let porcentaje = ((count / total) * 100).toFixed(1);
-                htmlTop += `<tr>
-                    <td><strong>${prod}</strong></td>
-                    <td>${count}</td>
-                    <td>${porcentaje}%</td>
-                </tr>`;
-            });
-            htmlTop += `</tbody></table>`;
-            
-            document.getElementById("topProductos").innerHTML = htmlTop;
-
-            // Resumen por usuario
-            let resumenUsuarios = {};
-            snapshot.forEach(child => {
-                let inv = child.val();
-                if (!resumenUsuarios[inv.nombre]) {
-                    resumenUsuarios[inv.nombre] = {
-                        total: 0,
-                        cuadran: 0
-                    };
-                }
-                resumenUsuarios[inv.nombre].total++;
-                if (inv.cuadra) resumenUsuarios[inv.nombre].cuadran++;
-            });
-
-            let htmlUsers = `<table>
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Total</th>
-                        <th>Cuadran</th>
-                        <th>%</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
-            Object.entries(resumenUsuarios).forEach(([user, data]) => {
-                let porcentaje = ((data.cuadran / data.total) * 100).toFixed(1);
-                htmlUsers += `<tr>
-                    <td><strong>${user}</strong></td>
-                    <td>${data.total}</td>
-                    <td>${data.cuadran}</td>
-                    <td>${porcentaje}%</td>
-                </tr>`;
-            });
-            htmlUsers += `</tbody></table>`;
-            
-            document.getElementById("resumenUsuarios").innerHTML = htmlUsers;
-
-            // Gráficos
-            actualizarGraficos(conteoProductos);
-            
-        } catch (error) {
-            manejarError(error, 'Error cargando reportes');
-        }
-    }
-
-    function actualizarGraficos(conteoProductos) {
-        // Gráfico de top productos
-        let ctxTop = document.getElementById('graficoTopProductos').getContext('2d');
-        if (graficoTopProductos) graficoTopProductos.destroy();
-        
-        graficoTopProductos = new Chart(ctxTop, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(conteoProductos).slice(0, 5),
-                datasets: [{
-                    data: Object.values(conteoProductos).slice(0, 5),
-                    backgroundColor: ['#00c853', '#ff9800', '#2196f3', '#9c27b0', '#f44336']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: 'white' } }
-                }
-            }
-        });
-
-        // Gráfico de inventarios por día (últimos 7 días)
-        let fechas = [];
-        let datos = [];
-        for (let i = 6; i >= 0; i--) {
-            let fecha = new Date();
-            fecha.setDate(fecha.getDate() - i);
-            fechas.push(fecha.toLocaleDateString('es-ES', { weekday: 'short' }));
-            datos.push(Math.floor(Math.random() * 20) + 5); // Datos de ejemplo
-        }
-
-        let ctxInv = document.getElementById('graficoInventarios').getContext('2d');
-        if (graficoInventarios) graficoInventarios.destroy();
-        
-        graficoInventarios = new Chart(ctxInv, {
-            type: 'line',
-            data: {
-                labels: fechas,
-                datasets: [{
-                    label: 'Inventarios',
-                    data: datos,
-                    borderColor: '#00c853',
-                    backgroundColor: 'rgba(0,200,83,0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: 'white' } },
-                    x: { grid: { display: false }, ticks: { color: 'white' } }
-                }
-            }
-        });
-    }
-
-    // ============================================
-    // FUNCIONES GENERALES
+    // CERRAR SESIÓN
     // ============================================
     function cerrarSesion() {
-        if (intervaloActualizacion) {
-            clearInterval(intervaloActualizacion);
-        }
-        
-        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
-        setTimeout(() => {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }, 1500);
+        localStorage.clear();
+        window.location.href = "index.html";
     }
-
-    function recargarTodo() {
-        if (!verificarSesion()) return;
-        
-        let seccionActiva = document.querySelector('.seccion.active')?.id || '';
-        mostrarSeccion(seccionActiva.replace('seccion-', ''));
-        cargarDashboard();
-    }
-
-    // Cerrar dropdown al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        let dropdown = document.getElementById("notificationDropdown");
-        let bell = document.querySelector('.notification-bell');
-        
-        if (bell && !bell.contains(e.target) && dropdown && !dropdown.contains(e.target)) {
-            dropdown.style.display = "none";
-        }
-    });
-
-    // Manejar visibilidad de la página
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && usuario) {
-            recargarTodo();
-        }
-    });
-
-    // Manejar errores no capturados
-    window.addEventListener('error', (event) => {
-        console.error('Error global:', event.error);
-        mostrarToast('Error', 'Ocurrió un error inesperado', 'error');
-    });
 
     // ============================================
     // INICIALIZACIÓN
     // ============================================
-    async function inicializar() {
-        if (!verificarSesion()) return;
-        
-        mostrarLoading(true);
-        
-        try {
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-            
-            // Inicializar todo
-            inicializarNotificaciones();
-            await cargarDashboard();
-            
-            // Mostrar dashboard por defecto
-            mostrarSeccion('dashboard');
-            
-            // Actualizar cada 30 segundos
-            intervaloActualizacion = setInterval(() => {
-                if (document.visibilityState === 'visible') {
-                    cargarDashboard();
-                }
-            }, 30000);
-            
-        } catch (error) {
-            manejarError(error, 'Error al inicializar');
-        } finally {
-            mostrarLoading(false);
-        }
-    }
-
-    // Iniciar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializar);
-    } else {
-        inicializar();
-    }
+    mostrarSeccion('dashboard');
 </script>
 
 </body>
