@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* ===== VARIABLES ===== */
+        /* ===== MANTENER LOS ESTILOS EXACTAMENTE COMO ESTABAN ===== */
         :root {
             --primary: #00c853;
             --primary-dark: #00a844;
@@ -41,7 +41,6 @@
             --border-radius-sm: 8px;
         }
 
-        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
@@ -49,7 +48,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ===== ANIMACIONES ===== */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -70,7 +68,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ===== ESTILOS GENERALES ===== */
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, var(--dark), var(--dark-light));
@@ -86,7 +83,6 @@
             padding: 16px;
         }
 
-        /* ===== HEADER MÓVIL ===== */
         .header {
             background: linear-gradient(135deg, rgba(13,71,161,0.98), rgba(13,71,161,0.95));
             backdrop-filter: blur(10px);
@@ -152,12 +148,16 @@
             font-size: 14px;
         }
 
+        .user-role {
+            font-size: 11px;
+            color: var(--primary-light);
+        }
+
         .user-date {
             font-size: 11px;
             color: var(--primary-light);
         }
 
-        /* ===== BOTONES ===== */
         .btn {
             padding: 12px 20px;
             border-radius: var(--border-radius-sm);
@@ -204,7 +204,6 @@
             pointer-events: none;
         }
 
-        /* ===== CARDS ===== */
         .card {
             background: rgba(32, 58, 67, 0.95);
             backdrop-filter: blur(10px);
@@ -240,7 +239,6 @@
             font-size: 20px;
         }
 
-        /* ===== SELECTOR DE PRODUCTO MEJORADO ===== */
         .product-selector {
             background: rgba(13,71,161,0.3);
             border-radius: var(--border-radius);
@@ -383,7 +381,6 @@
             margin-bottom: 10px;
         }
 
-        /* ===== CAMPOS DE CONTEO ===== */
         .conteo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -435,7 +432,6 @@
         .conteo-card.muestras { border-left: 4px solid #ff9800; }
         .conteo-card.caducados { border-left: 4px solid #f44336; }
 
-        /* ===== TOTAL ===== */
         .total-card {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             border-radius: var(--border-radius);
@@ -466,7 +462,6 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ===== TABLAS ===== */
         .table-container {
             overflow-x: auto;
             border-radius: var(--border-radius);
@@ -498,7 +493,10 @@
             font-size: 13px;
         }
 
-        /* ===== BADGES ===== */
+        tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
         .badge {
             padding: 4px 10px;
             border-radius: 20px;
@@ -514,7 +512,6 @@
         .badge-primary { background: var(--primary); color: var(--white); }
         .badge-info { background: var(--info); color: var(--white); }
 
-        /* ===== PROGRESO ===== */
         .progress-container {
             margin: 16px 0;
         }
@@ -540,7 +537,6 @@
             transition: width 0.5s ease;
         }
 
-        /* ===== DASHBOARD CARDS ===== */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -582,7 +578,6 @@
             font-weight: bold;
         }
 
-        /* ===== LOADING OVERLAY ===== */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -606,7 +601,6 @@
             animation: spin 1s linear infinite;
         }
 
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             top: 16px;
@@ -643,76 +637,30 @@
         .toast-message { font-size: 12px; opacity: 0.9; }
         .toast-close { cursor: pointer; opacity: 0.7; padding: 4px; }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-
-            .logo {
-                justify-content: center;
-            }
-
-            .user-info {
-                justify-content: center;
-            }
-
-            .user-details {
-                text-align: center;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .product-info-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .product-stock {
-                width: 100%;
-                text-align: center;
-            }
-
-            .conteo-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            th, td {
-                padding: 8px;
-                font-size: 12px;
-            }
+            .container { padding: 10px; }
+            .header { flex-direction: column; align-items: stretch; text-align: center; }
+            .logo { justify-content: center; }
+            .user-info { justify-content: center; }
+            .user-details { text-align: center; }
+            .btn { width: 100%; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+            .product-info-card { flex-direction: column; text-align: center; }
+            .product-stock { width: 100%; text-align: center; }
+            .conteo-grid { grid-template-columns: 1fr; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            th, td { padding: 8px; font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Header -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-boxes"></i>
@@ -722,6 +670,7 @@
         <div class="user-info">
             <div class="user-details">
                 <div class="user-name" id="userName">Cargando...</div>
+                <div class="user-role">Colaborador</div>
                 <div class="user-date" id="currentDate"></div>
             </div>
             <button class="btn btn-danger" onclick="cerrarSesion()">
@@ -730,7 +679,6 @@
         </div>
     </div>
 
-    <!-- Dashboard Cards -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-tasks"></i></div>
@@ -755,26 +703,16 @@
         </div>
     </div>
 
-    <!-- Card Principal: Conteo Diario -->
     <div class="card">
         <div class="card-header">
-            <h3>
-                <i class="fas fa-clipboard-list"></i>
-                Realizar Conteo Diario
-            </h3>
+            <h3><i class="fas fa-clipboard-list"></i> Realizar Conteo Diario</h3>
             <div class="badge badge-primary" id="fechaActual"></div>
         </div>
 
-        <!-- SELECTOR DE PRODUCTO MEJORADO - SOLO PENDIENTES -->
         <div class="product-selector" id="productSelector">
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" 
-                       class="product-search" 
-                       id="buscadorProducto" 
-                       placeholder="Buscar producto pendiente..." 
-                       onkeyup="filtrarProductos()"
-                       autocomplete="off">
+                <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto pendiente..." onkeyup="filtrarProductos()" autocomplete="off">
             </div>
 
             <div class="product-dropdown">
@@ -783,19 +721,16 @@
                 </select>
             </div>
 
-            <!-- Mensaje de sin resultados -->
             <div id="noResultados" class="no-results" style="display: none;">
                 <i class="fas fa-exclamation-circle"></i> No se encontraron productos pendientes
             </div>
 
-            <!-- Mensaje cuando no hay productos pendientes -->
             <div id="sinPendientes" class="mensaje-completado" style="display: none;">
                 <i class="fas fa-check-circle"></i>
                 <h4>¡Todos los productos han sido completados!</h4>
                 <p>Has respondido todas tus asignaciones del día.</p>
             </div>
 
-            <!-- Información del Producto Seleccionado -->
             <div class="product-info-card" id="productoInfo" style="display: none;">
                 <div class="product-name">
                     <i class="fas fa-cube"></i>
@@ -807,7 +742,6 @@
             </div>
         </div>
 
-        <!-- Campos de Conteo -->
         <div class="conteo-grid">
             <div class="conteo-card fisico">
                 <div class="conteo-icon"><i class="fas fa-hand-holding-heart"></i></div>
@@ -826,14 +760,12 @@
             </div>
         </div>
 
-        <!-- Total Calculado -->
         <div class="total-card" id="totalCard">
             <div class="total-label">Total Contado</div>
             <div class="total-value" id="totalCalculado">0</div>
             <div class="total-comparison" id="comparacionStock">vs Stock: 0</div>
         </div>
 
-        <!-- Barra de Progreso -->
         <div class="progress-container">
             <div class="progress-header">
                 <span>Progreso del día</span>
@@ -844,15 +776,11 @@
             </div>
         </div>
 
-        <!-- Botón Enviar -->
         <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
             <i class="fas fa-paper-plane"></i> Enviar Inventario
         </button>
-
-        <div id="estado"></div>
     </div>
 
-    <!-- Card: Productos Pendientes -->
     <div class="card">
         <div class="card-header">
             <h3><i class="fas fa-clock"></i> Productos Pendientes</h3>
@@ -863,7 +791,6 @@
         </div>
     </div>
 
-    <!-- Card: Historial de Envíos -->
     <div class="card">
         <div class="card-header">
             <h3><i class="fas fa-history"></i> Historial de Envíos</h3>
@@ -889,7 +816,6 @@
         appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
     };
 
-    // Inicializar Firebase con manejo de errores
     let db;
     try {
         if (!firebase.apps.length) {
@@ -904,42 +830,70 @@
     // VARIABLES GLOBALES
     // ============================================
     let usuario = null;
+    let rol = null;
     let fechaHoy = null;
     let mesActual = null;
     let productoSeleccionado = null;
     let productosPendientes = [];
     let productosEnviadosHoy = new Set();
     let intervaloActualizacion = null;
-    let intentosReconexion = 0;
-    const MAX_INTENTOS = 5;
 
     // ============================================
-    // VERIFICAR SESIÓN AL INICIAR
+    // VERIFICAR SESIÓN - CORREGIDO (SIN REDIRECCIÓN A ADMIN)
     // ============================================
     function verificarSesion() {
-        usuario = localStorage.getItem("usuario");
-        if (!usuario) {
-            mostrarToast('Sesión expirada', 'Por favor, inicie sesión nuevamente', 'error');
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2000);
+        try {
+            usuario = localStorage.getItem("usuario");
+            rol = localStorage.getItem("rol");
+            
+            console.log("Verificando sesión - Usuario:", usuario, "Rol:", rol);
+            
+            if (!usuario) {
+                console.log("No hay usuario, redirigiendo a login");
+                mostrarToast('Sesión expirada', 'Por favor, inicie sesión nuevamente', 'error');
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2000);
+                return false;
+            }
+            
+            // SOLO VERIFICAMOS QUE SEA COLABORADOR, NO REDIRIGIMOS
+            if (rol !== "colaborador") {
+                console.log("Rol incorrecto, debe ser colaborador");
+                mostrarToast('Error', 'Acceso no autorizado', 'error');
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2000);
+                return false;
+            }
+            
+            // Actualizar fechas
+            fechaHoy = new Date().toISOString().split("T")[0];
+            mesActual = new Date().toISOString().substring(0, 7);
+            
+            // Mostrar nombre de usuario
+            document.getElementById('userName').textContent = usuario;
+            
+            return true;
+            
+        } catch (error) {
+            console.error("Error verificando sesión:", error);
             return false;
         }
-        
-        fechaHoy = new Date().toISOString().split("T")[0];
-        mesActual = new Date().toISOString().substring(0, 7);
-        return true;
     }
 
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
     function mostrarLoading(mostrar = true) {
-        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
+        let overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
     }
 
     function mostrarToast(titulo, mensaje, tipo = 'success') {
         let container = document.getElementById('toastContainer');
+        if (!container) return;
+        
         let toastId = 'toast_' + Date.now();
         
         let toast = document.createElement('div');
@@ -969,54 +923,20 @@
         }, 4000);
     }
 
-    function formatearFechaCorta(fechaISO) {
-        try {
-            let fecha = new Date(fechaISO);
-            return fecha.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        } catch (error) {
-            return fechaISO;
-        }
-    }
-
     function manejarError(error, mensaje = 'Error inesperado') {
         console.error(error);
-        
-        if (error.code === 'PERMISSION_DENIED') {
-            mostrarToast('Error', 'No tiene permisos para esta operación', 'error');
-        } else if (error.code === 'NETWORK_ERROR') {
-            mostrarToast('Error de red', 'Verifique su conexión', 'error');
-            if (intentosReconexion < MAX_INTENTOS) {
-                intentosReconexion++;
-                setTimeout(() => {
-                    recargarDatos();
-                }, 5000 * intentosReconexion);
-            }
-        } else {
-            mostrarToast('Error', mensaje, 'error');
-        }
+        mostrarToast('Error', mensaje, 'error');
     }
 
-    // ============================================
-    // FUNCIONES DE INTERFAZ
-    // ============================================
     function actualizarFecha() {
         try {
             let fecha = new Date();
             document.getElementById('fechaActual').textContent = fecha.toLocaleDateString('es-ES', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
+                day: '2-digit', month: '2-digit', year: 'numeric' 
             });
             document.getElementById('currentDate').textContent = fecha.toLocaleDateString('es-ES', { 
-                day: '2-digit', 
-                month: '2-digit', 
-                year: 'numeric' 
+                day: '2-digit', month: '2-digit', year: 'numeric' 
             });
-            document.getElementById('userName').textContent = usuario || 'Colaborador';
         } catch (error) {
             console.error("Error actualizando fecha:", error);
         }
@@ -1078,7 +998,6 @@
                     stock: parseInt(stock)
                 };
                 
-                // Resetear campos
                 document.getElementById("fisico").value = "0";
                 document.getElementById("muestras").value = "0";
                 document.getElementById("caducados").value = "0";
@@ -1092,16 +1011,12 @@
         }
     }
 
-    // ============================================
-    // FILTRO EN TIEMPO REAL
-    // ============================================
     function filtrarProductos() {
         try {
             let buscador = document.getElementById("buscadorProducto");
             let filtro = buscador.value.toLowerCase();
             let select = document.getElementById("productoSelect");
             let noResultados = document.getElementById("noResultados");
-            let sinPendientes = document.getElementById("sinPendientes");
             
             let opciones = select.options;
             let visibles = 0;
@@ -1124,13 +1039,10 @@
     }
 
     // ============================================
-    // CARGAR SOLO PRODUCTOS PENDIENTES
+    // CARGAR PRODUCTOS PENDIENTES
     // ============================================
     async function cargarProductosPendientes() {
-        if (!db) {
-            manejarError(new Error('Base de datos no inicializada'), 'Error de conexión');
-            return;
-        }
+        if (!db || !usuario) return;
 
         mostrarLoading(true);
         
@@ -1141,14 +1053,11 @@
             ]);
 
             let select = document.getElementById("productoSelect");
-            let buscador = document.getElementById("buscadorProducto");
             let sinPendientes = document.getElementById("sinPendientes");
-            let productSelector = document.getElementById("productSelector");
             
             select.innerHTML = "";
             productosPendientes = [];
             
-            // Opción por defecto
             let defaultOption = document.createElement("option");
             defaultOption.value = "";
             defaultOption.textContent = "Seleccione un producto...";
@@ -1163,7 +1072,6 @@
                 return;
             }
 
-            // Registrar productos ya enviados hoy
             productosEnviadosHoy.clear();
             snapshotEnvios.forEach(child => {
                 let envio = child.val();
@@ -1176,7 +1084,6 @@
             let asignaciones = snapshotAsignaciones.val();
             let productosIds = Object.keys(asignaciones);
 
-            // Cargar productos en paralelo
             await Promise.all(productosIds.map(async productoId => {
                 try {
                     let prodSnap = await db.ref("productos/" + productoId).once("value");
@@ -1187,7 +1094,6 @@
                         
                         let yaEnviado = productosEnviadosHoy.has(productoId);
                         
-                        // Solo agregar al select si NO ha sido enviado
                         if (!yaEnviado) {
                             let option = document.createElement("option");
                             option.value = productoId;
@@ -1211,31 +1117,25 @@
             }));
 
             if (productosPendientes.length === 0) {
-                // No hay productos pendientes
                 sinPendientes.style.display = "block";
                 select.style.display = "none";
                 document.getElementById("buscadorProducto").style.display = "none";
             } else {
-                // Hay productos pendientes
                 sinPendientes.style.display = "none";
                 select.style.display = "block";
                 document.getElementById("buscadorProducto").style.display = "block";
                 
-                // Ordenar alfabéticamente
                 let options = Array.from(select.options).slice(1);
                 options.sort((a, b) => a.textContent.localeCompare(b.textContent));
                 options.forEach(option => select.appendChild(option));
                 
-                if (buscador) buscador.value = "";
+                document.getElementById("buscadorProducto").value = "";
                 
-                // Seleccionar el primer producto por defecto
                 if (options.length > 0) {
                     select.selectedIndex = 1;
                     cambiarProducto();
                 }
             }
-            
-            intentosReconexion = 0; // Resetear intentos de reconexión
             
         } catch (error) {
             manejarError(error, 'Error cargando productos');
@@ -1248,7 +1148,7 @@
     // CARGAR DASHBOARD
     // ============================================
     async function cargarDashboard() {
-        if (!db) return;
+        if (!db || !usuario) return;
         
         try {
             const [snapAsignaciones, snapEnvios] = await Promise.all([
@@ -1297,7 +1197,7 @@
     // CARGAR PENDIENTES
     // ============================================
     async function cargarPendientes() {
-        if (!db) return;
+        if (!db || !usuario) return;
         
         let container = document.getElementById("pendientesContainer");
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando pendientes...</p>";
@@ -1335,7 +1235,6 @@
                         let data = prodSnap.val();
                         let yaEnviado = productosEnviados.has(productoId);
                         
-                        // Solo mostrar pendientes (no enviados)
                         if (!yaEnviado) {
                             pendientes.push({
                                 id: productoId,
@@ -1376,7 +1275,6 @@
             
         } catch (error) {
             manejarError(error, 'Error cargando pendientes');
-            container.innerHTML = `<p class='text-center text-danger'>Error cargando datos</p>`;
         }
     }
 
@@ -1384,7 +1282,7 @@
     // CARGAR HISTORIAL
     // ============================================
     async function cargarHistorial() {
-        if (!db) return;
+        if (!db || !usuario) return;
         
         let container = document.getElementById("historialContainer");
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando historial...</p>";
@@ -1414,7 +1312,7 @@
                     let diferencia = total - envio.sistema;
                     
                     todosEnvios.push({
-                        fecha: formatearFechaCorta(envio.fecha),
+                        fecha: new Date(envio.fecha).toLocaleDateString(),
                         producto: envio.producto,
                         sistema: envio.sistema,
                         fisico: envio.fisico,
@@ -1469,7 +1367,6 @@
             
         } catch (error) {
             manejarError(error, 'Error cargando historial');
-            container.innerHTML = `<p class='text-center text-danger'>Error cargando historial</p>`;
         }
     }
 
@@ -1524,10 +1421,8 @@
             
             mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
             
-            // Actualizar productos enviados
             productosEnviadosHoy.add(productoSeleccionado.id);
             
-            // Recargar todos los datos
             await Promise.all([
                 cargarProductosPendientes(),
                 cargarDashboard(),
@@ -1535,7 +1430,6 @@
                 cargarHistorial()
             ]);
             
-            // Resetear campos
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
@@ -1563,7 +1457,6 @@
                 cargarPendientes(),
                 cargarHistorial()
             ]);
-            mostrarToast('Actualizado', 'Datos actualizados correctamente', 'success');
         } catch (error) {
             manejarError(error, 'Error al recargar datos');
         } finally {
@@ -1587,17 +1480,22 @@
     }
 
     // ============================================
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN - CORREGIDA
     // ============================================
     async function inicializar() {
-        if (!verificarSesion()) return;
+        console.log("Inicializando panel colaborador...");
+        
+        // Verificar sesión primero
+        if (!verificarSesion()) {
+            console.log("Verificación de sesión falló");
+            return;
+        }
         
         actualizarFecha();
         
         try {
             await recargarDatos();
             
-            // Configurar intervalo de actualización (cada 30 segundos)
             if (intervaloActualizacion) {
                 clearInterval(intervaloActualizacion);
             }
@@ -1613,20 +1511,17 @@
         }
     }
 
-    // Manejar visibilidad de la página
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible' && usuario) {
             recargarDatos();
         }
     });
 
-    // Manejar errores no capturados
     window.addEventListener('error', (event) => {
         console.error('Error global:', event.error);
         mostrarToast('Error', 'Ocurrió un error inesperado', 'error');
     });
 
-    // Iniciar cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', inicializar);
     } else {
