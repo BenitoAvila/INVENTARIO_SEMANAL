@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Login Inventario Eurofert</title>
+<title>SISTEMA BENITO AVILA</title>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -216,7 +216,7 @@ button.loading::after{
 <body>
 
 <div class="card">
-<h2>🔐 EUROFERT</h2>
+<h2>🔐 SISTEMA BENITO AVILA</h2>
 
 <div class="input-group">
     <label>Usuario</label>
@@ -236,7 +236,7 @@ button.loading::after{
 <div id="mensaje"></div>
 
 <div class="footer">
-    © 2024 Eurofert Inventory System<br>
+    © 2026 ControlStock BA<br>
     <small>v2.0</small>
 </div>
 </div>
@@ -411,7 +411,7 @@ async function login() {
         localStorage.setItem("rol", data.rol);
         localStorage.setItem("ultimoAcceso", new Date().toISOString());
         
-        mostrarMensaje("✅ acceso correcto! Redirigiendo...", "success");
+        mostrarMensaje("✅ acceso correcto!", "success");
         
         // Redirigir según rol
         setTimeout(() => {

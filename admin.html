@@ -395,10 +395,29 @@
             display: inline-block;
         }
 
-        .badge-success { background: var(--success); }
-        .badge-warning { background: var(--warning); }
-        .badge-danger { background: var(--danger); }
-        .badge-primary { background: var(--primary); }
+        .badge-success { 
+            background: var(--success); 
+            color: var(--white);
+        }
+        
+        .badge-warning { 
+            background: var(--warning); 
+            color: var(--white);
+        }
+        
+        .badge-danger { 
+            background: var(--danger); 
+            color: var(--white);
+        }
+        
+        .badge-primary { 
+            background: var(--primary); 
+            color: var(--white);
+        }
+
+        .badge-success i, .badge-warning i {
+            margin-right: 4px;
+        }
 
         /* ===== DASHBOARD ===== */
         .dashboard-grid {
@@ -948,8 +967,7 @@
         `).join('');
     }
 
-        
-        function verNotificacion(id) {
+    function verNotificacion(id) {
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
             notificacion.leida = true;
@@ -1366,12 +1384,18 @@
         }
     }
 
+    // ============================================
+    // ASIGNACIONES CON ESTADO (MODIFICADA)
+    // ============================================
     async function cargarAsignacionesHoy() {
         let container = document.getElementById("asignacionesHoy");
         container.innerHTML = "<p class='text-center'>Cargando asignaciones...</p>";
 
         try {
             let fechaHoy = new Date().toISOString().split("T")[0];
+            let mesActual = new Date().toISOString().substring(0, 7);
+            
+            // Obtener asignaciones de hoy
             let snapshot = await db.ref("asignaciones/" + fechaHoy).once("value");
             
             if (!snapshot.exists()) {
@@ -1379,20 +1403,49 @@
                 return;
             }
 
+            // Obtener todos los inventarios de hoy para saber qué se ha respondido
+            let inventariosHoy = new Set();
+            let inventariosSnap = await db.ref("inventario/" + mesActual)
+                .orderByChild("fecha")
+                .once("value");
+                
+            inventariosSnap.forEach(child => {
+                let inv = child.val();
+                let fechaInv = inv.fecha.split("T")[0];
+                if (fechaInv === fechaHoy) {
+                    // Guardamos combinación único de usuario+producto
+                    inventariosHoy.add(`${inv.nombre}_${inv.productoId}`);
+                }
+            });
+
             let asignaciones = [];
             
             snapshot.forEach(userSnap => {
                 let usuario = userSnap.key;
                 userSnap.forEach(prodSnap => {
                     let data = prodSnap.val();
+                    let productoId = prodSnap.key;
+                    
+                    // Verificar si esta asignación ya fue respondida
+                    let keyRespuesta = `${usuario}_${productoId}`;
+                    let respondida = inventariosHoy.has(keyRespuesta);
+                    
                     asignaciones.push({
                         usuario: usuario,
                         producto: data.nombreProducto,
                         stock: data.stockSistema,
                         multiples: data.permitirMultiples ? 'Sí' : 'No',
-                        productoId: prodSnap.key
+                        productoId: productoId,
+                        respondida: respondida,
+                        fechaAsignacion: data.fechaAsignacion
                     });
                 });
+            });
+
+            // Ordenar: primero las pendientes, luego las respondidas
+            asignaciones.sort((a, b) => {
+                if (a.respondida === b.respondida) return 0;
+                return a.respondida ? 1 : -1; // Pendientes primero
             });
 
             let html = `<table>
@@ -1402,17 +1455,27 @@
                         <th>Producto</th>
                         <th>Stock</th>
                         <th>Múltiples</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>`;
             
             asignaciones.forEach(a => {
+                let estadoClass = a.respondida ? 'badge-success' : 'badge-warning';
+                let estadoTexto = a.respondida ? '✓ RESPONDIDA' : '⏳ PENDIENTE';
+                let icono = a.respondida ? 'fa-check-circle' : 'fa-clock';
+                
                 html += `<tr>
                     <td><strong>${a.usuario}</strong></td>
                     <td>${a.producto}</td>
                     <td><span class="badge badge-primary">${a.stock}</span></td>
                     <td>${a.multiples}</td>
+                    <td>
+                        <span class="badge ${estadoClass}">
+                            <i class="fas ${icono}"></i> ${estadoTexto}
+                        </span>
+                    </td>
                     <td>
                         <button class="btn btn-danger" onclick="eliminarAsignacion('${fechaHoy}','${a.usuario}','${a.productoId}')" style="padding:5px 10px;">
                             <i class="fas fa-trash"></i>
@@ -1473,7 +1536,7 @@
         }
     }
 
-        async function cargarInventario() {
+    async function cargarInventario() {
         let fechaInicio = document.getElementById("fechaInicio").value;
         let fechaFin = document.getElementById("fechaFin").value;
         let filtroUsuario = document.getElementById("filtroUsuario").value;
