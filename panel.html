@@ -70,6 +70,9 @@
             box-shadow: var(--shadow);
             border-bottom: 3px solid var(--primary);
             animation: fadeIn 0.5s ease;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .logo {
@@ -278,6 +281,15 @@
             color: var(--primary);
             font-size: 24px;
             margin-left: 10px;
+        }
+
+        .no-results {
+            padding: 15px;
+            text-align: center;
+            color: var(--light);
+            background: rgba(255,255,255,0.05);
+            border-radius: var(--border-radius-sm);
+            margin-top: 10px;
         }
 
         .conteo-grid {
@@ -522,6 +534,10 @@
                 <option value="">Cargando productos...</option>
             </select>
 
+            <div id="noResultados" class="no-results" style="display: none;">
+                <i class="fas fa-search"></i> No se encontraron productos
+            </div>
+
             <div id="sinPendientes" class="mensaje-completado" style="display: none;">
                 <i class="fas fa-check-circle"></i>
                 <h4>¡Todos los productos completados!</h4>
@@ -629,46 +645,83 @@
     // ============================================
     // VARIABLES GLOBALES
     // ============================================
-    let usuario = localStorage.getItem("usuario");
-    let rol = localStorage.getItem("rol");
-    let fechaHoy = new Date().toISOString().split("T")[0];
-    let mesActual = new Date().toISOString().substring(0, 7);
+    let usuario = null;
+    let rol = null;
+    let fechaHoy = null;
+    let mesActual = null;
     let productoSeleccionado = null;
     let productosPendientes = [];
     let productosEnviadosHoy = new Set();
 
     // ============================================
-    // VERIFICAR SESIÓN
+    // VERIFICAR SESIÓN - CORREGIDO
     // ============================================
-    if (!usuario) {
-        alert("Debe iniciar sesión");
-        window.location.href = "index.html";
+    function verificarSesion() {
+        try {
+            usuario = localStorage.getItem("usuario");
+            rol = localStorage.getItem("rol");
+            
+            console.log("Verificando sesión - Usuario:", usuario, "Rol:", rol);
+            
+            if (!usuario) {
+                console.log("No hay usuario, redirigiendo a login");
+                mostrarToast('Sesión expirada', 'Por favor, inicie sesión nuevamente', 'error');
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 2000);
+                return false;
+            }
+            
+            // Si es admin, redirigir a admin.html
+            if (rol === "admin") {
+                console.log("Usuario es admin, redirigiendo a admin.html");
+                window.location.href = "admin.html";
+                return false;
+            }
+            
+            // Actualizar fechas
+            fechaHoy = new Date().toISOString().split("T")[0];
+            mesActual = new Date().toISOString().substring(0, 7);
+            
+            // Mostrar nombre de usuario
+            document.getElementById('userName').textContent = usuario;
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('fechaActual').textContent = new Date().toLocaleDateString();
+            
+            return true;
+            
+        } catch (error) {
+            console.error("Error verificando sesión:", error);
+            return false;
+        }
     }
 
-    if (rol === "admin") {
-        window.location.href = "admin.html";
+    // Verificar sesión al cargar
+    if (!verificarSesion()) {
+        // Si la verificación falla, no continuar
+        throw new Error("Verificación de sesión fallida");
     }
-
-    document.getElementById('userName').textContent = usuario;
-    document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-    document.getElementById('fechaActual').textContent = new Date().toLocaleDateString();
 
     // ============================================
     // FUNCIONES DE UTILIDAD
     // ============================================
     function mostrarLoading(mostrar) {
-        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
+        let overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
     }
 
     function mostrarToast(titulo, mensaje, tipo = 'success') {
         let container = document.getElementById('toastContainer');
+        if (!container) return;
+        
         let toastId = 'toast_' + Date.now();
         
         let toast = document.createElement('div');
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
         
-        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        let icono = tipo === 'success' ? 'fa-check-circle' : 
+                    tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
         
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
@@ -682,6 +735,7 @@
         `;
         
         container.appendChild(toast);
+        
         setTimeout(() => {
             let elemento = document.getElementById(toastId);
             if (elemento) elemento.remove();
@@ -701,9 +755,21 @@
         
         if (productoSeleccionado) {
             let diferencia = total - productoSeleccionado.stock;
-            document.getElementById("comparacionStock").innerHTML = 
-                diferencia === 0 ? '✓ Cuadra exactamente' : 
-                diferencia > 0 ? `⚠ Sobrante: +${diferencia}` : `❌ Faltante: ${diferencia}`;
+            let comparacion = document.getElementById("comparacionStock");
+            
+            if (diferencia === 0) {
+                comparacion.innerHTML = '✓ Cuadra exactamente';
+                comparacion.style.color = 'var(--success)';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--success), var(--primary))';
+            } else if (diferencia > 0) {
+                comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
+                comparacion.style.color = 'var(--warning)';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), var(--warning-dark))';
+            } else {
+                comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
+                comparacion.style.color = 'var(--danger)';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), var(--danger-dark))';
+            }
         }
         
         return total;
@@ -711,33 +777,70 @@
 
     function cambiarProducto() {
         let select = document.getElementById("productoSelect");
+        if (!select) return;
+        
         let selectedOption = select.options[select.selectedIndex];
         
         if (selectedOption && selectedOption.value) {
-            productoSeleccionado = {
-                id: selectedOption.value,
-                nombre: selectedOption.getAttribute("data-nombre"),
-                stock: parseInt(selectedOption.getAttribute("data-stock"))
-            };
+            let nombre = selectedOption.getAttribute("data-nombre");
+            let stock = selectedOption.getAttribute("data-stock");
+            let productoId = selectedOption.value;
             
-            document.getElementById("productoNombre").textContent = productoSeleccionado.nombre;
-            document.getElementById("productoStock").textContent = productoSeleccionado.stock;
+            document.getElementById("productoNombre").textContent = nombre;
+            document.getElementById("productoStock").textContent = stock;
             document.getElementById("productoInfo").style.display = "flex";
+            
+            productoSeleccionado = {
+                id: productoId,
+                nombre: nombre,
+                stock: parseInt(stock)
+            };
             
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
             calcularTotal();
+        } else {
+            document.getElementById("productoInfo").style.display = "none";
+            productoSeleccionado = null;
         }
     }
 
+    // ============================================
+    // FILTRO DE PRODUCTOS MEJORADO
+    // ============================================
     function filtrarProductos() {
         let filtro = document.getElementById("buscadorProducto").value.toLowerCase();
         let select = document.getElementById("productoSelect");
+        let noResultados = document.getElementById("noResultados");
         
+        if (!select) return;
+        
+        let visibles = 0;
         for (let i = 1; i < select.options.length; i++) {
             let option = select.options[i];
-            option.style.display = option.text.toLowerCase().includes(filtro) ? "" : "none";
+            let texto = option.text.toLowerCase();
+            if (texto.includes(filtro)) {
+                option.style.display = "";
+                visibles++;
+            } else {
+                option.style.display = "none";
+            }
+        }
+        
+        if (noResultados) {
+            noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
+        }
+        
+        // Auto-seleccionar si solo queda un resultado
+        if (visibles === 1 && filtro !== "") {
+            for (let i = 1; i < select.options.length; i++) {
+                if (select.options[i].style.display !== "none") {
+                    select.selectedIndex = i;
+                    cambiarProducto();
+                    break;
+                }
+            }
         }
     }
 
@@ -745,29 +848,37 @@
     // CARGAR PRODUCTOS ASIGNADOS
     // ============================================
     async function cargarProductosAsignados() {
+        if (!db || !usuario) {
+            console.log("No hay db o usuario");
+            return;
+        }
+
         mostrarLoading(true);
         
         try {
             console.log("Cargando asignaciones para:", usuario, "fecha:", fechaHoy);
             
-            // Obtener asignaciones
             const asignacionesSnap = await db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value");
             
             let select = document.getElementById("productoSelect");
             let sinPendientes = document.getElementById("sinPendientes");
+            let buscador = document.getElementById("buscadorProducto");
+            let noResultados = document.getElementById("noResultados");
+            
+            if (!select) return;
             
             select.innerHTML = "<option value=''>Seleccione un producto...</option>";
             productosPendientes = [];
 
             if (!asignacionesSnap.exists()) {
                 console.log("No hay asignaciones para hoy");
-                sinPendientes.style.display = "block";
-                select.style.display = "none";
-                document.getElementById("buscadorProducto").style.display = "none";
+                if (sinPendientes) sinPendientes.style.display = "block";
+                if (select) select.style.display = "none";
+                if (buscador) buscador.style.display = "none";
+                if (noResultados) noResultados.style.display = "none";
                 return;
             }
 
-            // Obtener productos ya enviados hoy
             const enviosSnap = await db.ref("inventario/" + mesActual)
                 .orderByChild("nombre")
                 .equalTo(usuario)
@@ -786,43 +897,49 @@
             
             console.log("Productos asignados:", productosIds);
 
-            // Cargar cada producto
             for (let productoId of productosIds) {
-                let prodSnap = await db.ref("productos/" + productoId).once("value");
-                if (prodSnap.exists()) {
-                    let data = prodSnap.val();
-                    let asignacion = asignaciones[productoId];
-                    let stock = asignacion.stockSistema || data.sistema;
-                    
-                    if (!productosEnviadosHoy.has(productoId)) {
-                        let option = document.createElement("option");
-                        option.value = productoId;
-                        option.textContent = `${data.nombre} (Stock: ${stock})`;
-                        option.setAttribute("data-nombre", data.nombre);
-                        option.setAttribute("data-stock", stock);
-                        select.appendChild(option);
+                try {
+                    let prodSnap = await db.ref("productos/" + productoId).once("value");
+                    if (prodSnap.exists()) {
+                        let data = prodSnap.val();
+                        let asignacion = asignaciones[productoId];
+                        let stock = asignacion.stockSistema || data.sistema;
                         
-                        productosPendientes.push({
-                            id: productoId,
-                            nombre: data.nombre,
-                            stock: stock
-                        });
+                        if (!productosEnviadosHoy.has(productoId)) {
+                            let option = document.createElement("option");
+                            option.value = productoId;
+                            option.textContent = `${data.nombre} (Stock: ${stock})`;
+                            option.setAttribute("data-nombre", data.nombre);
+                            option.setAttribute("data-stock", stock);
+                            select.appendChild(option);
+                            
+                            productosPendientes.push({
+                                id: productoId,
+                                nombre: data.nombre,
+                                stock: stock
+                            });
+                        }
                     }
+                } catch (error) {
+                    console.error("Error cargando producto:", productoId, error);
                 }
             }
 
             if (productosPendientes.length === 0) {
-                sinPendientes.style.display = "block";
-                select.style.display = "none";
-                document.getElementById("buscadorProducto").style.display = "none";
+                if (sinPendientes) sinPendientes.style.display = "block";
+                if (select) select.style.display = "none";
+                if (buscador) buscador.style.display = "none";
+                if (noResultados) noResultados.style.display = "none";
             } else {
-                sinPendientes.style.display = "none";
-                select.style.display = "block";
-                document.getElementById("buscadorProducto").style.display = "block";
+                if (sinPendientes) sinPendientes.style.display = "none";
+                if (select) select.style.display = "block";
+                if (buscador) buscador.style.display = "block";
                 
                 // Seleccionar primer producto
-                select.selectedIndex = 1;
-                cambiarProducto();
+                if (select.options.length > 1) {
+                    select.selectedIndex = 1;
+                    cambiarProducto();
+                }
             }
             
         } catch (error) {
@@ -837,6 +954,8 @@
     // CARGAR DASHBOARD
     // ============================================
     async function cargarDashboard() {
+        if (!db || !usuario) return;
+        
         try {
             const [asignacionesSnap, enviosSnap] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
@@ -880,7 +999,10 @@
     // CARGAR PENDIENTES
     // ============================================
     async function cargarPendientes() {
+        if (!db || !usuario) return;
+        
         let container = document.getElementById("pendientesContainer");
+        if (!container) return;
         
         try {
             const [asignacionesSnap, enviosSnap] = await Promise.all([
@@ -905,13 +1027,17 @@
             let asignaciones = asignacionesSnap.val();
             
             for (let productoId in asignaciones) {
-                let prodSnap = await db.ref("productos/" + productoId).once("value");
-                if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
-                    let data = prodSnap.val();
-                    pendientes.push({
-                        nombre: data.nombre,
-                        stock: asignaciones[productoId].stockSistema || data.sistema
-                    });
+                try {
+                    let prodSnap = await db.ref("productos/" + productoId).once("value");
+                    if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
+                        let data = prodSnap.val();
+                        pendientes.push({
+                            nombre: data.nombre,
+                            stock: asignaciones[productoId].stockSistema || data.sistema
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error cargando producto:", productoId, error);
                 }
             }
 
@@ -929,6 +1055,7 @@
             
         } catch (error) {
             console.error("Error cargando pendientes:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando datos</p>";
         }
     }
 
@@ -936,7 +1063,10 @@
     // CARGAR HISTORIAL
     // ============================================
     async function cargarHistorial() {
+        if (!db || !usuario) return;
+        
         let container = document.getElementById("historialContainer");
+        if (!container) return;
         
         try {
             let meses = [];
@@ -949,22 +1079,26 @@
             let todosEnvios = [];
             
             for (let mes of meses) {
-                let snapshot = await db.ref("inventario/" + mes)
-                    .orderByChild("nombre")
-                    .equalTo(usuario)
-                    .once("value");
-                
-                snapshot.forEach(child => {
-                    let envio = child.val();
-                    todosEnvios.push({
-                        fecha: new Date(envio.fecha).toLocaleDateString(),
-                        producto: envio.producto,
-                        sistema: envio.sistema,
-                        fisico: envio.fisico,
-                        muestras: envio.muestras,
-                        caducados: envio.caducados
+                try {
+                    let snapshot = await db.ref("inventario/" + mes)
+                        .orderByChild("nombre")
+                        .equalTo(usuario)
+                        .once("value");
+                    
+                    snapshot.forEach(child => {
+                        let envio = child.val();
+                        todosEnvios.push({
+                            fecha: new Date(envio.fecha).toLocaleDateString(),
+                            producto: envio.producto,
+                            sistema: envio.sistema,
+                            fisico: envio.fisico,
+                            muestras: envio.muestras,
+                            caducados: envio.caducados
+                        });
                     });
-                });
+                } catch (error) {
+                    console.error("Error cargando mes:", mes, error);
+                }
             }
 
             todosEnvios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -991,13 +1125,19 @@
             
         } catch (error) {
             console.error("Error cargando historial:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando historial</p>";
         }
     }
 
     // ============================================
-    // ENVIAR INVENTARIO
+    // ENVIAR INVENTARIO - MEJORADO
     // ============================================
     async function enviarInventario() {
+        if (!db || !usuario) {
+            mostrarToast('Error', 'Sesión no válida', 'error');
+            return;
+        }
+
         if (!productoSeleccionado) {
             mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
@@ -1009,15 +1149,29 @@
         let total = fisico + muestras + caducados;
 
         // Verificar si permite múltiples
-        let asignacionSnap = await db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoSeleccionado.id}`).once("value");
-        let permitirMultiples = asignacionSnap.val()?.permitirMultiples || false;
+        let asignacionSnap;
+        try {
+            asignacionSnap = await db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoSeleccionado.id}`).once("value");
+        } catch (error) {
+            console.error("Error verificando asignación:", error);
+        }
+        let permitirMultiples = asignacionSnap?.val()?.permitirMultiples || false;
 
         if (total !== productoSeleccionado.stock && !permitirMultiples) {
-            if (!confirm(`El total no coincide. ¿Continuar?`)) return;
+            let diferencia = total - productoSeleccionado.stock;
+            let mensaje = `⚠ El total (${total}) no coincide con el stock (${productoSeleccionado.stock}).\n`;
+            mensaje += diferencia > 0 ? `Sobrante: +${diferencia}` : `Faltante: ${diferencia}`;
+            mensaje += `\n\n¿Desea continuar de todas formas?`;
+            
+            if (!confirm(mensaje)) return;
         }
 
         mostrarLoading(true);
-        document.getElementById("btnEnviar").disabled = true;
+        let btnEnviar = document.getElementById("btnEnviar");
+        if (btnEnviar) {
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        }
 
         try {
             await db.ref("inventario/" + mesActual).push({
@@ -1042,17 +1196,24 @@
                 cargarHistorial()
             ]);
             
+            // Limpiar campos
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
+            let buscador = document.getElementById("buscadorProducto");
+            if (buscador) buscador.value = "";
             calcularTotal();
+            filtrarProductos();
             
         } catch (error) {
             console.error("Error:", error);
             mostrarToast('Error', 'Error al enviar', 'error');
         } finally {
             mostrarLoading(false);
-            document.getElementById("btnEnviar").disabled = false;
+            if (btnEnviar) {
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
+            }
         }
     }
 
@@ -1060,23 +1221,37 @@
     // CERRAR SESIÓN
     // ============================================
     function cerrarSesion() {
-        localStorage.clear();
-        window.location.href = "index.html";
+        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
+        setTimeout(() => {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }, 1000);
     }
 
     // ============================================
     // INICIALIZACIÓN
     // ============================================
     async function inicializar() {
-        await Promise.all([
-            cargarProductosAsignados(),
-            cargarDashboard(),
-            cargarPendientes(),
-            cargarHistorial()
-        ]);
+        try {
+            await Promise.all([
+                cargarProductosAsignados(),
+                cargarDashboard(),
+                cargarPendientes(),
+                cargarHistorial()
+            ]);
+            console.log("Inicialización completada");
+        } catch (error) {
+            console.error("Error en inicialización:", error);
+            mostrarToast('Error', 'Error al cargar datos', 'error');
+        }
     }
 
-    inicializar();
+    // Iniciar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', inicializar);
+    } else {
+        inicializar();
+    }
 </script>
 
 </body>
