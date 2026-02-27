@@ -1153,31 +1153,29 @@
 
     function inicializarNotificaciones() {
         // primero cargamos lo que haya en localStorage para mostrar rápido
+        // localStorage es la fuente de verdad al iniciar
         cargarNotificacionesGuardadas();
         
-        // suscripción a la rama global de notificaciones en la base de datos
-        db.ref("notificaciones").orderByChild("timestamp").limitToLast(50)
-          .on("child_added", (snapshot) => {
-              let n = snapshot.val();
-              if (!n || !n.id) return;
-              // ignorar si alguien ya la marcó como leída o fue eliminada
-              if (n.leida) {
-                  // eliminarla de la base por si quedó colgada
-                  db.ref('notificaciones/' + n.id).remove().catch(() => {});
-                  return;
-              }
-              // siempre mantenemos el array con los más recientes al principio
-              if (!notificaciones.some(x => x.id === n.id)) {
-                  notificaciones.unshift(n);
-                  notificacionesNoLeidas++;
-                  // limpiar exceso
-                  if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
-                  localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-                  actualizarBadgeNotificaciones();
-                  mostrarNotificaciones();
-                  ringBell();
-              }
-          });
+        if (!db) return;
+        
+        // escuchar SOLO nuevas notificaciones NO LEÍDAS que se creen después (child_added en prospectiva)
+        // limitamos a los últimos 1 para evitar cargar todo el historial
+        let listener = db.ref("notificaciones")
+              .orderByChild("timestamp")
+              .limitToLast(1)
+              .on("child_added", (snapshot) => {
+                  let n = snapshot.val();
+                  if (!n || !n.id || n.leida) return; // ignorar las ya leídas
+                  if (!notificaciones.some(x => x.id === n.id)) {
+                      notificaciones.unshift(n);
+                      notificacionesNoLeidas++;
+                      if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
+                      localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+                      actualizarBadgeNotificaciones();
+                      mostrarNotificaciones();
+                      ringBell();
+                  }
+              });
         
         // seguir también escuchando nuevos inventarios para crear notificación automática
         let mesActual = new Date().toISOString().substring(0, 7);
@@ -1253,9 +1251,9 @@
 
         if (guardarEnDB && db) {
             try {
-                let ref = db.ref('notificaciones').push();
-                let copy = { ...notificacion, id: ref.key };
-                ref.set(copy);
+                // usar directamente el ID de la notificación, no push() que genera otro ID
+                db.ref('notificaciones/' + notificacion.id).set(notificacion)
+                  .catch(e => console.error('Error guardando notificación en DB', e));
             } catch (e) {
                 console.error('Error guardando notificación en DB', e);
             }
@@ -1270,28 +1268,33 @@
     }
 
     function marcarTodasLeidas() {
-        notificaciones = [];
-        notificacionesNoLeidas = 0;
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-        actualizarBadgeNotificaciones();
-        mostrarNotificaciones();
+        // marcar todas como leídas en la base de datos
+        // usar Promise.all para esperar a que todas terminen
+        let promesas = notificaciones.map(n => 
+            db.ref('notificaciones/' + n.id).update({ leida: true }).catch(e => console.error(e))
+        );
+        Promise.all(promesas).then(() => {
+            // solo entonces vaciar el array local
+            notificaciones = [];
+            notificacionesNoLeidas = 0;
+            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+            actualizarBadgeNotificaciones();
+            mostrarNotificaciones();
+        });
     }
 
     function cargarNotificacionesGuardadas() {
         try {
+            // localStorage es la fuente de verdad al iniciar
             let guardadas = localStorage.getItem('notificaciones');
             if (guardadas) {
-                notificaciones = JSON.parse(guardadas);
-                // eliminar cualquier notificación ya leída para que no vuelvan a mostrarse
-                notificaciones.forEach(n => {
-                    if (n.leida && db) {
-                        db.ref('notificaciones/' + n.id).remove().catch(() => {});
-                    }
-                });
-                notificaciones = notificaciones.filter(n => !n.leida);
+                let todas = JSON.parse(guardadas);
+                // mantener solo las no leídas
+                notificaciones = todas.filter(n => !n.leida);
                 notificacionesNoLeidas = notificaciones.length;
                 localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
                 actualizarBadgeNotificaciones();
+                mostrarNotificaciones();
             }
         } catch (error) {
             console.error("Error cargando notificaciones:", error);
@@ -1363,22 +1366,36 @@
     function eliminarNotificacion(id, event) {
         // evitar que el clic en la 'x' abra la notificación
         if (event) event.stopPropagation();
+        
+        // quitar del array local inmediatamente
         notificaciones = notificaciones.filter(n => n.id !== id);
         notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
         localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-        // también eliminamos de la base de datos para que no reaparezca
-        if (db) {
-            db.ref('notificaciones/' + id).remove().catch(e => console.error(e));
-        }
+        
+        // actualizar UI inmediatamente
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
+        
+        // marcar como leída en la base de datos (operación asincrona, sin esperar)
+        if (db) {
+            db.ref('notificaciones/' + id).update({ leida: true })
+              .catch(e => console.error('Error marcando como leída:', e));
+        }
     }
     function verNotificacion(id) {
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
-            notificacion.leida = true;
-            // una vez marcada como leída la quitamos del array para que no vuelva a aparecer
-            eliminarNotificacion(id);
+            // marcar como leída en la base de datos
+            if (db) {
+                db.ref('notificaciones/' + id).update({ leida: true })
+                  .catch(e => console.error('Error marcando como leída:', e));
+            }
+            // quitar del array local
+            notificaciones = notificaciones.filter(n => n.id !== id);
+            notificacionesNoLeidas = Math.max(0, notificacionesNoLeidas - 1);
+            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+            actualizarBadgeNotificaciones();
+            mostrarNotificaciones();
             
             let dropdown = document.getElementById("notificationDropdown");
             if (dropdown) dropdown.style.display = "none";
@@ -1595,15 +1612,6 @@
         }
     }
 
-    function marcarTodasLeidas() {
-        // descartamos completamente todas las notificaciones para que no reaparezcan
-        notificaciones = [];
-        notificacionesNoLeidas = 0;
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-        actualizarBadgeNotificaciones();
-        mostrarNotificaciones();
-        mostrarToast('Éxito', 'Todas las notificaciones se han eliminado', 'success');
-    }
 
     function actualizarBadgeNotificaciones() {
         let badge = document.getElementById("notificationCount");
