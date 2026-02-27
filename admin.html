@@ -199,7 +199,6 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* bell animation */
         @keyframes shake {
             0% { transform: rotate(0); }
             25% { transform: rotate(15deg); }
@@ -218,22 +217,12 @@
             gap: 8px;
         }
 
-        .mark-read {
-            font-size: 12px;
-            color: var(--primary-light);
-            cursor: pointer;
-        }
-
-        .mark-read:hover {
-            text-decoration: underline;
-        }
-
         .notification-item {
             padding: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             transition: background 0.3s, transform 0.2s;
             cursor: pointer;
-            position: relative; /* allow delete icon positioning */
+            position: relative;
             border-radius: var(--border-radius-sm);
             background: rgba(255,255,255,0.03);
         }
@@ -245,10 +234,6 @@
         .notification-item:hover {
             background: rgba(255,255,255,0.1);
             transform: translateX(3px);
-        }
-
-        .notification-item:hover {
-            background: rgba(255,255,255,0.05);
         }
 
         .notification-item.unread {
@@ -263,7 +248,6 @@
             margin-top: 5px;
         }
 
-        /* delete button shown on read notifications */
         .delete-notification {
             position: absolute;
             top: 8px;
@@ -499,10 +483,6 @@
             color: var(--white);
         }
 
-        .badge-success i, .badge-warning i {
-            margin-right: 4px;
-        }
-
         /* ===== DASHBOARD MEJORADO ===== */
         .dashboard-grid {
             display: grid;
@@ -554,7 +534,6 @@
             margin-top: 5px;
         }
 
-        /* Estilos para gráficos */
         .graficos-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -587,7 +566,6 @@
             width: 100% !important;
         }
 
-        /* Resumen cards */
         .resumen-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -716,14 +694,12 @@
             margin: 5px 0;
         }
 
-        /* ===== ACCIONES ===== */
         .acciones-cell {
             display: flex;
             gap: 5px;
             flex-wrap: wrap;
         }
 
-        /* ===== SECCIONES ===== */
         .seccion {
             display: none;
         }
@@ -732,7 +708,6 @@
             display: block;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -765,28 +740,21 @@
 <body>
 
 <div class="container">
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Modal para opciones de eliminación -->
     <div class="modal" id="modalOpcionesEliminar">
         <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-trash" style="color: var(--danger);"></i> Gestionar Respuesta</h3>
                 <span class="modal-close" onclick="cerrarModalOpciones()">&times;</span>
             </div>
-            <div class="modal-body" id="modalOpcionesContenido">
-                <!-- Contenido dinámico -->
-            </div>
+            <div class="modal-body" id="modalOpcionesContenido"></div>
         </div>
     </div>
 
-    <!-- Header con Notificaciones -->
     <div class="header">
         <div class="logo">
             <i class="fas fa-crown"></i>
@@ -794,13 +762,11 @@
             <span class="logo-badge">ADMIN</span>
         </div>
         <div class="user-info">
-            <!-- Sistema de Notificaciones -->
             <div class="notification-bell" onclick="toggleNotifications()">
                 <i class="fas fa-bell"></i>
                 <span class="notification-badge" id="notificationCount">0</span>
             </div>
             
-            <!-- Dropdown de Notificaciones -->
             <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-header">
                     <h4><i class="fas fa-bell"></i> Notificaciones</h4>
@@ -824,7 +790,6 @@
         </div>
     </div>
 
-    <!-- Menú Principal -->
     <div class="menu-grid">
         <div class="menu-card" onclick="mostrarSeccion('dashboard')">
             <div class="menu-icon"><i class="fas fa-chart-pie"></i></div>
@@ -848,9 +813,7 @@
         </div>
     </div>
 
-    <!-- DASHBOARD MEJORADO -->
     <div id="seccion-dashboard" style="display: none;">
-        <!-- Cards de resumen con tendencias -->
         <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
@@ -886,7 +849,6 @@
             </div>
         </div>
 
-        <!-- Gráficos -->
         <div class="graficos-container">
             <div class="grafico-card">
                 <h4>
@@ -904,7 +866,6 @@
             </div>
         </div>
 
-        <!-- Tablas de resumen -->
         <div class="resumen-grid">
             <div class="card">
                 <h4 style="margin-bottom: 15px; color: var(--light);">
@@ -923,7 +884,6 @@
         </div>
     </div>
 
-    <!-- USUARIOS -->
     <div id="seccion-usuarios" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-user-plus"></i> Crear Usuario</h3>
@@ -952,7 +912,6 @@
         <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- PRODUCTOS -->
     <div id="seccion-productos" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-box"></i> Crear Producto</h3>
@@ -986,7 +945,6 @@
         <div id="listaProductos" class="table-container"></div>
     </div>
 
-    <!-- ASIGNACIONES -->
     <div id="seccion-asignaciones" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-calendar-alt"></i> Asignar Producto</h3>
@@ -1026,7 +984,6 @@
         <div id="asignacionesHoy" class="table-container"></div>
     </div>
 
-    <!-- INVENTARIO -->
     <div id="seccion-inventario" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-search"></i> Consultar Inventario</h3>
@@ -1076,7 +1033,6 @@
         appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
     };
 
-    // Inicializar Firebase
     let db;
     try {
         if (!firebase.apps.length) {
@@ -1095,7 +1051,11 @@
     let todosLosRegistros = [];
     let graficoInventarios = null;
     let graficoTopProductos = null;
-    let respuestaSeleccionada = null; // Para el modal de opciones
+    let respuestaSeleccionada = null;
+    
+    // Variables de notificaciones
+    let notificaciones = [];
+    let notificacionesNoLeidas = 0;
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -1147,54 +1107,62 @@
     // ============================================
     // SISTEMA DE NOTIFICACIONES MEJORADO
     // ============================================
-    let notificaciones = [];
-    let notificacionesNoLeidas = 0;
-    let ultimaNotificacionId = null;
-
+    
     function inicializarNotificaciones() {
-        // primero cargamos lo que haya en localStorage para mostrar rápido
-        // localStorage es la fuente de verdad al iniciar
+        // Primero cargar SOLO notificaciones NO LEÍDAS guardadas
         cargarNotificacionesGuardadas();
         
         if (!db) return;
         
-        // escuchar SOLO nuevas notificaciones NO LEÍDAS que se creen después (child_added en prospectiva)
-        // limitamos a los últimos 1 para evitar cargar todo el historial
+        // Marcar la última notificación procesada para evitar duplicados
+        let ultimaNotificacionProcesada = localStorage.getItem('ultimaNotificacionId') || '';
+        
+        // Escuchar SOLO notificaciones NUEVAS (después de la última conocida)
         let listener = db.ref("notificaciones")
-              .orderByChild("timestamp")
-              .limitToLast(1)
+              .orderByKey()
+              .startAfter(ultimaNotificacionProcesada)
               .on("child_added", (snapshot) => {
                   let n = snapshot.val();
-                  if (!n || !n.id || n.leida) return; // ignorar las ya leídas
-                  if (!notificaciones.some(x => x.id === n.id)) {
+                  if (!n) return;
+                  
+                  // Solo agregar si no existe ya y NO está leída
+                  if (!notificaciones.some(x => x.id === n.id) && !n.leida) {
                       notificaciones.unshift(n);
                       notificacionesNoLeidas++;
+                      
+                      // Guardar ID de última notificación
+                      localStorage.setItem('ultimaNotificacionId', n.id);
+                      
                       if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
-                      localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+                      
+                      // Guardar solo las NO LEÍDAS
+                      let noLeidas = notificaciones.filter(x => !x.leida);
+                      localStorage.setItem('notificaciones', JSON.stringify(noLeidas));
+                      
                       actualizarBadgeNotificaciones();
                       mostrarNotificaciones();
                       ringBell();
                   }
               });
         
-        // seguir también escuchando nuevos inventarios para crear notificación automática
+        // Escuchar nuevos inventarios para crear notificaciones automáticas (SOLO LOCALES)
         let mesActual = new Date().toISOString().substring(0, 7);
-        db.ref("inventario/" + mesActual).on("child_added", (snapshot) => {
-            let nuevoInventario = snapshot.val();
-            let notificacionId = snapshot.key;
-
-            if (ultimaNotificacionId === notificacionId) return;
-
-            let fecha = new Date(nuevoInventario.fecha);
-            let hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-
-            if (fecha >= hoy && notificacionId !== ultimaNotificacionId) {
-                ultimaNotificacionId = notificacionId;
-
-                let existe = notificaciones.some(n => n.id === notificacionId);
+        let fechaHoy = new Date().toISOString().split('T')[0];
+        
+        db.ref("inventario/" + mesActual)
+            .orderByChild("fecha")
+            .startAt(fechaHoy)
+            .on("child_added", (snapshot) => {
+                let nuevoInventario = snapshot.val();
+                let notificacionId = snapshot.key;
+                
+                // Verificar si ya existe esta notificación
+                let existe = notificaciones.some(n => n.id === notificacionId) || 
+                            localStorage.getItem('notificaciones_procesadas')?.includes(notificacionId);
+                
                 if (!existe) {
-                    crearNotificacion({
+                    // Crear notificación pero NO guardar en DB (solo local)
+                    crearNotificacionLocal({
                         id: notificacionId,
                         titulo: '📦 Nuevo inventario',
                         mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
@@ -1205,15 +1173,18 @@
                         muestras: nuevoInventario.muestras || 0,
                         caducados: nuevoInventario.caducados || 0,
                         fecha: nuevoInventario.fecha
-                    }, true); // indica que debe almacenarse en DB
+                    });
+                    
+                    // Registrar como procesada
+                    let procesadas = JSON.parse(localStorage.getItem('notificaciones_procesadas') || '[]');
+                    procesadas.push(notificacionId);
+                    if (procesadas.length > 100) procesadas.shift();
+                    localStorage.setItem('notificaciones_procesadas', JSON.stringify(procesadas));
                 }
-            }
-        });
+            });
     }
 
-    // el segundo parámetro (guardarEnDB) controlará si también escribimos la
-    // notificación en la base de datos para que sea accesible desde otros clientes
-    function crearNotificacion(datos, guardarEnDB = false) {
+    function crearNotificacionLocal(datos) {
         let notificacion = {
             id: datos.id || Date.now() + Math.random().toString(36).substr(2, 9),
             ...datos,
@@ -1235,29 +1206,61 @@
             notificaciones = notificaciones.slice(0, 50);
         }
         
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        // Guardar solo las NO LEÍDAS
+        let noLeidas = notificaciones.filter(n => !n.leida);
+        localStorage.setItem('notificaciones', JSON.stringify(noLeidas));
+        
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
         
         // animación y alerta
         ringBell();
         mostrarToast('Nueva notificación', datos.mensaje, 'info');
-        // si el dropdown está cerrado, abrirlo momentáneamente para llamar la atención
+        
+        // Mostrar dropdown momentáneamente
         let dropdown = document.getElementById('notificationDropdown');
         if (dropdown && dropdown.style.display !== 'block') {
             dropdown.style.display = 'block';
             setTimeout(() => { dropdown.style.display = 'none'; }, 4000);
         }
+    }
 
-        if (guardarEnDB && db) {
-            try {
-                // usar directamente el ID de la notificación, no push() que genera otro ID
-                db.ref('notificaciones/' + notificacion.id).set(notificacion)
-                  .catch(e => console.error('Error guardando notificación en DB', e));
-            } catch (e) {
-                console.error('Error guardando notificación en DB', e);
+    function cargarNotificacionesGuardadas() {
+        try {
+            // Cargar SOLO notificaciones NO LEÍDAS
+            let guardadas = localStorage.getItem('notificaciones');
+            if (guardadas) {
+                let todas = JSON.parse(guardadas);
+                // Filtrar para asegurar solo no leídas
+                notificaciones = todas.filter(n => !n.leida);
+                notificacionesNoLeidas = notificaciones.length;
+                
+                // Guardar de nuevo solo las no leídas
+                localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+                actualizarBadgeNotificaciones();
+                mostrarNotificaciones();
+            } else {
+                notificaciones = [];
+                notificacionesNoLeidas = 0;
             }
+        } catch (error) {
+            console.error("Error cargando notificaciones:", error);
+            notificaciones = [];
+            notificacionesNoLeidas = 0;
         }
+    }
+
+    function marcarTodasLeidas() {
+        // Marcar todas como leídas localmente
+        notificaciones = [];
+        notificacionesNoLeidas = 0;
+        
+        // Limpiar localStorage
+        localStorage.setItem('notificaciones', JSON.stringify([]));
+        localStorage.removeItem('ultimaNotificacionId');
+        
+        actualizarBadgeNotificaciones();
+        mostrarNotificaciones();
     }
 
     function ringBell() {
@@ -1265,40 +1268,6 @@
         if (!bell) return;
         bell.classList.add('ring');
         setTimeout(() => bell.classList.remove('ring'), 2000);
-    }
-
-    function marcarTodasLeidas() {
-        // marcar todas como leídas en la base de datos
-        // usar Promise.all para esperar a que todas terminen
-        let promesas = notificaciones.map(n => 
-            db.ref('notificaciones/' + n.id).update({ leida: true }).catch(e => console.error(e))
-        );
-        Promise.all(promesas).then(() => {
-            // solo entonces vaciar el array local
-            notificaciones = [];
-            notificacionesNoLeidas = 0;
-            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-            actualizarBadgeNotificaciones();
-            mostrarNotificaciones();
-        });
-    }
-
-    function cargarNotificacionesGuardadas() {
-        try {
-            // localStorage es la fuente de verdad al iniciar
-            let guardadas = localStorage.getItem('notificaciones');
-            if (guardadas) {
-                let todas = JSON.parse(guardadas);
-                // mantener solo las no leídas
-                notificaciones = todas.filter(n => !n.leida);
-                notificacionesNoLeidas = notificaciones.length;
-                localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-                actualizarBadgeNotificaciones();
-                mostrarNotificaciones();
-            }
-        } catch (error) {
-            console.error("Error cargando notificaciones:", error);
-        }
     }
 
     function toggleNotifications() {
@@ -1353,47 +1322,30 @@
                 ${n.leida ? `<span class="delete-notification" onclick="eliminarNotificacion('${n.id}', event)">✖</span>` : ''}
             </div>
         `).join('');
-        // añadir clase de entrada al primer elemento
+        
         let first = container.querySelector('.notification-item');
         if (first) first.classList.add('new');
     }
 
-    // ============================================
-    // FUNCIÓN MEJORADA PARA VER NOTIFICACIÓN
-    // ============================================
-
-    // eliminar notificación (solo la quita, ya sea leída o no)
     function eliminarNotificacion(id, event) {
-        // evitar que el clic en la 'x' abra la notificación
         if (event) event.stopPropagation();
         
-        // quitar del array local inmediatamente
         notificaciones = notificaciones.filter(n => n.id !== id);
         notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
-        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        localStorage.setItem('notificaciones', JSON.stringify(notificaciones.filter(n => !n.leida)));
         
-        // actualizar UI inmediatamente
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
-        
-        // marcar como leída en la base de datos (operación asincrona, sin esperar)
-        if (db) {
-            db.ref('notificaciones/' + id).update({ leida: true })
-              .catch(e => console.error('Error marcando como leída:', e));
-        }
     }
+
     function verNotificacion(id) {
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
-            // marcar como leída en la base de datos
-            if (db) {
-                db.ref('notificaciones/' + id).update({ leida: true })
-                  .catch(e => console.error('Error marcando como leída:', e));
-            }
-            // quitar del array local
+            // Eliminar del array local
             notificaciones = notificaciones.filter(n => n.id !== id);
             notificacionesNoLeidas = Math.max(0, notificacionesNoLeidas - 1);
-            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+            localStorage.setItem('notificaciones', JSON.stringify(notificaciones.filter(n => !n.leida)));
+            
             actualizarBadgeNotificaciones();
             mostrarNotificaciones();
             
@@ -1429,6 +1381,14 @@
         }
     }
 
+    function actualizarBadgeNotificaciones() {
+        let badge = document.getElementById("notificationCount");
+        if (badge) {
+            badge.textContent = notificacionesNoLeidas;
+            badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
+        }
+    }
+
     // ============================================
     // FUNCIÓN ESPECÍFICA PARA CARGAR INVENTARIO DESDE NOTIFICACIÓN
     // ============================================
@@ -1446,36 +1406,30 @@
             
             let fin = parseLocalDate(fechaFin);
             fin.setHours(23, 59, 59, 999);
-            // los límites se mantienen en horario local
 
             let registros = [];
             let encontrado = false;
 
-            // Determinar los meses a buscar (mes de la notificación y meses adyacentes)
+            // Determinar los meses a buscar
             let meses = [];
             let fechaNoti = new Date(notificacion.fecha);
             
-            // Mes de la notificación
             let añoNoti = fechaNoti.getFullYear();
             let mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
             meses.push(`${añoNoti}-${mesNoti}`);
             
-            // Mes anterior
             fechaNoti.setMonth(fechaNoti.getMonth() - 1);
             añoNoti = fechaNoti.getFullYear();
             mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
             meses.push(`${añoNoti}-${mesNoti}`);
             
-            // Mes siguiente
             fechaNoti.setMonth(fechaNoti.getMonth() + 2);
             añoNoti = fechaNoti.getFullYear();
             mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
             meses.push(`${añoNoti}-${mesNoti}`);
 
-            // Quitar duplicados
             meses = [...new Set(meses)];
 
-            // Buscar en cada mes
             for (let mes of meses) {
                 let snapshot = await db.ref("inventario/" + mes).once("value");
                 if (snapshot.exists()) {
@@ -1485,7 +1439,6 @@
                         
                         if (fechaReg >= inicio && fechaReg <= fin) {
                             if (!filtroUsuario || reg.nombre === filtroUsuario) {
-                                // Verificar si es la notificación específica
                                 if (child.key === notificacion.id || 
                                     (reg.nombre === notificacion.usuario && 
                                      reg.producto === notificacion.producto &&
@@ -1531,7 +1484,6 @@
                 return;
             }
 
-            // Mostrar los resultados
             let html = `<table>
                 <thead>
                     <tr>
@@ -1549,7 +1501,6 @@
                 </thead>
                 <tbody>`;
             
-            // Resaltar el registro de la notificación
             registros.forEach(r => {
                 let fecha = new Date(r.fecha).toLocaleString('es-ES', {
                     day: '2-digit',
@@ -1561,7 +1512,6 @@
                 let total = r.fisico + r.muestras + r.caducados;
                 let cuadra = total === r.sistema;
                 
-                // Verificar si este registro corresponde a la notificación
                 let esNotificacion = (r.key === notificacion.id) || 
                                     (r.nombre === notificacion.usuario && 
                                      r.producto === notificacion.producto &&
@@ -1569,7 +1519,6 @@
                 
                 let estiloFila = esNotificacion ? 'style="background: rgba(0,200,83,0.2); border-left: 4px solid var(--primary);"' : '';
                 
-                // Escapar caracteres especiales para el onclick
                 let respuestaJson = JSON.stringify(r).replace(/"/g, '&quot;');
                 
                 html += `<tr ${estiloFila}>
@@ -1593,7 +1542,6 @@
             });
             html += `</tbody></table>`;
             
-            // Agregar un mensaje si se encontró la notificación
             if (encontrado) {
                 html = `<div style="margin-bottom: 10px; padding: 10px; background: rgba(0,200,83,0.1); border-radius: 8px;">
                     <i class="fas fa-check-circle" style="color: var(--primary);"></i> 
@@ -1602,22 +1550,11 @@
             }
             
             cont.innerHTML = html;
-            
-            // Mostrar toast de éxito
             mostrarToast('Éxito', `Se encontraron ${registros.length} registros`, 'success');
             
         } catch (error) {
             console.error("Error cargando inventario desde notificación:", error);
             cont.innerHTML = "<p class='text-center text-danger'>Error cargando inventario</p>";
-        }
-    }
-
-
-    function actualizarBadgeNotificaciones() {
-        let badge = document.getElementById("notificationCount");
-        if (badge) {
-            badge.textContent = notificacionesNoLeidas;
-            badge.style.display = notificacionesNoLeidas > 0 ? "flex" : "none";
         }
     }
 
@@ -1639,7 +1576,6 @@
             if (seccion === 'inventario') {
                 configurarFechas();
                 cargarFiltrosUsuarios();
-                // No cargar inventario automáticamente, esperar a que el usuario busque
             }
         }
     }
@@ -1648,7 +1584,6 @@
     // FUNCIONES PARA GESTIONAR RESPUESTAS
     // ============================================
 
-    // Abrir modal con opciones para la respuesta
     function abrirModalOpciones(respuesta) {
         respuestaSeleccionada = respuesta;
         let modal = document.getElementById('modalOpcionesEliminar');
@@ -1691,7 +1626,6 @@
         respuestaSeleccionada = null;
     }
 
-    // Opción 1: Rehabilitar para nueva respuesta (elimina respuesta pero mantiene asignación)
     async function rehabilitarParaNuevaRespuesta() {
         if (!respuestaSeleccionada) {
             cerrarModalOpciones();
@@ -1703,11 +1637,9 @@
         try {
             let respuesta = respuestaSeleccionada;
             
-            // Eliminar solo la respuesta de inventario
             if (respuesta.mes && respuesta.key) {
                 await db.ref(`inventario/${respuesta.mes}/${respuesta.key}`).remove();
                 
-                // Registrar acción en auditoría
                 await db.ref("auditoria/rehabilitaciones").push({
                     admin: usuario,
                     fecha: new Date().toISOString(),
@@ -1726,7 +1658,6 @@
 
                 mostrarToast('Éxito', 'Respuesta eliminada. El colaborador podrá enviar una nueva.', 'success');
                 
-                // Recargar datos
                 await cargarInventario();
                 await cargarDashboard();
                 await cargarAsignacionesHoy();
@@ -1743,7 +1674,6 @@
         }
     }
 
-    // Opción 2: Eliminar permanentemente (elimina respuesta y asignación)
     async function eliminarPermanentemente() {
         if (!respuestaSeleccionada) {
             cerrarModalOpciones();
@@ -1760,17 +1690,14 @@
             let respuesta = respuestaSeleccionada;
             let fechaRespuesta = new Date(respuesta.fecha).toISOString().split('T')[0];
             
-            // 1. Eliminar la respuesta de inventario
             if (respuesta.mes && respuesta.key) {
                 await db.ref(`inventario/${respuesta.mes}/${respuesta.key}`).remove();
             }
             
-            // 2. Eliminar la asignación correspondiente
             if (respuesta.nombre && respuesta.productoId) {
                 await db.ref(`asignaciones/${fechaRespuesta}/${respuesta.nombre}/${respuesta.productoId}`).remove();
             }
             
-            // 3. Registrar en auditoría
             await db.ref("auditoria/eliminaciones_permanentes").push({
                 admin: usuario,
                 fecha: new Date().toISOString(),
@@ -1790,7 +1717,6 @@
 
             mostrarToast('Éxito', 'Respuesta y asignación eliminadas permanentemente', 'warning');
             
-            // Recargar datos
             await cargarInventario();
             await cargarDashboard();
             await cargarAsignacionesHoy();
@@ -2462,16 +2388,14 @@
         }
     }
 
-    // helper que convierte un ISO UTC a un Date ajustado al día local
-    function fechaLocalDesdeISOString(iso) {
-        let d = new Date(iso);
-        return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
-    }
-
-    // parsear un string "YYYY-MM-DD" como fecha local (no UTC)
     function parseLocalDate(str) {
         let [y, m, d] = str.split('-').map(Number);
         return new Date(y, m - 1, d);
+    }
+
+    function fechaLocalDesdeISOString(iso) {
+        let d = new Date(iso);
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
     }
 
     async function cargarInventario() {
@@ -2510,7 +2434,6 @@
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
                         let reg = child.val();
-                        // convertir fecha UTC a día local
                         let fechaReg = fechaLocalDesdeISOString(reg.fecha);
                         
                         if (fechaReg >= inicio && fechaReg <= fin) {
@@ -2628,7 +2551,6 @@
     mostrarSeccion('dashboard');
     inicializarNotificaciones();
 
-    // Cerrar modal al hacer clic fuera
     window.onclick = function(event) {
         let modal = document.getElementById('modalOpcionesEliminar');
         if (event.target === modal) {
