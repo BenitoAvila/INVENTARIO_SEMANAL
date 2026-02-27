@@ -15,20 +15,42 @@
     <style>
         /* ===== VARIABLES ===== */
         :root {
-            --primary: #00c853;
-            --primary-dark: #00a844;
-            --secondary: #0d47a1;
-            --secondary-dark: #0a3a7a;
-            --danger: #c62828;
-            --warning: #ff9800;
-            --success: #2e7d32;
-            --dark: #1e3c72;
-            --dark-light: #2a5298;
-            --light: #f5f5f5;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #34d399;
+            --secondary: #3b82f6;
+            --secondary-dark: #2563eb;
+            --secondary-light: #60a5fa;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --info: #3b82f6;
+            --dark: #1e293b;
+            --darker: #0f172a;
+            --light: #f8fafc;
             --white: #ffffff;
-            --shadow: 0 8px 20px rgba(0,0,0,0.3);
-            --border-radius: 12px;
-            --border-radius-sm: 8px;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            
+            --border-radius: 16px;
+            --border-radius-lg: 20px;
+            --border-radius-sm: 12px;
+            --border-radius-xs: 8px;
+            
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -42,108 +64,214 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideIn {
+            from { transform: translateX(-10px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--dark), var(--dark-light));
-            color: var(--white);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--gray-900), var(--gray-800));
+            color: var(--gray-100);
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.05) 0%, transparent 30%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
+        /* Header Styles */
         .header {
-            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
-            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 24px;
             border-radius: var(--border-radius);
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: var(--shadow);
-            border-bottom: 3px solid var(--primary);
+            box-shadow: var(--shadow-lg);
             animation: fadeIn 0.5s ease;
             position: sticky;
-            top: 0;
+            top: 16px;
             z-index: 100;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .logo i {
             font-size: 32px;
             color: var(--primary);
+            filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+            animation: pulse 2s infinite;
         }
 
         .logo-text {
             font-size: 24px;
-            font-weight: bold;
-            color: var(--white);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--white), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo-badge {
-            background: var(--primary);
-            padding: 4px 10px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 4px 12px;
+            border-radius: 100px;
             font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
         }
 
-        .btn {
-            padding: 12px 25px;
-            border-radius: var(--border-radius-sm);
-            border: none;
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
             font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
+            font-size: 16px;
             color: var(--white);
         }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
+        .user-date {
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-xs);
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .btn:hover::before {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
         }
 
         .btn-danger {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger), #dc2626);
             color: var(--white);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
         }
 
         .btn-block {
             width: 100%;
         }
 
+        /* Card Styles */
         .card {
-            background: rgba(32, 58, 67, 0.95);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
             animation: fadeIn 0.5s ease;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-xl);
         }
 
         .card-header {
@@ -151,241 +279,562 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .card-header h3 {
-            color: var(--light);
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--white);
         }
 
         .card-header h3 i {
             color: var(--primary);
+            font-size: 20px;
         }
 
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            padding: 10px 24px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            text-align: center;
+            font-weight: 500;
+            color: var(--gray-400);
+        }
+
+        .tab i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tab-content {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Dashboard Grid */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
             padding: 20px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(0,200,83,0.2);
-            border-radius: 10px;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-info h4 {
+            font-size: 14px;
+            color: var(--gray-400);
+            margin-bottom: 4px;
         }
 
         .stat-number {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.2;
         }
 
+        /* Product Selector */
         .product-selector {
-            background: rgba(13,71,161,0.3);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .search-container {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .search-icon {
             position: absolute;
-            left: 15px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--primary);
+            color: var(--gray-400);
+            font-size: 14px;
         }
 
         .product-search {
             width: 100%;
-            padding: 15px 15px 15px 45px;
-            border-radius: var(--border-radius-sm);
-            border: 2px solid transparent;
-            background: rgba(255,255,255,0.1);
+            padding: 12px 16px 12px 42px;
+            border-radius: var(--border-radius-xs);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
-            font-size: 16px;
+            font-size: 14px;
+            transition: var(--transition);
         }
 
         .product-search:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .product-search::placeholder {
+            color: var(--gray-500);
         }
 
         .product-select-custom {
             width: 100%;
-            padding: 12px;
-            border-radius: var(--border-radius-sm);
-            border: 2px solid var(--primary);
-            background: rgba(255,255,255,0.15);
+            padding: 10px;
+            border-radius: var(--border-radius-xs);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
-            font-size: 15px;
-            min-height: 44px;
+            font-size: 14px;
+            min-height: 120px;
+            transition: var(--transition);
+        }
+
+        .product-select-custom:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .product-select-custom option {
-            background: var(--dark);
+            background: var(--gray-800);
             color: var(--white);
-            padding: 10px;
+            padding: 8px;
         }
 
         .product-info-card {
-            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(16, 185, 129, 0.2));
             border-radius: var(--border-radius);
-            padding: 20px;
-            margin-top: 15px;
+            padding: 16px 20px;
+            margin-top: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .product-name {
-            font-size: 20px;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--white);
+        }
+
+        .product-name i {
+            color: var(--primary);
         }
 
         .product-stock {
-            background: rgba(0,200,83,0.2);
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 18px;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 14px;
+            color: var(--gray-300);
         }
 
         .product-stock span {
             color: var(--primary);
-            font-size: 24px;
-            margin-left: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-left: 8px;
         }
 
-        .no-results {
-            padding: 15px;
-            text-align: center;
-            color: var(--light);
-            background: rgba(255,255,255,0.05);
-            border-radius: var(--border-radius-sm);
-            margin-top: 10px;
-        }
-
+        /* Conteo Grid */
         .conteo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
+            gap: 16px;
             margin: 20px 0;
         }
 
         .conteo-card {
-            background: rgba(28, 49, 58, 0.8);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
-            padding: 20px;
+            padding: 16px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .conteo-card label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: var(--gray-400);
+            font-weight: 500;
         }
 
         .conteo-card input {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
-            font-size: 20px;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            background: rgba(255,255,255,0.1);
+            font-size: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-xs);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
+            font-weight: 600;
+            transition: var(--transition);
         }
 
+        .conteo-card input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Total Card */
         .total-card {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: var(--border-radius);
             padding: 20px;
             text-align: center;
             margin: 20px 0;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .total-card > div:first-child {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
         }
 
         .total-value {
-            font-size: 48px;
-            font-weight: bold;
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
         }
 
+        #comparacionStock {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.5s ease;
+            border-radius: 100px;
+        }
+
+        /* Table Styles */
         .table-container {
             overflow-x: auto;
             border-radius: var(--border-radius);
-            background: rgba(28, 49, 58, 0.8);
-            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-top: 16px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             color: var(--white);
+            font-size: 14px;
         }
 
         th {
-            background: var(--secondary);
-            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 14px 16px;
             text-align: left;
+            font-weight: 600;
+            color: var(--gray-300);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badge Styles */
         .badge {
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 100px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 600;
             display: inline-block;
+            letter-spacing: 0.3px;
         }
 
-        .badge-success { background: var(--success); }
-        .badge-warning { background: var(--warning); }
-        .badge-primary { background: var(--primary); }
+        .badge-success { 
+            background: rgba(16, 185, 129, 0.2); 
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .badge-warning { 
+            background: rgba(245, 158, 11, 0.2); 
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-primary { 
+            background: rgba(59, 130, 246, 0.2); 
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .badge-info { 
+            background: rgba(139, 92, 246, 0.2); 
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
 
-        .progress-container {
+        /* Maquila Styles */
+        .create-maquila-container {
+            margin-bottom: 20px;
+        }
+
+        .create-maquila-title {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            padding: 10px 18px;
+            border-radius: 100px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: inline-block;
+            font-size: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .create-maquila-form {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--border-radius-xs);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--white);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .maquila-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             margin: 20px 0;
         }
 
-        .progress-bar {
-            height: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            overflow: hidden;
+        .maquila-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-            transition: width 0.5s ease;
+        .maquila-section h4 {
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--border-radius-xs);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--white);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-group input:disabled,
+        .input-group input[readonly] {
+            background: rgba(0, 0, 0, 0.2);
+            opacity: 0.7;
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .sobrantes-card {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .sobrantes-card h4 {
+            color: var(--warning);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .transformacion-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .transformacion-card h4 {
+            color: var(--secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Info Message */
+        .info-message {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--border-radius-xs);
+            padding: 10px 14px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: var(--gray-300);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-message i {
+            color: var(--secondary);
+        }
+
+        /* No Results */
+        .no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--gray-400);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius-xs);
+            margin-top: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
         }
 
         .mensaje-completado {
-            background: rgba(46,125,50,0.2);
-            border: 2px solid var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: var(--border-radius);
             padding: 30px;
             text-align: center;
@@ -394,16 +843,30 @@
         .mensaje-completado i {
             font-size: 48px;
             color: var(--success);
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
+        .mensaje-completado h4 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: var(--white);
+        }
+
+        .mensaje-completado p {
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -411,73 +874,182 @@
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.1);
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
+        /* Toast Container */
         .toast-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             z-index: 9999;
-            max-width: 400px;
+            max-width: 360px;
         }
 
         .toast {
-            background: var(--dark);
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             color: var(--white);
-            padding: 15px 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            box-shadow: var(--shadow);
+            padding: 16px 20px;
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-xl);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             animation: fadeIn 0.3s;
             border-left: 4px solid var(--primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
+        .toast.info { border-left-color: var(--secondary); }
 
+        .toast-icon i {
+            font-size: 20px;
+        }
+
+        .toast.success .toast-icon i { color: var(--success); }
+        .toast.error .toast-icon i { color: var(--danger); }
+        .toast.info .toast-icon i { color: var(--secondary); }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .toast-message {
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        .toast-close {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
             .header {
                 flex-direction: column;
                 text-align: center;
-                gap: 15px;
+                gap: 16px;
+                top: 8px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .user-details {
+                text-align: center;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
             }
             
             .product-info-card {
                 flex-direction: column;
                 text-align: center;
+                gap: 12px;
             }
             
             .conteo-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .maquila-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+                border-radius: var(--border-radius);
+                padding: 8px;
+            }
+            
+            .tab {
+                border-radius: var(--border-radius-xs);
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .toast-container {
+                left: 16px;
+                right: 16px;
+                max-width: none;
+            }
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 100px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Header -->
     <div class="header">
         <div class="logo">
-            <i class="fas fa-boxes"></i>
-            <span class="logo-text">EUROFERT</span>
+            <i class="fas fa-cube"></i>
+            <span class="logo-text">EUROFERT PRO</span>
             <span class="logo-badge">COLABORADOR</span>
         </div>
         <div class="user-info">
@@ -491,7 +1063,6 @@
         </div>
     </div>
 
-    <!-- Dashboard Cards -->
     <div class="dashboard-grid">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-tasks"></i></div>
@@ -514,101 +1085,234 @@
                 <div class="stat-number" id="precision">100%</div>
             </div>
         </div>
+        <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-industry"></i></div>
+            <div class="stat-info">
+                <h4>Maquilas Hoy</h4>
+                <div class="stat-number" id="totalMaquilas">0</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Card Principal: Conteo -->
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-clipboard-list"></i> Realizar Conteo</h3>
-            <div class="badge badge-primary" id="fechaActual"></div>
+    <div class="tabs">
+        <div class="tab active" onclick="cambiarTab('inventario')">
+            <i class="fas fa-clipboard-list"></i> Inventario
         </div>
+        <div class="tab" onclick="cambiarTab('maquilas')">
+            <i class="fas fa-industry"></i> Maquilas
+        </div>
+    </div>
 
-        <!-- Selector de Producto -->
-        <div class="product-selector">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
+    <!-- TAB INVENTARIO -->
+    <div id="tabInventario" class="tab-content active">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clipboard-list"></i> Realizar Conteo</h3>
+                <div class="badge badge-primary" id="fechaActual"></div>
             </div>
 
-            <select class="product-select-custom" id="productoSelect" onchange="cambiarProducto()" size="4">
-                <option value="">Cargando productos...</option>
-            </select>
-
-            <div id="noResultados" class="no-results" style="display: none;">
-                <i class="fas fa-search"></i> No se encontraron productos
-            </div>
-
-            <div id="sinPendientes" class="mensaje-completado" style="display: none;">
-                <i class="fas fa-check-circle"></i>
-                <h4>¡Todos los productos completados!</h4>
-                <p>Has respondido todas tus asignaciones del día.</p>
-            </div>
-
-            <div class="product-info-card" id="productoInfo" style="display: none;">
-                <div class="product-name">
-                    <i class="fas fa-cube"></i>
-                    <span id="productoNombre">-</span>
+            <div class="product-selector">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
                 </div>
-                <div class="product-stock">
-                    Stock: <span id="productoStock">0</span>
+
+                <select class="product-select-custom" id="productoSelect" onchange="cambiarProducto()" size="4">
+                    <option value="">Cargando productos...</option>
+                </select>
+
+                <div id="noResultados" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i> No se encontraron productos
+                </div>
+
+                <div id="sinPendientes" class="mensaje-completado" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>¡Todos los productos completados!</h4>
+                    <p>Has respondido todas tus asignaciones del día.</p>
+                </div>
+
+                <div class="product-info-card" id="productoInfo" style="display: none;">
+                    <div class="product-name">
+                        <i class="fas fa-cube"></i>
+                        <span id="productoNombre">-</span>
+                    </div>
+                    <div class="product-stock">
+                        Stock: <span id="productoStock">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="conteo-grid">
+                <div class="conteo-card">
+                    <label>Físico</label>
+                    <input type="number" id="fisico" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                </div>
+                <div class="conteo-card">
+                    <label>Muestras</label>
+                    <input type="number" id="muestras" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                </div>
+                <div class="conteo-card">
+                    <label>Caducados</label>
+                    <input type="number" id="caducados" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                </div>
+            </div>
+
+            <div class="total-card" id="totalCard">
+                <div>Total Contado</div>
+                <div class="total-value" id="totalCalculado">0</div>
+                <div id="comparacionStock">vs Stock: 0</div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>Progreso del día</span>
+                    <span id="progresoTexto">0/0 completados</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progresoBarra" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
+                <i class="fas fa-paper-plane"></i> Enviar Inventario
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Pendientes</h3>
+                <div class="badge badge-warning" id="pendientesCount">0</div>
+            </div>
+            <div id="pendientesContainer" class="table-container">
+                <p class="text-center">Cargando pendientes...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB MAQUILAS -->
+    <div id="tabMaquilas" class="tab-content">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-industry"></i> Ingreso de Maquilas</h3>
+                <div class="badge badge-primary" id="fechaMaquila"></div>
+            </div>
+
+            <!-- Formulario para crear productos de maquila -->
+            <div class="create-maquila-container">
+                <div class="create-maquila-title">Crear producto para maquila</div>
+                <div class="create-maquila-form">
+                    <div class="form-group">
+                        <label>Nombre del Producto</label>
+                        <input type="text" id="nombreProductoMaquila" class="form-control" placeholder="ej: Fertilizante Líquido">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción (opcional)</label>
+                        <input type="text" id="descripcionProductoMaquila" class="form-control" placeholder="ej: 20L">
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="crearProductoMaquila()" id="btnCrearProductoMaquila">
+                        <i class="fas fa-save"></i> Guardar Producto de Maquila
+                    </button>
+                </div>
+                <hr>
+            </div>
+
+            <div class="product-selector">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="product-search" id="buscadorProductoMaquila" placeholder="Buscar producto para maquila..." onkeyup="filtrarProductosMaquila()">
+                </div>
+
+                <select class="product-select-custom" id="productoMaquilaSelect" onchange="cambiarProductoMaquila()" size="4">
+                    <option value="">Seleccione un producto...</option>
+                </select>
+
+                <div id="noResultadosMaquila" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i> No se encontraron productos
+                </div>
+
+                <div class="info-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Las presentaciones se ingresan manualmente</span>
+                </div>
+            </div>
+
+            <div id="maquilaForm" style="display: none;">
+                <div class="maquila-grid">
+                    <div class="maquila-section">
+                        <h4><i class="fas fa-cube"></i> Materia Prima</h4>
+                        <div class="input-group">
+                            <label>Cantidad</label>
+                            <input type="number" id="mpCantidad" min="0" value="0" onchange="calcularTotalesMaquila()">
+                        </div>
+                        <div class="input-group">
+                            <label>Presentación</label>
+                            <input type="text" id="mpPresentacion" placeholder="Ej: Kg, Caja, Bolsa" value="Kg">
+                        </div>
+                    </div>
+
+                    <div class="maquila-section">
+                        <h4><i class="fas fa-box"></i> Producto Terminado</h4>
+                        <div class="input-group">
+                            <label>Cantidad</label>
+                            <input type="number" id="ptCantidad" min="0" value="0" onchange="calcularTotalesMaquila()">
+                        </div>
+                        <div class="input-group">
+                            <label>Presentación</label>
+                            <input type="text" id="ptPresentacion" placeholder="Ej: Unidad, Caja" value="Unidad">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sobrantes-card">
+                    <h4><i class="fas fa-boxes"></i> Sobrantes</h4>
+                    <div class="input-group">
+                        <label>Cantidad de Sobrantes</label>
+                        <input type="number" id="sobrantes" min="0" value="0" onchange="calcularTotalesMaquila()">
+                    </div>
+                </div>
+
+                <div class="transformacion-card">
+                    <h4><i class="fas fa-hashtag"></i> Número de Transformación</h4>
+                    <div class="input-group">
+                        <label>Asignado por administrador</label>
+                        <input type="text" id="numTransformacion" readonly value="Pendiente de asignación">
+                    </div>
+                    <div class="info-message">
+                        <i class="fas fa-lock"></i>
+                        <span>Campo asignado por el administrador</span>
+                    </div>
+                </div>
+
+                <div class="total-card">
+                    <div>Total Procesado</div>
+                    <div class="total-value" id="totalMaquilaCalculado">0</div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="enviarMaquila()" style="flex: 2;" id="btnEnviarMaquila">
+                        <i class="fas fa-paper-plane"></i> Enviar Maquila
+                    </button>
+                    <button class="btn btn-secondary" onclick="limpiarFormMaquila()" style="flex: 1;">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Campos de Conteo -->
-        <div class="conteo-grid">
-            <div class="conteo-card">
-                <label>Físico</label>
-                <input type="number" id="fisico" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-history"></i> Historial de Maquilas</h3>
+                <div class="badge badge-primary">Últimas 10</div>
             </div>
-            <div class="conteo-card">
-                <label>Muestras</label>
-                <input type="number" id="muestras" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+            <div id="historialMaquilasContainer" class="table-container">
+                <p class="text-center">Cargando historial...</p>
             </div>
-            <div class="conteo-card">
-                <label>Caducados</label>
-                <input type="number" id="caducados" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
-            </div>
-        </div>
-
-        <!-- Total -->
-        <div class="total-card" id="totalCard">
-            <div class="total-value" id="totalCalculado">0</div>
-            <div id="comparacionStock">vs Stock: 0</div>
-        </div>
-
-        <!-- Progreso -->
-        <div class="progress-container">
-            <div class="progress-header">
-                <span>Progreso del día</span>
-                <span id="progresoTexto">0/0 completados</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progresoBarra" style="width: 0%;"></div>
-            </div>
-        </div>
-
-        <!-- Botón Enviar -->
-        <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
-            <i class="fas fa-paper-plane"></i> Enviar Inventario
-        </button>
-    </div>
-
-    <!-- Pendientes -->
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-clock"></i> Pendientes</h3>
-            <div class="badge badge-warning" id="pendientesCount">0</div>
-        </div>
-        <div id="pendientesContainer" class="table-container">
-            <p class="text-center">Cargando pendientes...</p>
         </div>
     </div>
 
-    <!-- Historial -->
     <div class="card">
         <div class="card-header">
-            <h3><i class="fas fa-history"></i> Historial</h3>
+            <h3><i class="fas fa-history"></i> Historial de Inventario</h3>
             <div class="badge badge-primary">Últimos 10</div>
         </div>
         <div id="historialContainer" class="table-container">
@@ -638,6 +1342,7 @@
             firebase.initializeApp(firebaseConfig);
         }
         db = firebase.database();
+        console.log("Firebase inicializado correctamente");
     } catch (error) {
         console.error("Error inicializando Firebase:", error);
     }
@@ -650,11 +1355,12 @@
     let fechaHoy = null;
     let mesActual = null;
     let productoSeleccionado = null;
+    let productoMaquilaSeleccionado = null;
     let productosPendientes = [];
     let productosEnviadosHoy = new Set();
 
     // ============================================
-    // VERIFICAR SESIÓN - CORREGIDO
+    // VERIFICAR SESIÓN
     // ============================================
     function verificarSesion() {
         try {
@@ -672,21 +1378,32 @@
                 return false;
             }
             
-            // Si es admin, redirigir a admin.html
             if (rol === "admin") {
                 console.log("Usuario es admin, redirigiendo a admin.html");
                 window.location.href = "admin.html";
                 return false;
             }
             
-            // Actualizar fechas
             fechaHoy = new Date().toISOString().split("T")[0];
             mesActual = new Date().toISOString().substring(0, 7);
             
-            // Mostrar nombre de usuario
             document.getElementById('userName').textContent = usuario;
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
-            document.getElementById('fechaActual').textContent = new Date().toLocaleDateString();
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('fechaActual').textContent = new Date().toLocaleDateString('es-ES', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            document.getElementById('fechaMaquila').textContent = new Date().toLocaleDateString('es-ES', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
             
             return true;
             
@@ -696,9 +1413,7 @@
         }
     }
 
-    // Verificar sesión al cargar
     if (!verificarSesion()) {
-        // Si la verificación falla, no continuar
         throw new Error("Verificación de sesión fallida");
     }
 
@@ -708,6 +1423,25 @@
     function mostrarLoading(mostrar) {
         let overlay = document.getElementById('loadingOverlay');
         if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
+    }
+
+    // ============================================
+    // NOTIFICACIONES AL ADMINISTRADOR
+    // ============================================
+    async function registrarNotificacion(tipo, detalles) {
+        if (!db) return;
+        try {
+            await db.ref("notificaciones").push({
+                tipo: tipo,
+                usuario: usuario,
+                fecha: new Date().toISOString(),
+                leida: false,
+                detalles: detalles
+            });
+            console.log("Notificación registrada:", tipo);
+        } catch (error) {
+            console.error("Error registrando notificación:", error);
+        }
     }
 
     function mostrarToast(titulo, mensaje, tipo = 'success') {
@@ -742,8 +1476,22 @@
         }, 4000);
     }
 
+    function cambiarTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        if (tab === 'inventario') {
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('tabInventario').classList.add('active');
+        } else {
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('tabMaquilas').classList.add('active');
+            cargarProductosMaquila();
+        }
+    }
+
     // ============================================
-    // FUNCIONES DE INTERFAZ
+    // FUNCIONES DE INVENTARIO
     // ============================================
     function calcularTotal() {
         let fisico = parseInt(document.getElementById("fisico").value) || 0;
@@ -760,15 +1508,15 @@
             if (diferencia === 0) {
                 comparacion.innerHTML = '✓ Cuadra exactamente';
                 comparacion.style.color = 'var(--success)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--success), var(--primary))';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--primary), var(--primary-dark))';
             } else if (diferencia > 0) {
                 comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
                 comparacion.style.color = 'var(--warning)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), var(--warning-dark))';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--warning), #d97706)';
             } else {
                 comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
                 comparacion.style.color = 'var(--danger)';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), var(--danger-dark))';
+                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, var(--danger), #dc2626)';
             }
         }
         
@@ -806,9 +1554,6 @@
         }
     }
 
-    // ============================================
-    // FILTRO DE PRODUCTOS MEJORADO
-    // ============================================
     function filtrarProductos() {
         let filtro = document.getElementById("buscadorProducto").value.toLowerCase();
         let select = document.getElementById("productoSelect");
@@ -832,7 +1577,6 @@
             noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
         }
         
-        // Auto-seleccionar si solo queda un resultado
         if (visibles === 1 && filtro !== "") {
             for (let i = 1; i < select.options.length; i++) {
                 if (select.options[i].style.display !== "none") {
@@ -844,9 +1588,6 @@
         }
     }
 
-    // ============================================
-    // CARGAR PRODUCTOS ASIGNADOS
-    // ============================================
     async function cargarProductosAsignados() {
         if (!db || !usuario) {
             console.log("No hay db o usuario");
@@ -885,12 +1626,14 @@
                 .once("value");
             
             productosEnviadosHoy.clear();
-            enviosSnap.forEach(child => {
-                let envio = child.val();
-                if (envio.fecha.split("T")[0] === fechaHoy) {
-                    productosEnviadosHoy.add(envio.productoId);
-                }
-            });
+            if (enviosSnap.exists()) {
+                enviosSnap.forEach(child => {
+                    let envio = child.val();
+                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
+                        productosEnviadosHoy.add(envio.productoId);
+                    }
+                });
+            }
 
             let asignaciones = asignacionesSnap.val();
             let productosIds = Object.keys(asignaciones);
@@ -903,7 +1646,7 @@
                     if (prodSnap.exists()) {
                         let data = prodSnap.val();
                         let asignacion = asignaciones[productoId];
-                        let stock = asignacion.stockSistema || data.sistema;
+                        let stock = asignacion.stockSistema || data.sistema || 0;
                         
                         if (!productosEnviadosHoy.has(productoId)) {
                             let option = document.createElement("option");
@@ -935,7 +1678,6 @@
                 if (select) select.style.display = "block";
                 if (buscador) buscador.style.display = "block";
                 
-                // Seleccionar primer producto
                 if (select.options.length > 1) {
                     select.selectedIndex = 1;
                     cambiarProducto();
@@ -950,188 +1692,6 @@
         }
     }
 
-    // ============================================
-    // CARGAR DASHBOARD
-    // ============================================
-    async function cargarDashboard() {
-        if (!db || !usuario) return;
-        
-        try {
-            const [asignacionesSnap, enviosSnap] = await Promise.all([
-                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
-                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]);
-
-            let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
-            
-            let completadosHoy = 0;
-            let precisos = 0;
-            let totalEnvios = 0;
-            
-            enviosSnap.forEach(child => {
-                let envio = child.val();
-                if (envio.fecha.split("T")[0] === fechaHoy) {
-                    completadosHoy++;
-                }
-                
-                let total = envio.fisico + envio.muestras + envio.caducados;
-                if (total === envio.sistema) precisos++;
-                totalEnvios++;
-            });
-
-            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-            document.getElementById("totalCompletados").textContent = completadosHoy;
-            
-            let precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
-            document.getElementById("precision").textContent = precision + '%';
-            
-            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
-            let progreso = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 : 0;
-            document.getElementById("progresoBarra").style.width = progreso + '%';
-            document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
-            
-        } catch (error) {
-            console.error("Error cargando dashboard:", error);
-        }
-    }
-
-    // ============================================
-    // CARGAR PENDIENTES
-    // ============================================
-    async function cargarPendientes() {
-        if (!db || !usuario) return;
-        
-        let container = document.getElementById("pendientesContainer");
-        if (!container) return;
-        
-        try {
-            const [asignacionesSnap, enviosSnap] = await Promise.all([
-                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
-                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]);
-
-            if (!asignacionesSnap.exists()) {
-                container.innerHTML = "<p class='text-center'>No hay asignaciones</p>";
-                return;
-            }
-
-            let enviadosHoy = new Set();
-            enviosSnap.forEach(child => {
-                let envio = child.val();
-                if (envio.fecha.split("T")[0] === fechaHoy) {
-                    enviadosHoy.add(envio.productoId);
-                }
-            });
-
-            let pendientes = [];
-            let asignaciones = asignacionesSnap.val();
-            
-            for (let productoId in asignaciones) {
-                try {
-                    let prodSnap = await db.ref("productos/" + productoId).once("value");
-                    if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
-                        let data = prodSnap.val();
-                        pendientes.push({
-                            nombre: data.nombre,
-                            stock: asignaciones[productoId].stockSistema || data.sistema
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error cargando producto:", productoId, error);
-                }
-            }
-
-            if (pendientes.length === 0) {
-                container.innerHTML = "<p class='text-center'>✅ ¡Todo completado!</p>";
-                return;
-            }
-
-            let html = `<table><thead><tr><th>Producto</th><th>Stock</th></tr></thead><tbody>`;
-            pendientes.forEach(p => {
-                html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.stock}</span></td></tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            
-        } catch (error) {
-            console.error("Error cargando pendientes:", error);
-            container.innerHTML = "<p class='text-center'>Error cargando datos</p>";
-        }
-    }
-
-    // ============================================
-    // CARGAR HISTORIAL
-    // ============================================
-    async function cargarHistorial() {
-        if (!db || !usuario) return;
-        
-        let container = document.getElementById("historialContainer");
-        if (!container) return;
-        
-        try {
-            let meses = [];
-            for (let i = 0; i < 3; i++) {
-                let fecha = new Date();
-                fecha.setMonth(fecha.getMonth() - i);
-                meses.push(fecha.toISOString().substring(0, 7));
-            }
-
-            let todosEnvios = [];
-            
-            for (let mes of meses) {
-                try {
-                    let snapshot = await db.ref("inventario/" + mes)
-                        .orderByChild("nombre")
-                        .equalTo(usuario)
-                        .once("value");
-                    
-                    snapshot.forEach(child => {
-                        let envio = child.val();
-                        todosEnvios.push({
-                            fecha: new Date(envio.fecha).toLocaleDateString(),
-                            producto: envio.producto,
-                            sistema: envio.sistema,
-                            fisico: envio.fisico,
-                            muestras: envio.muestras,
-                            caducados: envio.caducados
-                        });
-                    });
-                } catch (error) {
-                    console.error("Error cargando mes:", mes, error);
-                }
-            }
-
-            todosEnvios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
-            if (todosEnvios.length === 0) {
-                container.innerHTML = "<p class='text-center'>No hay envíos</p>";
-                return;
-            }
-
-            let html = `<table><thead><tr><th>Fecha</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th></tr></thead><tbody>`;
-            
-            todosEnvios.slice(0, 10).forEach(e => {
-                html += `<tr>
-                    <td>${e.fecha}</td>
-                    <td>${e.producto}</td>
-                    <td>${e.sistema}</td>
-                    <td>${e.fisico}</td>
-                    <td>${e.muestras}</td>
-                    <td>${e.caducados}</td>
-                </tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            
-        } catch (error) {
-            console.error("Error cargando historial:", error);
-            container.innerHTML = "<p class='text-center'>Error cargando historial</p>";
-        }
-    }
-
-    // ============================================
-    // ENVIAR INVENTARIO - MEJORADO
-    // ============================================
     async function enviarInventario() {
         if (!db || !usuario) {
             mostrarToast('Error', 'Sesión no válida', 'error');
@@ -1148,7 +1708,6 @@
         let caducados = parseInt(document.getElementById("caducados").value) || 0;
         let total = fisico + muestras + caducados;
 
-        // Verificar si permite múltiples
         let asignacionSnap;
         try {
             asignacionSnap = await db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoSeleccionado.id}`).once("value");
@@ -1185,7 +1744,17 @@
                 fecha: new Date().toISOString()
             });
 
-            mostrarToast('Éxito', 'Inventario enviado', 'success');
+            // Registrar notificación al administrador
+            await registrarNotificacion("inventario", {
+                colaborador: usuario,
+                producto: productoSeleccionado.nombre,
+                fisico: fisico,
+                muestras: muestras,
+                caducados: caducados,
+                total: fisico + muestras + caducados
+            });
+
+            mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
             
             productosEnviadosHoy.add(productoSeleccionado.id);
             
@@ -1196,7 +1765,6 @@
                 cargarHistorial()
             ]);
             
-            // Limpiar campos
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
@@ -1207,13 +1775,589 @@
             
         } catch (error) {
             console.error("Error:", error);
-            mostrarToast('Error', 'Error al enviar', 'error');
+            mostrarToast('Error', 'Error al enviar inventario', 'error');
         } finally {
             mostrarLoading(false);
             if (btnEnviar) {
                 btnEnviar.disabled = false;
                 btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
             }
+        }
+    }
+
+    // ============================================
+    // FUNCIONES DE MAQUILAS
+    // ============================================
+    async function cargarProductosMaquila() {
+        if (!db) {
+            console.log("DB no disponible");
+            return;
+        }
+        
+        let select = document.getElementById("productoMaquilaSelect");
+        if (!select) return;
+        
+        select.innerHTML = "<option value=''>Cargando productos...</option>";
+        
+        try {
+            let snapshot = await db.ref("maquilas_productos").once("value");
+            
+            select.innerHTML = "<option value=''>Seleccione un producto...</option>";
+            
+            if (!snapshot.exists()) {
+                console.log("No hay productos de maquila");
+                let option = document.createElement("option");
+                option.value = "";
+                option.textContent = "No hay productos disponibles";
+                option.disabled = true;
+                select.appendChild(option);
+                return;
+            }
+            
+            let productos = [];
+            snapshot.forEach(child => {
+                let data = child.val();
+                productos.push({
+                    id: child.key,
+                    nombre: data.nombre,
+                    descripcion: data.descripcion || ''
+                });
+            });
+            
+            productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            
+            productos.forEach(p => {
+                let option = document.createElement("option");
+                option.value = p.id;
+                option.textContent = p.descripcion ? `${p.nombre} - ${p.descripcion}` : p.nombre;
+                option.setAttribute("data-nombre", p.nombre);
+                select.appendChild(option);
+            });
+            
+        } catch (error) {
+            console.error("Error cargando productos maquila:", error);
+            select.innerHTML = "<option value=''>Error al cargar productos</option>";
+            mostrarToast('Error', 'Error al cargar productos de maquila', 'error');
+        }
+    }
+
+    async function crearProductoMaquila() {
+        let nombre = document.getElementById("nombreProductoMaquila").value.trim();
+        let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
+
+        if (!nombre) {
+            mostrarToast('Error', 'Ingrese el nombre del producto', 'error');
+            return;
+        }
+
+        let btn = document.getElementById("btnCrearProductoMaquila");
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        }
+        mostrarLoading(true);
+
+        try {
+            let id = nombre.toLowerCase()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+
+            await db.ref("maquilas_productos/" + id).set({
+                nombre: nombre,
+                descripcion: descripcion,
+                fechaCreacion: new Date().toISOString()
+            });
+
+            // Registrar notificación al administrador
+            await registrarNotificacion("producto_maquila", {
+                colaborador: usuario,
+                producto: nombre,
+                descripcion: descripcion
+            });
+
+            mostrarToast('Éxito', 'Producto de maquila creado correctamente', 'success');
+            document.getElementById("nombreProductoMaquila").value = "";
+            document.getElementById("descripcionProductoMaquila").value = "";
+            await cargarProductosMaquila();
+
+        } catch (error) {
+            console.error("Error creando producto maquila:", error);
+            mostrarToast('Error', 'Error al crear producto: ' + (error.message || error), 'error');
+        } finally {
+            mostrarLoading(false);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila';
+            }
+        }
+    }
+
+    function filtrarProductosMaquila() {
+        let filtro = document.getElementById("buscadorProductoMaquila").value.toLowerCase();
+        let select = document.getElementById("productoMaquilaSelect");
+        let noResultados = document.getElementById("noResultadosMaquila");
+        
+        if (!select) return;
+        
+        let visibles = 0;
+        for (let i = 1; i < select.options.length; i++) {
+            let option = select.options[i];
+            let texto = option.text.toLowerCase();
+            if (texto.includes(filtro)) {
+                option.style.display = "";
+                visibles++;
+            } else {
+                option.style.display = "none";
+            }
+        }
+        
+        if (noResultados) {
+            noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
+        }
+    }
+
+    function cambiarProductoMaquila() {
+        let select = document.getElementById("productoMaquilaSelect");
+        let form = document.getElementById("maquilaForm");
+        
+        if (select && select.selectedIndex > 0) {
+            let selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                form.style.display = "block";
+                productoMaquilaSeleccionado = {
+                    id: select.value,
+                    nombre: selectedOption.getAttribute("data-nombre") || selectedOption.text.split(' - ')[0]
+                };
+                limpiarFormMaquila();
+            } else {
+                form.style.display = "none";
+                productoMaquilaSeleccionado = null;
+            }
+        } else {
+            form.style.display = "none";
+            productoMaquilaSeleccionado = null;
+        }
+    }
+
+    function calcularTotalesMaquila() {
+        let mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
+        let ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
+        let sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
+        
+        let total = mpCantidad + ptCantidad + sobrantes;
+        document.getElementById("totalMaquilaCalculado").textContent = total;
+    }
+
+    function limpiarFormMaquila() {
+        document.getElementById("mpCantidad").value = "0";
+        document.getElementById("ptCantidad").value = "0";
+        document.getElementById("sobrantes").value = "0";
+        document.getElementById("mpPresentacion").value = "Kg";
+        document.getElementById("ptPresentacion").value = "Unidad";
+        document.getElementById("numTransformacion").value = "Pendiente de asignación";
+        calcularTotalesMaquila();
+    }
+
+    async function enviarMaquila() {
+        if (!db || !usuario) {
+            mostrarToast('Error', 'Sesión no válida', 'error');
+            return;
+        }
+
+        if (!productoMaquilaSeleccionado) {
+            mostrarToast('Error', 'Seleccione un producto', 'error');
+            return;
+        }
+
+        let mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
+        let ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
+        let sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
+
+        if (mpCantidad === 0 && ptCantidad === 0 && sobrantes === 0) {
+            mostrarToast('Error', 'Ingrese al menos una cantidad', 'error');
+            return;
+        }
+
+        let mpPresentacion = document.getElementById("mpPresentacion").value.trim();
+        let ptPresentacion = document.getElementById("ptPresentacion").value.trim();
+        
+        if (!mpPresentacion) {
+            mostrarToast('Error', 'Ingrese la presentación de la materia prima', 'error');
+            return;
+        }
+        
+        if (!ptPresentacion) {
+            mostrarToast('Error', 'Ingrese la presentación del producto terminado', 'error');
+            return;
+        }
+
+        mostrarLoading(true);
+        let btnEnviar = document.getElementById("btnEnviarMaquila");
+        if (btnEnviar) {
+            btnEnviar.disabled = true;
+            btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        }
+
+        try {
+            let maquilaRef = db.ref("maquilas/" + mesActual).push();
+            
+            await maquilaRef.set({
+                nombre: usuario,
+                producto: productoMaquilaSeleccionado.nombre,
+                productoId: productoMaquilaSeleccionado.id,
+                mpCantidad: mpCantidad,
+                mpPresentacion: mpPresentacion,
+                ptCantidad: ptCantidad,
+                ptPresentacion: ptPresentacion,
+                sobrantes: sobrantes,
+                numTransformacion: "",
+                fecha: new Date().toISOString(),
+                estado: "pendiente"
+            });
+
+            // Registrar notificación al administrador
+            await registrarNotificacion("maquila", {
+                colaborador: usuario,
+                producto: productoMaquilaSeleccionado.nombre,
+                mpCantidad: mpCantidad,
+                mpPresentacion: mpPresentacion,
+                ptCantidad: ptCantidad,
+                ptPresentacion: ptPresentacion,
+                sobrantes: sobrantes
+            });
+
+            mostrarToast('Éxito', 'Maquila enviada correctamente', 'success');
+            
+            limpiarFormMaquila();
+            await Promise.all([
+                cargarDashboard(),
+                cargarHistorialMaquilas()
+            ]);
+            
+            document.getElementById("productoMaquilaSelect").selectedIndex = 0;
+            document.getElementById("maquilaForm").style.display = "none";
+            productoMaquilaSeleccionado = null;
+            
+        } catch (error) {
+            console.error("Error enviando maquila:", error);
+            mostrarToast('Error', 'Error al enviar maquila: ' + error.message, 'error');
+        } finally {
+            mostrarLoading(false);
+            if (btnEnviar) {
+                btnEnviar.disabled = false;
+                btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Maquila';
+            }
+        }
+    }
+
+    async function cargarHistorialMaquilas() {
+        if (!db || !usuario) return;
+        
+        let container = document.getElementById("historialMaquilasContainer");
+        if (!container) return;
+        
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+        
+        try {
+            let meses = [];
+            for (let i = 0; i < 3; i++) {
+                let fecha = new Date();
+                fecha.setMonth(fecha.getMonth() - i);
+                meses.push(fecha.toISOString().substring(0, 7));
+            }
+
+            let todasMaquilas = [];
+            
+            for (let mes of meses) {
+                try {
+                    let snapshot = await db.ref("maquilas/" + mes)
+                        .orderByChild("nombre")
+                        .equalTo(usuario)
+                        .once("value");
+                    
+                    if (snapshot.exists()) {
+                        snapshot.forEach(child => {
+                            let m = child.val();
+                            todasMaquilas.push({
+                                fecha: new Date(m.fecha).toLocaleDateString(),
+                                producto: m.producto,
+                                mpCantidad: m.mpCantidad || 0,
+                                mpPresentacion: m.mpPresentacion || '-',
+                                ptCantidad: m.ptCantidad || 0,
+                                ptPresentacion: m.ptPresentacion || '-',
+                                sobrantes: m.sobrantes || 0,
+                                numTransformacion: m.numTransformacion || "Pendiente"
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error cargando mes:", mes, error);
+                }
+            }
+
+            todasMaquilas.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            if (todasMaquilas.length === 0) {
+                container.innerHTML = "<p class='text-center'>No hay maquilas este mes</p>";
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Producto</th>
+                        <th>MP Cantidad</th>
+                        <th>MP Presentación</th>
+                        <th>PT Cantidad</th>
+                        <th>PT Presentación</th>
+                        <th>Sobrantes</th>
+                        <th>N° Transformación</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            todasMaquilas.slice(0, 10).forEach(m => {
+                let badgeClass = m.numTransformacion !== "Pendiente" ? "badge-success" : "badge-warning";
+                
+                let mpCant = m.mpCantidad || 0;
+                let mpPres = m.mpPresentacion || '';
+                let ptCant = m.ptCantidad || 0;
+                let ptPres = m.ptPresentacion || '';
+                
+                html += `<tr>
+                    <td>${m.fecha}</td>
+                    <td>${m.producto}</td>
+                    <td>${mpCant}</td>
+                    <td>${mpPres}</td>
+                    <td>${ptCant}</td>
+                    <td>${ptPres}</td>
+                    <td>${m.sobrantes}</td>
+                    <td><span class="badge ${badgeClass}">${m.numTransformacion}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) {
+            console.error("Error cargando historial maquilas:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando historial</p>";
+        }
+    }
+
+    // ============================================
+    // FUNCIONES DE DASHBOARD
+    // ============================================
+    async function cargarDashboard() {
+        if (!db || !usuario) return;
+        
+        try {
+            const [asignacionesSnap, enviosSnap, maquilasSnap] = await Promise.all([
+                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value"),
+                db.ref("maquilas/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+            ]);
+
+            let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
+            
+            let completadosHoy = 0;
+            let precisos = 0;
+            let totalEnvios = 0;
+            
+            if (enviosSnap.exists()) {
+                enviosSnap.forEach(child => {
+                    let envio = child.val();
+                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
+                        completadosHoy++;
+                    }
+                    
+                    let total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
+                    if (total === (envio.sistema || 0)) precisos++;
+                    totalEnvios++;
+                });
+            }
+
+            let totalMaquilasHoy = 0;
+            if (maquilasSnap.exists()) {
+                maquilasSnap.forEach(child => {
+                    let maquila = child.val();
+                    if (maquila.fecha && maquila.fecha.split("T")[0] === fechaHoy) {
+                        totalMaquilasHoy++;
+                    }
+                });
+            }
+
+            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
+            document.getElementById("totalCompletados").textContent = completadosHoy;
+            document.getElementById("totalMaquilas").textContent = totalMaquilasHoy;
+            
+            let precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
+            document.getElementById("precision").textContent = precision + '%';
+            
+            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
+            let progreso = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 : 0;
+            document.getElementById("progresoBarra").style.width = progreso + '%';
+            document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
+            
+        } catch (error) {
+            console.error("Error cargando dashboard:", error);
+        }
+    }
+
+    async function cargarPendientes() {
+        if (!db || !usuario) return;
+        
+        let container = document.getElementById("pendientesContainer");
+        if (!container) return;
+        
+        try {
+            const [asignacionesSnap, enviosSnap] = await Promise.all([
+                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+            ]);
+
+            if (!asignacionesSnap.exists()) {
+                container.innerHTML = "<p class='text-center'>No hay asignaciones para hoy</p>";
+                return;
+            }
+
+            let enviadosHoy = new Set();
+            if (enviosSnap.exists()) {
+                enviosSnap.forEach(child => {
+                    let envio = child.val();
+                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
+                        enviadosHoy.add(envio.productoId);
+                    }
+                });
+            }
+
+            let pendientes = [];
+            let asignaciones = asignacionesSnap.val();
+            
+            for (let productoId in asignaciones) {
+                try {
+                    let prodSnap = await db.ref("productos/" + productoId).once("value");
+                    if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
+                        let data = prodSnap.val();
+                        pendientes.push({
+                            nombre: data.nombre,
+                            stock: asignaciones[productoId].stockSistema || data.sistema || 0
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error cargando producto:", productoId, error);
+                }
+            }
+
+            if (pendientes.length === 0) {
+                container.innerHTML = "<p class='text-center'><i class='fas fa-check-circle' style='color: var(--success);'></i> ¡Todos los productos han sido completados!</p>";
+                return;
+            }
+
+            let html = `<table><thead><tr><th>Producto</th><th>Stock a verificar</th></tr></thead><tbody>`;
+            pendientes.forEach(p => {
+                html += `<tr>
+                    <td>${p.nombre}</td>
+                    <td><span class="badge badge-primary">${p.stock}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) {
+            console.error("Error cargando pendientes:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando datos</p>";
+        }
+    }
+
+    async function cargarHistorial() {
+        if (!db || !usuario) return;
+        
+        let container = document.getElementById("historialContainer");
+        if (!container) return;
+        
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+        
+        try {
+            let meses = [];
+            for (let i = 0; i < 3; i++) {
+                let fecha = new Date();
+                fecha.setMonth(fecha.getMonth() - i);
+                meses.push(fecha.toISOString().substring(0, 7));
+            }
+
+            let todosEnvios = [];
+            
+            for (let mes of meses) {
+                try {
+                    let snapshot = await db.ref("inventario/" + mes)
+                        .orderByChild("nombre")
+                        .equalTo(usuario)
+                        .once("value");
+                    
+                    if (snapshot.exists()) {
+                        snapshot.forEach(child => {
+                            let envio = child.val();
+                            todosEnvios.push({
+                                fecha: new Date(envio.fecha).toLocaleDateString(),
+                                producto: envio.producto,
+                                sistema: envio.sistema || 0,
+                                fisico: envio.fisico || 0,
+                                muestras: envio.muestras || 0,
+                                caducados: envio.caducados || 0,
+                                total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0)
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error cargando mes:", mes, error);
+                }
+            }
+
+            todosEnvios.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+            if (todosEnvios.length === 0) {
+                container.innerHTML = "<p class='text-center'>No hay envíos en el historial</p>";
+                return;
+            }
+
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Físico</th>
+                        <th>Muestras</th>
+                        <th>Caducados</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            todosEnvios.slice(0, 10).forEach(e => {
+                let estado = e.total === e.sistema ? 
+                    '<span class="badge badge-success">Correcto</span>' : 
+                    '<span class="badge badge-warning">Diferencia</span>';
+                
+                html += `<tr>
+                    <td>${e.fecha}</td>
+                    <td>${e.producto}</td>
+                    <td>${e.sistema}</td>
+                    <td>${e.fisico}</td>
+                    <td>${e.muestras}</td>
+                    <td>${e.caducados}</td>
+                    <td><strong>${e.total}</strong></td>
+                    <td>${estado}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) {
+            console.error("Error cargando historial:", error);
+            container.innerHTML = "<p class='text-center'>Error cargando historial</p>";
         }
     }
 
@@ -1225,7 +2369,7 @@
         setTimeout(() => {
             localStorage.clear();
             window.location.href = "index.html";
-        }, 1000);
+        }, 1500);
     }
 
     // ============================================
@@ -1233,20 +2377,24 @@
     // ============================================
     async function inicializar() {
         try {
+            mostrarLoading(true);
             await Promise.all([
                 cargarProductosAsignados(),
                 cargarDashboard(),
                 cargarPendientes(),
-                cargarHistorial()
+                cargarHistorial(),
+                cargarProductosMaquila(),
+                cargarHistorialMaquilas()
             ]);
             console.log("Inicialización completada");
         } catch (error) {
             console.error("Error en inicialización:", error);
-            mostrarToast('Error', 'Error al cargar datos', 'error');
+            mostrarToast('Error', 'Error al cargar datos: ' + error.message, 'error');
+        } finally {
+            mostrarLoading(false);
         }
     }
 
-    // Iniciar cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', inicializar);
     } else {
