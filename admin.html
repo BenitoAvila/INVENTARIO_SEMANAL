@@ -57,6 +57,12 @@
             to { transform: rotate(360deg); }
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* ===== ESTILOS GENERALES ===== */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -145,12 +151,6 @@
             animation: pulse 1s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
         .notification-dropdown {
             position: absolute;
             top: 50px;
@@ -179,6 +179,38 @@
             z-index: 2;
         }
 
+        .notification-header .mark-all {
+            font-size: 12px;
+            color: var(--primary-light);
+            cursor: pointer;
+        }
+        .notification-header .mark-all:hover {
+            text-decoration: underline;
+        }
+        .notification-header .close-dropdown {
+            font-size: 14px;
+            cursor: pointer;
+            color: var(--light);
+            padding: 2px 6px;
+            border-radius: var(--border-radius-sm);
+            transition: background 0.2s;
+        }
+        .notification-header .close-dropdown:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* bell animation */
+        @keyframes shake {
+            0% { transform: rotate(0); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(0); }
+            75% { transform: rotate(-15deg); }
+            100% { transform: rotate(0); }
+        }
+        .notification-bell.ring {
+            animation: shake 0.5s ease-in-out 0s 4;
+        }
+
         .notification-header h4 {
             font-size: 16px;
             display: flex;
@@ -199,8 +231,20 @@
         .notification-item {
             padding: 15px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            transition: background 0.3s;
+            transition: background 0.3s, transform 0.2s;
             cursor: pointer;
+            position: relative; /* allow delete icon positioning */
+            border-radius: var(--border-radius-sm);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .notification-item.new {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .notification-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(3px);
         }
 
         .notification-item:hover {
@@ -217,6 +261,20 @@
             color: var(--light);
             opacity: 0.7;
             margin-top: 5px;
+        }
+
+        /* delete button shown on read notifications */
+        .delete-notification {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 14px;
+            color: var(--danger);
+            cursor: pointer;
+            user-select: none;
+        }
+        .delete-notification:hover {
+            color: var(--danger-dark);
         }
 
         /* ===== MENÚ ===== */
@@ -354,8 +412,31 @@
             color: var(--white);
         }
 
+        .btn-info {
+            background: var(--info);
+            color: var(--white);
+        }
+
+        .btn-info:hover {
+            background: #00838f;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #1b5e20;
+        }
+
         .btn-block {
             width: 100%;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
         }
 
         /* ===== TABLAS ===== */
@@ -562,6 +643,85 @@
 
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--warning); }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--darker);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header h3 {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--light);
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .info-box {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+        }
+
+        /* ===== ACCIONES ===== */
+        .acciones-cell {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
 
         /* ===== SECCIONES ===== */
         .seccion {
@@ -595,6 +755,10 @@
             .resumen-grid {
                 grid-template-columns: 1fr;
             }
+
+            .acciones-cell {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -607,6 +771,19 @@
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Modal para opciones de eliminación -->
+    <div class="modal" id="modalOpcionesEliminar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash" style="color: var(--danger);"></i> Gestionar Respuesta</h3>
+                <span class="modal-close" onclick="cerrarModalOpciones()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalOpcionesContenido">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
     </div>
 
     <!-- Header con Notificaciones -->
@@ -627,7 +804,10 @@
             <div class="notification-dropdown" id="notificationDropdown">
                 <div class="notification-header">
                     <h4><i class="fas fa-bell"></i> Notificaciones</h4>
-                    <span class="mark-read" onclick="marcarTodasLeidas()">Marcar todas</span>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="mark-all" onclick="marcarTodasLeidas()">Marcar todas leídas</span>
+                        <span class="close-dropdown" onclick="toggleNotifications()" title="Cerrar">✖</span>
+                    </div>
                 </div>
                 <div id="notificacionesLista">
                     <p style="text-align:center; padding:20px;">Cargando...</p>
@@ -743,7 +923,7 @@
         </div>
     </div>
 
-    <!-- USUARIOS (sin cambios) -->
+    <!-- USUARIOS -->
     <div id="seccion-usuarios" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-user-plus"></i> Crear Usuario</h3>
@@ -772,7 +952,7 @@
         <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- PRODUCTOS (sin cambios) -->
+    <!-- PRODUCTOS -->
     <div id="seccion-productos" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-box"></i> Crear Producto</h3>
@@ -806,7 +986,7 @@
         <div id="listaProductos" class="table-container"></div>
     </div>
 
-    <!-- ASIGNACIONES (sin cambios) -->
+    <!-- ASIGNACIONES -->
     <div id="seccion-asignaciones" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-calendar-alt"></i> Asignar Producto</h3>
@@ -846,7 +1026,7 @@
         <div id="asignacionesHoy" class="table-container"></div>
     </div>
 
-    <!-- INVENTARIO (sin cambios) -->
+    <!-- INVENTARIO -->
     <div id="seccion-inventario" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-search"></i> Consultar Inventario</h3>
@@ -869,7 +1049,7 @@
             </div>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
             <button class="btn btn-primary" onclick="cargarInventario()">
                 <i class="fas fa-search"></i> Buscar
             </button>
@@ -915,6 +1095,7 @@
     let todosLosRegistros = [];
     let graficoInventarios = null;
     let graficoTopProductos = null;
+    let respuestaSeleccionada = null; // Para el modal de opciones
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -942,7 +1123,8 @@
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
         
-        let icono = tipo === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        let icono = tipo === 'success' ? 'fa-check-circle' : 
+                    tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
         
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
@@ -963,30 +1145,55 @@
     }
 
     // ============================================
-    // SISTEMA DE NOTIFICACIONES
+    // SISTEMA DE NOTIFICACIONES MEJORADO
     // ============================================
     let notificaciones = [];
     let notificacionesNoLeidas = 0;
     let ultimaNotificacionId = null;
 
     function inicializarNotificaciones() {
+        // primero cargamos lo que haya en localStorage para mostrar rápido
         cargarNotificacionesGuardadas();
         
-        let mesActual = new Date().toISOString().substring(0, 7);
+        // suscripción a la rama global de notificaciones en la base de datos
+        db.ref("notificaciones").orderByChild("timestamp").limitToLast(50)
+          .on("child_added", (snapshot) => {
+              let n = snapshot.val();
+              if (!n || !n.id) return;
+              // ignorar si alguien ya la marcó como leída o fue eliminada
+              if (n.leida) {
+                  // eliminarla de la base por si quedó colgada
+                  db.ref('notificaciones/' + n.id).remove().catch(() => {});
+                  return;
+              }
+              // siempre mantenemos el array con los más recientes al principio
+              if (!notificaciones.some(x => x.id === n.id)) {
+                  notificaciones.unshift(n);
+                  notificacionesNoLeidas++;
+                  // limpiar exceso
+                  if (notificaciones.length > 50) notificaciones = notificaciones.slice(0, 50);
+                  localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+                  actualizarBadgeNotificaciones();
+                  mostrarNotificaciones();
+                  ringBell();
+              }
+          });
         
+        // seguir también escuchando nuevos inventarios para crear notificación automática
+        let mesActual = new Date().toISOString().substring(0, 7);
         db.ref("inventario/" + mesActual).on("child_added", (snapshot) => {
             let nuevoInventario = snapshot.val();
             let notificacionId = snapshot.key;
-            
+
             if (ultimaNotificacionId === notificacionId) return;
-            
+
             let fecha = new Date(nuevoInventario.fecha);
             let hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
-            
+
             if (fecha >= hoy && notificacionId !== ultimaNotificacionId) {
                 ultimaNotificacionId = notificacionId;
-                
+
                 let existe = notificaciones.some(n => n.id === notificacionId);
                 if (!existe) {
                     crearNotificacion({
@@ -995,26 +1202,36 @@
                         mensaje: `${nuevoInventario.nombre} envió: ${nuevoInventario.producto}`,
                         usuario: nuevoInventario.nombre,
                         producto: nuevoInventario.producto,
-                        fisico: nuevoInventario.fisico,
-                        muestras: nuevoInventario.muestras,
-                        caducados: nuevoInventario.caducados,
+                        productoId: nuevoInventario.productoId || '',
+                        fisico: nuevoInventario.fisico || 0,
+                        muestras: nuevoInventario.muestras || 0,
+                        caducados: nuevoInventario.caducados || 0,
                         fecha: nuevoInventario.fecha
-                    });
+                    }, true); // indica que debe almacenarse en DB
                 }
             }
         });
     }
 
-    function crearNotificacion(datos) {
+    // el segundo parámetro (guardarEnDB) controlará si también escribimos la
+    // notificación en la base de datos para que sea accesible desde otros clientes
+    function crearNotificacion(datos, guardarEnDB = false) {
         let notificacion = {
             id: datos.id || Date.now() + Math.random().toString(36).substr(2, 9),
             ...datos,
             leida: false,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            usuario: datos.usuario,
+            producto: datos.producto,
+            productoId: datos.productoId || '',
+            fisico: datos.fisico || 0,
+            muestras: datos.muestras || 0,
+            caducados: datos.caducados || 0,
+            fecha: datos.fecha || new Date().toISOString()
         };
         
         notificaciones.unshift(notificacion);
-        notificacionesNoLeidas++;
+        if (!notificacion.leida) notificacionesNoLeidas++;
         
         if (notificaciones.length > 50) {
             notificaciones = notificaciones.slice(0, 50);
@@ -1024,7 +1241,40 @@
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
         
+        // animación y alerta
+        ringBell();
         mostrarToast('Nueva notificación', datos.mensaje, 'info');
+        // si el dropdown está cerrado, abrirlo momentáneamente para llamar la atención
+        let dropdown = document.getElementById('notificationDropdown');
+        if (dropdown && dropdown.style.display !== 'block') {
+            dropdown.style.display = 'block';
+            setTimeout(() => { dropdown.style.display = 'none'; }, 4000);
+        }
+
+        if (guardarEnDB && db) {
+            try {
+                let ref = db.ref('notificaciones').push();
+                let copy = { ...notificacion, id: ref.key };
+                ref.set(copy);
+            } catch (e) {
+                console.error('Error guardando notificación en DB', e);
+            }
+        }
+    }
+
+    function ringBell() {
+        let bell = document.querySelector('.notification-bell');
+        if (!bell) return;
+        bell.classList.add('ring');
+        setTimeout(() => bell.classList.remove('ring'), 2000);
+    }
+
+    function marcarTodasLeidas() {
+        notificaciones = [];
+        notificacionesNoLeidas = 0;
+        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        actualizarBadgeNotificaciones();
+        mostrarNotificaciones();
     }
 
     function cargarNotificacionesGuardadas() {
@@ -1032,7 +1282,15 @@
             let guardadas = localStorage.getItem('notificaciones');
             if (guardadas) {
                 notificaciones = JSON.parse(guardadas);
-                notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
+                // eliminar cualquier notificación ya leída para que no vuelvan a mostrarse
+                notificaciones.forEach(n => {
+                    if (n.leida && db) {
+                        db.ref('notificaciones/' + n.id).remove().catch(() => {});
+                    }
+                });
+                notificaciones = notificaciones.filter(n => !n.leida);
+                notificacionesNoLeidas = notificaciones.length;
+                localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
                 actualizarBadgeNotificaciones();
             }
         } catch (error) {
@@ -1048,6 +1306,26 @@
                 mostrarNotificaciones();
             }
         }
+    }
+
+    function timeAgo(date) {
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        const intervals = [
+            { label: 'año', seconds: 31536000 },
+            { label: 'mes', seconds: 2592000 },
+            { label: 'día', seconds: 86400 },
+            { label: 'hora', seconds: 3600 },
+            { label: 'minuto', seconds: 60 },
+            { label: 'segundo', seconds: 1 }
+        ];
+        for (let i of intervals) {
+            let count = Math.floor(seconds / i.seconds);
+            if (count >= 1) {
+                return `${count} ${i.label}${count > 1 ? 's' : ''} atrás`;
+            }
+        }
+        return 'ahora';
     }
 
     function mostrarNotificaciones() {
@@ -1066,48 +1344,265 @@
                     <div style="flex:1;">
                         <div style="font-weight:bold;">${n.titulo}</div>
                         <div style="font-size:13px; margin:5px 0;">${n.mensaje}</div>
-                        <div class="notification-time">${new Date(n.fecha).toLocaleString()}</div>
+                        <div class="notification-time">${timeAgo(new Date(n.fecha))}</div>
                     </div>
                 </div>
+                ${n.leida ? `<span class="delete-notification" onclick="eliminarNotificacion('${n.id}', event)">✖</span>` : ''}
             </div>
         `).join('');
+        // añadir clase de entrada al primer elemento
+        let first = container.querySelector('.notification-item');
+        if (first) first.classList.add('new');
     }
 
+    // ============================================
+    // FUNCIÓN MEJORADA PARA VER NOTIFICACIÓN
+    // ============================================
+
+    // eliminar notificación (solo la quita, ya sea leída o no)
+    function eliminarNotificacion(id, event) {
+        // evitar que el clic en la 'x' abra la notificación
+        if (event) event.stopPropagation();
+        notificaciones = notificaciones.filter(n => n.id !== id);
+        notificacionesNoLeidas = notificaciones.filter(n => !n.leida).length;
+        localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+        // también eliminamos de la base de datos para que no reaparezca
+        if (db) {
+            db.ref('notificaciones/' + id).remove().catch(e => console.error(e));
+        }
+        actualizarBadgeNotificaciones();
+        mostrarNotificaciones();
+    }
     function verNotificacion(id) {
         let notificacion = notificaciones.find(n => n.id === id);
         if (notificacion) {
             notificacion.leida = true;
-            notificacionesNoLeidas = Math.max(0, notificacionesNoLeidas - 1);
-            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-            actualizarBadgeNotificaciones();
-            mostrarNotificaciones();
+            // una vez marcada como leída la quitamos del array para que no vuelva a aparecer
+            eliminarNotificacion(id);
             
             let dropdown = document.getElementById("notificationDropdown");
             if (dropdown) dropdown.style.display = "none";
             
             mostrarSeccion('inventario');
             
-            let fechaNotificacion = new Date(notificacion.fecha).toISOString().split('T')[0];
+            // Obtener la fecha de la notificación
+            let fechaNotificacion = new Date(notificacion.fecha);
             
-            document.getElementById("fechaInicio").value = fechaNotificacion;
-            document.getElementById("fechaFin").value = fechaNotificacion;
-            document.getElementById("filtroUsuario").value = notificacion.usuario;
+            // Formatear la fecha correctamente (YYYY-MM-DD)
+            let año = fechaNotificacion.getFullYear();
+            let mes = String(fechaNotificacion.getMonth() + 1).padStart(2, '0');
+            let dia = String(fechaNotificacion.getDate()).padStart(2, '0');
+            let fechaFormateada = `${año}-${mes}-${dia}`;
             
+            // Configurar fechas para buscar en el mismo día
+            document.getElementById("fechaInicio").value = fechaFormateada;
+            document.getElementById("fechaFin").value = fechaFormateada;
+            
+            // Configurar filtro de usuario
+            document.getElementById("filtroUsuario").value = notificacion.usuario || '';
+            
+            // Mostrar mensaje de carga
+            let cont = document.getElementById("resultadoInventario");
+            cont.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Buscando inventario...</p>";
+            
+            // Pequeño retraso para asegurar que los filtros se aplicaron
             setTimeout(() => {
-                document.getElementById("resultadoInventario").innerHTML = "<p class='text-center'>Buscando inventario...</p>";
-                cargarInventario();
-                mostrarToast('Filtrado aplicado', `Mostrando inventario de ${notificacion.usuario}`, 'success');
+                cargarInventarioConNotificacion(notificacion);
             }, 300);
         }
     }
 
+    // ============================================
+    // FUNCIÓN ESPECÍFICA PARA CARGAR INVENTARIO DESDE NOTIFICACIÓN
+    // ============================================
+    async function cargarInventarioConNotificacion(notificacion) {
+        let fechaInicio = document.getElementById("fechaInicio").value;
+        let fechaFin = document.getElementById("fechaFin").value;
+        let filtroUsuario = document.getElementById("filtroUsuario").value;
+
+        let cont = document.getElementById("resultadoInventario");
+        cont.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+
+        try {
+            let inicio = parseLocalDate(fechaInicio);
+            inicio.setHours(0, 0, 0, 0);
+            
+            let fin = parseLocalDate(fechaFin);
+            fin.setHours(23, 59, 59, 999);
+            // los límites se mantienen en horario local
+
+            let registros = [];
+            let encontrado = false;
+
+            // Determinar los meses a buscar (mes de la notificación y meses adyacentes)
+            let meses = [];
+            let fechaNoti = new Date(notificacion.fecha);
+            
+            // Mes de la notificación
+            let añoNoti = fechaNoti.getFullYear();
+            let mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
+            meses.push(`${añoNoti}-${mesNoti}`);
+            
+            // Mes anterior
+            fechaNoti.setMonth(fechaNoti.getMonth() - 1);
+            añoNoti = fechaNoti.getFullYear();
+            mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
+            meses.push(`${añoNoti}-${mesNoti}`);
+            
+            // Mes siguiente
+            fechaNoti.setMonth(fechaNoti.getMonth() + 2);
+            añoNoti = fechaNoti.getFullYear();
+            mesNoti = String(fechaNoti.getMonth() + 1).padStart(2, '0');
+            meses.push(`${añoNoti}-${mesNoti}`);
+
+            // Quitar duplicados
+            meses = [...new Set(meses)];
+
+            // Buscar en cada mes
+            for (let mes of meses) {
+                let snapshot = await db.ref("inventario/" + mes).once("value");
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        let reg = child.val();
+                        let fechaReg = new Date(reg.fecha);
+                        
+                        if (fechaReg >= inicio && fechaReg <= fin) {
+                            if (!filtroUsuario || reg.nombre === filtroUsuario) {
+                                // Verificar si es la notificación específica
+                                if (child.key === notificacion.id || 
+                                    (reg.nombre === notificacion.usuario && 
+                                     reg.producto === notificacion.producto &&
+                                     Math.abs(new Date(reg.fecha) - new Date(notificacion.fecha)) < 60000)) {
+                                    encontrado = true;
+                                }
+                                
+                                registros.push({ 
+                                    key: child.key, 
+                                    mes: mes, 
+                                    ...reg 
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+
+            registros.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            todosLosRegistros = registros;
+
+            if (registros.length === 0) {
+                if (!encontrado) {
+                    cont.innerHTML = `
+                        <div style="text-align: center; padding: 30px;">
+                            <i class="fas fa-search" style="font-size: 48px; color: var(--warning); margin-bottom: 15px;"></i>
+                            <p style="font-size: 16px; margin-bottom: 10px;">No se encontró el registro específico</p>
+                            <p style="font-size: 14px; color: var(--light); margin-bottom: 20px;">Detalles de la notificación:</p>
+                            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; text-align: left; max-width: 400px; margin: 0 auto;">
+                                <p><strong>Usuario:</strong> ${notificacion.usuario}</p>
+                                <p><strong>Producto:</strong> ${notificacion.producto}</p>
+                                <p><strong>Fecha:</strong> ${new Date(notificacion.fecha).toLocaleString()}</p>
+                                <p><strong>Valores:</strong> Físico: ${notificacion.fisico}, Muestras: ${notificacion.muestras}, Caducados: ${notificacion.caducados}</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="cargarInventario()" style="margin-top: 20px;">
+                                <i class="fas fa-sync"></i> Intentar con filtros actuales
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    cont.innerHTML = "<p class='text-center'>📭 No hay registros en el rango seleccionado</p>";
+                }
+                return;
+            }
+
+            // Mostrar los resultados
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Físico</th>
+                        <th>Muestras</th>
+                        <th>Caducados</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            // Resaltar el registro de la notificación
+            registros.forEach(r => {
+                let fecha = new Date(r.fecha).toLocaleString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                let total = r.fisico + r.muestras + r.caducados;
+                let cuadra = total === r.sistema;
+                
+                // Verificar si este registro corresponde a la notificación
+                let esNotificacion = (r.key === notificacion.id) || 
+                                    (r.nombre === notificacion.usuario && 
+                                     r.producto === notificacion.producto &&
+                                     Math.abs(new Date(r.fecha) - new Date(notificacion.fecha)) < 60000);
+                
+                let estiloFila = esNotificacion ? 'style="background: rgba(0,200,83,0.2); border-left: 4px solid var(--primary);"' : '';
+                
+                // Escapar caracteres especiales para el onclick
+                let respuestaJson = JSON.stringify(r).replace(/"/g, '&quot;');
+                
+                html += `<tr ${estiloFila}>
+                    <td>${fecha} ${esNotificacion ? '<i class="fas fa-bell" style="color: var(--primary); margin-left: 5px;"></i>' : ''}</td>
+                    <td><strong>${r.nombre}</strong></td>
+                    <td>${r.producto}</td>
+                    <td><span class="badge badge-primary">${r.sistema}</span></td>
+                    <td>${r.fisico}</td>
+                    <td>${r.muestras}</td>
+                    <td>${r.caducados}</td>
+                    <td><strong>${total}</strong></td>
+                    <td><span class="badge ${cuadra ? 'badge-success' : 'badge-danger'}">${cuadra ? 'OK' : 'Error'}</span></td>
+                    <td>
+                        <div class="acciones-cell">
+                            <button class="btn btn-info btn-sm" onclick="abrirModalOpciones(${respuestaJson})" title="Gestionar respuesta">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            
+            // Agregar un mensaje si se encontró la notificación
+            if (encontrado) {
+                html = `<div style="margin-bottom: 10px; padding: 10px; background: rgba(0,200,83,0.1); border-radius: 8px;">
+                    <i class="fas fa-check-circle" style="color: var(--primary);"></i> 
+                    Registro encontrado (resaltado en verde)
+                </div>` + html;
+            }
+            
+            cont.innerHTML = html;
+            
+            // Mostrar toast de éxito
+            mostrarToast('Éxito', `Se encontraron ${registros.length} registros`, 'success');
+            
+        } catch (error) {
+            console.error("Error cargando inventario desde notificación:", error);
+            cont.innerHTML = "<p class='text-center text-danger'>Error cargando inventario</p>";
+        }
+    }
+
     function marcarTodasLeidas() {
-        notificaciones.forEach(n => n.leida = true);
+        // descartamos completamente todas las notificaciones para que no reaparezcan
+        notificaciones = [];
         notificacionesNoLeidas = 0;
         localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
         actualizarBadgeNotificaciones();
         mostrarNotificaciones();
-        mostrarToast('Éxito', 'Notificaciones marcadas como leídas', 'success');
+        mostrarToast('Éxito', 'Todas las notificaciones se han eliminado', 'success');
     }
 
     function actualizarBadgeNotificaciones() {
@@ -1136,7 +1631,169 @@
             if (seccion === 'inventario') {
                 configurarFechas();
                 cargarFiltrosUsuarios();
+                // No cargar inventario automáticamente, esperar a que el usuario busque
             }
+        }
+    }
+
+    // ============================================
+    // FUNCIONES PARA GESTIONAR RESPUESTAS
+    // ============================================
+
+    // Abrir modal con opciones para la respuesta
+    function abrirModalOpciones(respuesta) {
+        respuestaSeleccionada = respuesta;
+        let modal = document.getElementById('modalOpcionesEliminar');
+        let contenido = document.getElementById('modalOpcionesContenido');
+        
+        let fecha = new Date(respuesta.fecha).toLocaleString();
+        
+        contenido.innerHTML = `
+            <p style="margin-bottom: 15px;">Selecciona una opción para la respuesta de <strong>${respuesta.nombre}</strong>:</p>
+            
+            <div class="info-box">
+                <p><strong>Producto:</strong> ${respuesta.producto}</p>
+                <p><strong>Fecha:</strong> ${fecha}</p>
+                <p><strong>Valores:</strong> Físico: ${respuesta.fisico} | Muestras: ${respuesta.muestras} | Caducados: ${respuesta.caducados}</p>
+                <p><strong>Total:</strong> ${respuesta.fisico + respuesta.muestras + respuesta.caducados}</p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-success" onclick="rehabilitarParaNuevaRespuesta()">
+                    <i class="fas fa-redo-alt"></i> Rehabilitar para nueva respuesta
+                </button>
+                <p style="font-size: 12px; color: var(--light); margin: 0 0 10px 0;">
+                    <i class="fas fa-info-circle"></i> Elimina la respuesta pero mantiene la asignación activa. El colaborador podrá enviar una nueva respuesta.
+                </p>
+                
+                <button class="btn btn-danger" onclick="eliminarPermanentemente()">
+                    <i class="fas fa-trash"></i> Eliminar permanentemente
+                </button>
+                <p style="font-size: 12px; color: var(--light); margin: 0;">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Elimina la respuesta y la asignación. El colaborador NO podrá volver a responder.
+                </p>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+    }
+
+    function cerrarModalOpciones() {
+        document.getElementById('modalOpcionesEliminar').classList.remove('active');
+        respuestaSeleccionada = null;
+    }
+
+    // Opción 1: Rehabilitar para nueva respuesta (elimina respuesta pero mantiene asignación)
+    async function rehabilitarParaNuevaRespuesta() {
+        if (!respuestaSeleccionada) {
+            cerrarModalOpciones();
+            return;
+        }
+
+        mostrarLoading(true);
+
+        try {
+            let respuesta = respuestaSeleccionada;
+            
+            // Eliminar solo la respuesta de inventario
+            if (respuesta.mes && respuesta.key) {
+                await db.ref(`inventario/${respuesta.mes}/${respuesta.key}`).remove();
+                
+                // Registrar acción en auditoría
+                await db.ref("auditoria/rehabilitaciones").push({
+                    admin: usuario,
+                    fecha: new Date().toISOString(),
+                    respuesta: {
+                        usuario: respuesta.nombre,
+                        producto: respuesta.producto,
+                        fechaOriginal: respuesta.fecha,
+                        valores: {
+                            fisico: respuesta.fisico,
+                            muestras: respuesta.muestras,
+                            caducados: respuesta.caducados
+                        }
+                    },
+                    tipo: 'rehabilitacion'
+                });
+
+                mostrarToast('Éxito', 'Respuesta eliminada. El colaborador podrá enviar una nueva.', 'success');
+                
+                // Recargar datos
+                await cargarInventario();
+                await cargarDashboard();
+                await cargarAsignacionesHoy();
+                
+                cerrarModalOpciones();
+            } else {
+                mostrarToast('Error', 'No se pudo identificar la respuesta', 'error');
+            }
+        } catch (error) {
+            console.error("Error rehabilitando respuesta:", error);
+            mostrarToast('Error', 'No se pudo rehabilitar la respuesta', 'error');
+        } finally {
+            mostrarLoading(false);
+        }
+    }
+
+    // Opción 2: Eliminar permanentemente (elimina respuesta y asignación)
+    async function eliminarPermanentemente() {
+        if (!respuestaSeleccionada) {
+            cerrarModalOpciones();
+            return;
+        }
+
+        if (!confirm("¿Estás seguro de eliminar permanentemente? El colaborador NO podrá volver a responder este producto.")) {
+            return;
+        }
+
+        mostrarLoading(true);
+
+        try {
+            let respuesta = respuestaSeleccionada;
+            let fechaRespuesta = new Date(respuesta.fecha).toISOString().split('T')[0];
+            
+            // 1. Eliminar la respuesta de inventario
+            if (respuesta.mes && respuesta.key) {
+                await db.ref(`inventario/${respuesta.mes}/${respuesta.key}`).remove();
+            }
+            
+            // 2. Eliminar la asignación correspondiente
+            if (respuesta.nombre && respuesta.productoId) {
+                await db.ref(`asignaciones/${fechaRespuesta}/${respuesta.nombre}/${respuesta.productoId}`).remove();
+            }
+            
+            // 3. Registrar en auditoría
+            await db.ref("auditoria/eliminaciones_permanentes").push({
+                admin: usuario,
+                fecha: new Date().toISOString(),
+                respuesta: {
+                    usuario: respuesta.nombre,
+                    producto: respuesta.producto,
+                    productoId: respuesta.productoId,
+                    fechaOriginal: respuesta.fecha,
+                    valores: {
+                        fisico: respuesta.fisico,
+                        muestras: respuesta.muestras,
+                        caducados: respuesta.caducados
+                    }
+                },
+                tipo: 'eliminacion_permanente'
+            });
+
+            mostrarToast('Éxito', 'Respuesta y asignación eliminadas permanentemente', 'warning');
+            
+            // Recargar datos
+            await cargarInventario();
+            await cargarDashboard();
+            await cargarAsignacionesHoy();
+            
+            cerrarModalOpciones();
+            
+        } catch (error) {
+            console.error("Error eliminando permanentemente:", error);
+            mostrarToast('Error', 'No se pudo eliminar permanentemente', 'error');
+        } finally {
+            mostrarLoading(false);
         }
     }
 
@@ -1157,10 +1814,6 @@
                 db.ref("inventario/" + mesAnterior).once("value")
             ]);
 
-            // ============================================
-            // 1. CARDS DE RESUMEN
-            // ============================================
-            
             // Usuarios
             let totalUsuarios = usuarios.numChildren();
             document.getElementById("totalUsuarios").textContent = totalUsuarios;
@@ -1199,10 +1852,7 @@
             document.getElementById("respuestasTrend").innerHTML = `<i class="fas fa-chart-line"></i> ${porcentajeCompletado}% completado`;
             document.getElementById("asignacionesTrend").innerHTML = `Pendientes: ${totalAsignaciones - respuestasHoy}`;
 
-            // ============================================
-            // 2. GRÁFICO DE INVENTARIOS POR DÍA
-            // ============================================
-            
+            // Gráfico de inventarios por día
             let fechas = [];
             let datosInventarios = [];
             
@@ -1264,10 +1914,7 @@
                 }
             });
 
-            // ============================================
-            // 3. GRÁFICO DE TOP PRODUCTOS
-            // ============================================
-            
+            // Gráfico de top productos
             let conteoProductos = {};
             inventario.forEach(child => {
                 let prod = child.val().producto;
@@ -1312,10 +1959,7 @@
                 }
             });
 
-            // ============================================
-            // 4. TOP 5 COLABORADORES
-            // ============================================
-            
+            // Top 5 colaboradores
             let conteoColaboradores = {};
             inventario.forEach(child => {
                 let inv = child.val();
@@ -1345,10 +1989,7 @@
             
             document.getElementById("topColaboradores").innerHTML = topColaboradores.length ? htmlColab : "<p class='text-center'>Sin datos</p>";
 
-            // ============================================
-            // 5. RESUMEN DEL MES
-            // ============================================
-            
+            // Resumen del mes
             let totalInventarios = inventario.numChildren();
             let totalCuadran = 0;
             let totalFisico = 0;
@@ -1384,7 +2025,7 @@
     }
 
     // ============================================
-    // USUARIOS (sin cambios)
+    // USUARIOS
     // ============================================
     async function crearUsuario() {
         let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1438,8 +2079,8 @@
                     <td><strong>${child.key}</strong></td>
                     <td><span class="badge ${child.val().rol === 'admin' ? 'badge-warning' : 'badge-success'}">${child.val().rol}</span></td>
                     <td>
-                        <button class="btn btn-warning" onclick="editarUsuario('${child.key}')" style="padding:5px 10px;">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarUsuario('${child.key}')" style="padding:5px 10px;">Eliminar</button>
+                        <button class="btn btn-warning btn-sm" onclick="editarUsuario('${child.key}')">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${child.key}')">Eliminar</button>
                     </td>
                 </tr>`;
             });
@@ -1477,7 +2118,7 @@
     }
 
     // ============================================
-    // PRODUCTOS (sin cambios)
+    // PRODUCTOS
     // ============================================
     async function crearProducto() {
         let nombre = document.getElementById("nombreProducto").value.trim();
@@ -1538,8 +2179,8 @@
                     <td><strong>${p.nombre}</strong></td>
                     <td><span class="badge badge-primary">${p.sistema}</span></td>
                     <td>
-                        <button class="btn btn-warning" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})" style="padding:5px 10px;">Editar</button>
-                        <button class="btn btn-danger" onclick="eliminarProducto('${p.id}')" style="padding:5px 10px;">Eliminar</button>
+                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">Editar</button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">Eliminar</button>
                     </td>
                 </tr>`;
             });
@@ -1576,7 +2217,7 @@
     }
 
     // ============================================
-    // ASIGNACIONES (sin cambios)
+    // ASIGNACIONES
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
@@ -1754,7 +2395,7 @@
                         </span>
                     </td>
                     <td>
-                        <button class="btn btn-danger" onclick="eliminarAsignacion('${fechaHoy}','${a.usuario}','${a.productoId}')" style="padding:5px 10px;">
+                        <button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${fechaHoy}','${a.usuario}','${a.productoId}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -1783,7 +2424,7 @@
     }
 
     // ============================================
-    // INVENTARIO (sin cambios)
+    // INVENTARIO
     // ============================================
     function configurarFechas() {
         let hoy = new Date();
@@ -1813,6 +2454,18 @@
         }
     }
 
+    // helper que convierte un ISO UTC a un Date ajustado al día local
+    function fechaLocalDesdeISOString(iso) {
+        let d = new Date(iso);
+        return new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    }
+
+    // parsear un string "YYYY-MM-DD" como fecha local (no UTC)
+    function parseLocalDate(str) {
+        let [y, m, d] = str.split('-').map(Number);
+        return new Date(y, m - 1, d);
+    }
+
     async function cargarInventario() {
         let fechaInicio = document.getElementById("fechaInicio").value;
         let fechaFin = document.getElementById("fechaFin").value;
@@ -1827,16 +2480,16 @@
         cont.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
 
         try {
-            let inicio = new Date(fechaInicio);
+            let inicio = parseLocalDate(fechaInicio);
             inicio.setHours(0, 0, 0, 0);
             
-            let fin = new Date(fechaFin);
+            let fin = parseLocalDate(fechaFin);
             fin.setHours(23, 59, 59, 999);
 
             let registros = [];
 
             let meses = [];
-            let fechaActual = new Date();
+            let fechaActual = new Date(fechaFin);
             for (let i = 0; i < 3; i++) {
                 let anio = fechaActual.getFullYear();
                 let mes = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
@@ -1849,7 +2502,8 @@
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
                         let reg = child.val();
-                        let fechaReg = new Date(reg.fecha);
+                        // convertir fecha UTC a día local
+                        let fechaReg = fechaLocalDesdeISOString(reg.fecha);
                         
                         if (fechaReg >= inicio && fechaReg <= fin) {
                             if (!filtroUsuario || reg.nombre === filtroUsuario) {
@@ -1884,6 +2538,7 @@
                         <th>Caducados</th>
                         <th>Total</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -1899,6 +2554,8 @@
                 let total = r.fisico + r.muestras + r.caducados;
                 let cuadra = total === r.sistema;
                 
+                let respuestaJson = JSON.stringify(r).replace(/"/g, '&quot;');
+                
                 html += `<tr>
                     <td>${fecha}</td>
                     <td><strong>${r.nombre}</strong></td>
@@ -1909,6 +2566,13 @@
                     <td>${r.caducados}</td>
                     <td><strong>${total}</strong></td>
                     <td><span class="badge ${cuadra ? 'badge-success' : 'badge-danger'}">${cuadra ? 'OK' : 'Error'}</span></td>
+                    <td>
+                        <div class="acciones-cell">
+                            <button class="btn btn-info btn-sm" onclick="abrirModalOpciones(${respuestaJson})" title="Gestionar respuesta">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>`;
             });
             html += `</tbody></table>`;
@@ -1955,6 +2619,14 @@
     // ============================================
     mostrarSeccion('dashboard');
     inicializarNotificaciones();
+
+    // Cerrar modal al hacer clic fuera
+    window.onclick = function(event) {
+        let modal = document.getElementById('modalOpcionesEliminar');
+        if (event.target === modal) {
+            cerrarModalOpciones();
+        }
+    }
 </script>
 
 </body>
