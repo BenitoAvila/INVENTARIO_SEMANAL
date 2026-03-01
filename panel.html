@@ -1057,6 +1057,9 @@
         <div class="nav-item" onclick="cambiarVista('maquilas')">
             <i class="fas fa-industry"></i> Maquilas
         </div>
+        <div class="nav-item" onclick="cambiarVista('devueltas')">
+            <i class="fas fa-undo"></i> Devolv.
+        </div>
         <div class="nav-item" onclick="cambiarVista('historial')">
             <i class="fas fa-history"></i> Historial
         </div>
@@ -1342,6 +1345,14 @@
             <div id="todasMaquilasContainer" class="table-container">
                 <p class="text-center">Cargando maquilas...</p>
             </div>
+    </div>
+    <!-- SECCIÓN MAQUILAS DEVUELTAS -->
+    <div id="viewDevueltas" class="view" style="display:none;">
+        <h3><i class="fas fa-undo"></i> Maquilas Devueltas</h3>
+        <div id="devueltasContainer" class="table-container" style="margin-top:20px;">
+            <p class="text-center">Cargando...</p>
+        </div>
+    </div>
         </div>
     </div>
 
@@ -1595,8 +1606,12 @@
             document.getElementById('viewMaquilas').classList.add('active');
             cargarProductosMaquila();
             cargarTodasMaquilas();
-        } else if (vista === 'historial') {
+        } else if (vista === 'devueltas') {
             document.querySelectorAll('.nav-item')[3].classList.add('active');
+            document.getElementById('viewDevueltas').classList.add('active');
+            cargarMaquilasDevueltas();
+        } else if (vista === 'historial') {
+            document.querySelectorAll('.nav-item')[4].classList.add('active');
             document.getElementById('viewHistorial').classList.add('active');
             configurarFechasFiltros();
             cargarHistorial();

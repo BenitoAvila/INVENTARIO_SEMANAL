@@ -198,6 +198,16 @@
             font-size: 12px;
         }
 
+        .btn-refresh {
+            background: var(--secondary);
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-refresh:hover {
+            background: var(--secondary-dark);
+        }
+
         /* Tarjetas */
         .card {
             background: rgba(32, 58, 67, 0.95);
@@ -671,6 +681,13 @@
             </div>
         </div>
 
+        <!-- Botón de actualización manual -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+            <button class="btn btn-refresh" onclick="actualizarDashboard()">
+                <i class="fas fa-sync-alt"></i> Actualizar Dashboard
+            </button>
+        </div>
+
         <!-- NUEVA TARJETA: Acciones Pendientes por Colaborador -->
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -930,9 +947,9 @@
     try {
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        console.log("Firebase inicializado correctamente");
+        console.log("✅ Firebase inicializado correctamente");
     } catch (error) {
-        console.error("Error al inicializar Firebase:", error);
+        console.error("❌ Error al inicializar Firebase:", error);
     }
 
     // ============================================
@@ -1066,32 +1083,61 @@
     }
 
     // ============================================
-    // NOTIFICACIONES
+    // NOTIFICACIONES - CORREGIDO
     // ============================================
     function iniciarListenerNotificaciones() {
         if (!db) return;
-        db.ref("notificaciones").limitToLast(1).on("child_added", () => {
+        
+        // Escuchar TODAS las notificaciones nuevas
+        db.ref("notificaciones").orderByChild("fecha").limitToLast(1).on("child_added", (snapshot) => {
+            console.log("📬 Nueva notificación recibida:", snapshot.val());
             cargarNotificaciones();
+            // También actualizar el dashboard si está visible
+            const dashboardSection = document.getElementById('seccion-dashboard');
+            if (dashboardSection && dashboardSection.classList.contains('active')) {
+                cargarDashboard();
+            }
         });
+        
+        console.log("✅ Listener de notificaciones iniciado");
     }
 
     async function cargarNotificaciones() {
+        if (!db) {
+            console.warn("Firebase no disponible");
+            return;
+        }
+        
         try {
+            console.log("📥 Cargando notificaciones...");
+            // Obtener las últimas 50 notificaciones
             let snap = await db.ref("notificaciones").orderByChild("fecha").limitToLast(50).once("value");
             notificaciones = [];
-            if (snap.exists()) {
-                snap.forEach(child => notificaciones.push({ id: child.key, ...child.val() }));
-            }
-            notificaciones.reverse();
             
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    notificaciones.push({ id: child.key, ...child.val() });
+                });
+                console.log(`✅ ${notificaciones.length} notificaciones cargadas`);
+            } else {
+                console.log("📭 No hay notificaciones");
+            }
+            
+            // Ordenar por fecha (más recientes primero)
+            notificaciones.sort((a, b) => {
+                return new Date(b.fecha || 0) - new Date(a.fecha || 0);
+            });
+            
+            // Actualizar contador de no leídas
             let noLeidas = notificaciones.filter(n => !n.leida).length;
             let badge = document.getElementById('notificationCount');
             if (badge) {
                 badge.textContent = noLeidas;
                 badge.style.display = noLeidas > 0 ? 'flex' : 'none';
             }
+            
         } catch (error) {
-            console.error("Error cargando notificaciones:", error);
+            console.error("❌ Error cargando notificaciones:", error);
         }
     }
 
@@ -1109,34 +1155,55 @@
         await cargarNotificaciones();
         
         if (notificaciones.length === 0) {
-            container.innerHTML = "<p class='text-center' style='padding:20px;'>No hay notificaciones</p>";
+            container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
             return;
         }
         
         let html = `<div style="max-height:600px; overflow-y:auto;">`;
         notificaciones.slice(0, 20).forEach(n => {
             let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
-                       n.tipo === "maquila" ? "fa-industry" : "fa-cube";
+                       n.tipo === "maquila" ? "fa-industry" : 
+                       n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
             let color = n.tipo === "inventario" ? "badge-primary" : 
-                       n.tipo === "maquila" ? "badge-warning" : "badge-info";
+                       n.tipo === "maquila" ? "badge-warning" : 
+                       n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
             let usuario = n.usuario || n.detalles?.colaborador || 'Sistema';
             
-            html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary);">
+            // Crear mensaje descriptivo
+            let mensaje = '';
+            if (n.tipo === 'inventario') {
+                mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'} (F:${n.detalles?.fisico || 0}, M:${n.detalles?.muestras || 0}, C:${n.detalles?.caducados || 0})`;
+            } else if (n.tipo === 'maquila') {
+                mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'} (MP:${n.detalles?.mpCantidad || 0}, PT:${n.detalles?.ptCantidad || 0})`;
+            } else if (n.tipo === 'producto_maquila') {
+                mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
+            } else {
+                mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+            }
+            
+            html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
-                    <span class="badge ${color}"><i class="fas ${icono}"></i> ${n.tipo?.toUpperCase() || 'NOTIFICACION'}</span>
+                    <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase()}</span>
                     <small style="color:var(--light);">${fecha}</small>
                 </div>
-                <strong>${usuario}</strong>
-                <p style="margin:8px 0; font-size:13px;">${n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '')}</p>
-                ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')">Marcar leída</button>` : ''}
+                <strong style="color: var(--primary);">${usuario}</strong>
+                <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
+                ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
             </div>`;
         });
+        
+        if (notificaciones.length > 20) {
+            html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${notificaciones.length} notificaciones</p>`;
+        }
+        
         html += `</div>`;
         container.innerHTML = html;
     }
 
     async function marcarComoLeida(id) {
+        if (!db) return;
+        
         try {
             await db.ref(`notificaciones/${id}/leida`).set(true);
             mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
@@ -1328,6 +1395,13 @@
         } finally {
             mostrarLoading(false);
         }
+    }
+
+    // Función para actualizar manualmente el dashboard
+    function actualizarDashboard() {
+        cargarDashboard();
+        cargarNotificaciones();
+        mostrarToast('Actualizando', 'Datos actualizados manualmente', 'info');
     }
 
     function renderizarAccionesPendientes(accionesInventario, maquilasPendientes, todosColaboradores) {
@@ -2214,14 +2288,13 @@
                     asignaciones.push({ 
                         usuario, 
                         producto: data.nombreProducto, 
+                        productoId: prodSnap.key,
                         stock: data.stockSistema, 
                         multiples: data.permitirMultiples ? 'Sí' : 'No', 
                         respondida 
                     });
                 });
             });
-            
-            asignaciones.sort((a,b) => a.respondida ? 1 : -1);
             
             let html = `<table>
                 <thead>
@@ -2231,6 +2304,7 @@
                         <th>Stock Sistema</th>
                         <th>Múltiples</th>
                         <th>Estado</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -2245,6 +2319,14 @@
                     <td><span class="badge badge-primary">${a.stock}</span></td>
                     <td>${a.multiples}</td>
                     <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editarAsignacion('${a.usuario}','${a.productoId}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${a.usuario}','${a.productoId}')" style="margin-left:5px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>`;
             });
             
@@ -2255,6 +2337,42 @@
             console.error("Error al cargar asignaciones:", error); 
             container.innerHTML = "<p class='text-center'>Error al cargar asignaciones</p>"; 
         }
+    }
+
+    // ===== funciones para modificar/eliminar asignaciones =====
+    function eliminarAsignacion(usuario, productoId) {
+        if (!confirm('¿Eliminar esta asignación?')) return;
+        let fechaHoy = obtenerFechaHoyEcuador();
+        db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoId}`).remove()
+            .then(() => {
+                mostrarToast('Éxito', 'Asignación eliminada', 'success');
+                cargarAsignacionesHoy();
+                cargarDashboard();
+            })
+            .catch(() => mostrarToast('Error', 'Error al eliminar asignación', 'error'));
+    }
+
+    function editarAsignacion(usuario, productoId) {
+        let fechaHoy = obtenerFechaHoyEcuador();
+        db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoId}`).once('value')
+            .then(snap => {
+                if (!snap.exists()) return;
+                let data = snap.val();
+                let nuevoStock = prompt('Stock sistema:', data.stockSistema || '');
+                let permitirMult = confirm('Permitir múltiples?');
+                if (nuevoStock == null) return;
+                db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoId}`).update({
+                    stockSistema: parseInt(nuevoStock) || 0,
+                    permitirMultiples: permitirMult
+                }).then(() => {
+                    mostrarToast('Éxito', 'Asignación actualizada', 'success');
+                    cargarAsignacionesHoy();
+                    cargarDashboard();
+                }).catch(err => {
+                    console.error('Error actualizando asignación', err);
+                    mostrarToast('Error', 'No se pudo actualizar asignación', 'error');
+                });
+            });
     }
 
     // ============================================
@@ -2733,6 +2851,15 @@
                                 <i class="fas fa-edit"></i> Editar
                             </button>`
                         }
+                        <button class="btn btn-warning btn-sm" onclick="editarMaquilaAdmin('${m.key}','${m.mes}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarMaquila('${m.key}','${m.mes}')" style="margin-left:5px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="devolverMaquila('${m.key}','${m.mes}')" style="margin-left:5px;">
+                            <i class="fas fa-undo"></i>
+                        </button>
                     </td>
                 </tr>`;
             });
@@ -2798,6 +2925,60 @@
         }
     }
 
+    function eliminarMaquila(key, mes) {
+        if (confirm('¿Eliminar esta maquila?')) {
+            db.ref(`maquilas/${mes}/${key}`).remove()
+                .then(() => {
+                    mostrarToast('Éxito', 'Maquila eliminada', 'success');
+                    cargarMaquilas();
+                    cargarDashboard();
+                })
+                .catch(() => mostrarToast('Error', 'Error al eliminar maquila', 'error'));
+        }
+    }
+
+    function editarMaquilaAdmin(key, mes) {
+        // allow admin to adjust maquila details
+        db.ref(`maquilas/${mes}/${key}`).once('value').then(snap => {
+            if (!snap.exists()) return;
+            const m = snap.val();
+            let producto = prompt('Producto:', m.producto || '');
+            let mpCant = prompt('MP Cantidad:', m.mpCantidad || '');
+            let mpPres = prompt('MP Presentación:', m.mpPresentacion || '');
+            let ptCant = prompt('PT Cantidad:', m.ptCantidad || '');
+            let ptPres = prompt('PT Presentación:', m.ptPresentacion || '');
+            let sobr = prompt('Sobrantes:', m.sobrantes || '');
+            if (producto == null || mpCant == null || ptCant == null || sobr == null) return;
+            db.ref(`maquilas/${mes}/${key}`).update({
+                producto: producto.trim(),
+                mpCantidad: parseInt(mpCant) || 0,
+                mpPresentacion: mpPres.trim(),
+                ptCantidad: parseInt(ptCant) || 0,
+                ptPresentacion: ptPres.trim(),
+                sobrantes: parseInt(sobr) || 0
+            }).then(() => {
+                mostrarToast('Éxito', 'Maquila actualizada', 'success');
+                cargarMaquilas();
+                cargarDashboard();
+            }).catch(err => {
+                console.error('Error editando maquila admin', err);
+                mostrarToast('Error', 'No se pudo actualizar maquila', 'error');
+            });
+        });
+    }
+
+    function devolverMaquila(key, mes) {
+        if (confirm('¿Devolver esta maquila al colaborador para corrección?')) {
+            db.ref(`maquilas/${mes}/${key}`).update({ devuelta: true, numTransformacion: null })
+                .then(() => {
+                    mostrarToast('Éxito', 'Maquila devuelta', 'success');
+                    cargarMaquilas();
+                    cargarDashboard();
+                })
+                .catch(() => mostrarToast('Error', 'Error al devolver maquila', 'error'));
+        }
+    }
+
     // ============================================
     // CERRAR SESIÓN
     // ============================================
@@ -2816,15 +2997,16 @@
         verificarConexionFirebase();
         iniciarListenerNotificaciones();
         mostrarSeccion('dashboard');
-        setTimeout(() => cargarNotificaciones(), 1000);
+        
+        // Cargar notificaciones después de 1 segundo
+        setTimeout(() => {
+            cargarNotificaciones();
+            console.log("⏰ Carga inicial de notificaciones");
+        }, 1000);
     });
 
-    setInterval(() => {
-        const dashboardSection = document.getElementById('seccion-dashboard');
-        if (dashboardSection && dashboardSection.classList.contains('active')) {
-            cargarDashboard();
-        }
-    }, 30000);
+    // ELIMINADO: setInterval de actualización automática
+    // Ahora solo se actualiza manualmente con el botón
 </script>
 </body>
 </html>
