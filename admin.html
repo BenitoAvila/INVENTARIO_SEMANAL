@@ -280,17 +280,12 @@
             background: rgba(255,255,255,0.1);
             color: var(--white);
             font-size: 14px;
-            transition: all 0.3s;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
             background: rgba(255,255,255,0.15);
-        }
-
-        .form-control::placeholder {
-            color: rgba(255,255,255,0.5);
         }
 
         select.form-control option {
@@ -316,18 +311,11 @@
             background: var(--secondary);
             padding: 12px;
             text-align: left;
-            font-weight: 600;
-            font-size: 13px;
         }
 
         td {
             padding: 10px 12px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 13px;
-        }
-
-        tr:hover {
-            background: rgba(255,255,255,0.05);
         }
 
         .badge {
@@ -359,11 +347,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
         }
 
         .stat-icon {
@@ -376,12 +359,6 @@
             justify-content: center;
             font-size: 28px;
             color: var(--primary);
-        }
-
-        .stat-info h4 {
-            font-size: 14px;
-            color: var(--light);
-            margin-bottom: 5px;
         }
 
         .stat-number {
@@ -464,11 +441,6 @@
             color: var(--light);
             font-size: 24px;
             cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .modal-close:hover {
-            color: var(--danger);
         }
 
         .action-buttons {
@@ -537,34 +509,6 @@
         .toast.info { border-left-color: var(--secondary); }
         .toast.warning { border-left-color: var(--warning); }
 
-        .toast-icon {
-            font-size: 20px;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: bold;
-            margin-bottom: 3px;
-        }
-
-        .toast-message {
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .toast-close {
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .toast-close:hover {
-            opacity: 1;
-        }
-
         /* Dropdown notificaciones */
         .notification-dropdown {
             position: fixed;
@@ -586,24 +530,7 @@
             display: block;
         }
 
-        /* Utilidades */
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-3 {
-            margin-top: 15px;
-        }
-
-        .mb-3 {
-            margin-bottom: 15px;
-        }
-
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
             .header {
                 flex-direction: column;
                 text-align: center;
@@ -625,38 +552,6 @@
             .action-buttons {
                 flex-direction: column;
             }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .modal-content {
-                padding: 20px;
-            }
-        }
-
-        /* Scrollbar personalizada */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -737,7 +632,7 @@
     </div>
 
     <!-- SECCIÓN DASHBOARD -->
-    <div id="seccion-dashboard" class="card seccion active">
+    <div id="seccion-dashboard" class="card seccion">
         <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
@@ -1024,10 +919,18 @@
     try {
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        console.log("Firebase inicializado correctamente");
+        console.log("Firebase inicializado");
     } catch (error) {
-        console.error("Error al inicializar Firebase:", error);
+        console.error("Error Firebase:", error);
     }
+
+    // ============================================
+    // HANDLE GLOBAL ERRORS
+    // ============================================
+    window.onerror = function(message, source, lineno, colno, error) {
+        alert('Error de JavaScript en admin: ' + message);
+        console.error('Global error caught (admin)', message, source, lineno, colno, error);
+    };
 
     // ============================================
     // VARIABLES GLOBALES
@@ -1038,7 +941,6 @@
     let firebaseConnected = true;
     let chartUsuarios, chartActividad, chartAsignaciones, chartMaquilas;
     let registroEditando = null;
-    let chartsInicializados = false;
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -1068,16 +970,11 @@
     function mostrarToast(titulo, mensaje, tipo = 'success') {
         let container = document.getElementById('toastContainer');
         if (!container) return;
-        
         let toastId = 'toast_' + Date.now();
         let toast = document.createElement('div');
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
-        
-        let icono = tipo === 'success' ? 'fa-check-circle' : 
-                   tipo === 'error' ? 'fa-exclamation-circle' : 
-                   tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
-        
+        let icono = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
             <div class="toast-content">
@@ -1086,9 +983,7 @@
             </div>
             <div class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></div>
         `;
-        
         container.appendChild(toast);
-        
         setTimeout(() => {
             let el = document.getElementById(toastId);
             if (el) el.remove();
@@ -1099,25 +994,13 @@
         document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
         const target = document.getElementById(`seccion-${seccion}`);
         if (target) target.classList.add('active');
-        
         if (seccion === 'dashboard') cargarDashboard();
         if (seccion === 'usuarios') cargarUsuarios();
         if (seccion === 'productos') cargarProductos();
-        if (seccion === 'asignaciones') { 
-            cargarSelectoresAsignacion(); 
-            cargarAsignacionesHoy(); 
-        }
-        if (seccion === 'inventario') { 
-            configurarFechas(); 
-            cargarFiltrosUsuarios(); 
-            cargarInventario(); 
-        }
+        if (seccion === 'asignaciones') { cargarSelectoresAsignacion(); cargarAsignacionesHoy(); }
+        if (seccion === 'inventario') { configurarFechas(); cargarFiltrosUsuarios(); cargarInventario(); }
         if (seccion === 'productosMaquila') cargarProductosMaquila();
-        if (seccion === 'maquilas') { 
-            configurarFechasMaquila(); 
-            cargarFiltrosUsuariosMaquila(); 
-            cargarMaquilas(); 
-        }
+        if (seccion === 'maquilas') { configurarFechasMaquila(); cargarFiltrosUsuariosMaquila(); cargarMaquilas(); }
     }
 
     function verificarConexionFirebase() {
@@ -1154,7 +1037,6 @@
                 snap.forEach(child => notificaciones.push({ id: child.key, ...child.val() }));
             }
             notificaciones.reverse();
-            
             let noLeidas = notificaciones.filter(n => !n.leida).length;
             let badge = document.getElementById('notificationCount');
             if (badge) {
@@ -1176,22 +1058,16 @@
     async function mostrarListadoNotificaciones() {
         let container = document.getElementById("notification-dropdown");
         if (!container) return;
-        
         await cargarNotificaciones();
-        
         if (notificaciones.length === 0) {
             container.innerHTML = "<p class='text-center' style='padding:20px;'>No hay notificaciones</p>";
             return;
         }
-        
         let html = `<div style="max-height:600px; overflow-y:auto;">`;
         notificaciones.forEach(n => {
-            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
-                       n.tipo === "maquila" ? "fa-industry" : "fa-cube";
-            let color = n.tipo === "inventario" ? "badge-primary" : 
-                       n.tipo === "maquila" ? "badge-warning" : "badge-info";
-            let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
-            
+            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : n.tipo === "maquila" ? "fa-industry" : "fa-cube";
+            let color = n.tipo === "inventario" ? "badge-primary" : n.tipo === "maquila" ? "badge-warning" : "badge-info";
+            let fecha = new Date(n.fecha).toLocaleString();
             html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary);">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
                     <span class="badge ${color}"><i class="fas ${icono}"></i> ${n.tipo?.toUpperCase() || 'NOTIFICACION'}</span>
@@ -1209,339 +1085,161 @@
     async function marcarComoLeida(id) {
         try {
             await db.ref(`notificaciones/${id}/leida`).set(true);
-            mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
+            mostrarToast('Éxito', 'Notificación marcada', 'success');
             await mostrarListadoNotificaciones();
-            await cargarNotificaciones();
         } catch (error) {
-            console.error("Error al marcar notificación:", error);
-            mostrarToast('Error', 'No se pudo marcar la notificación', 'error');
+            console.error("Error al marcar:", error);
         }
     }
 
     // ============================================
-    // DASHBOARD - CORREGIDO
+    // DASHBOARD (CORREGIDO: zona horaria Ecuador + 6 meses)
     // ============================================
     async function cargarDashboard() {
         try {
             mostrarLoading(true);
-            
             // Obtener fecha actual en Ecuador
             const ahoraEcuador = new Date().toLocaleString('en-US', { timeZone: 'America/Guayaquil' });
             const fechaEcuador = new Date(ahoraEcuador);
             const fechaHoy = fechaEcuador.toISOString().split('T')[0];
             const mesActual = fechaEcuador.toISOString().substring(0,7);
 
-            // Obtener datos necesarios
-            const [usuariosSnap, productosSnap, maquilasProductosSnap] = await Promise.all([
+            const [usuariosSnap, productosSnap, asignacionesSnap, inventarioSnap, maquilasProductosSnap] = await Promise.all([
                 db.ref("usuarios").once("value"),
                 db.ref("productos").once("value"),
+                db.ref("asignaciones/" + fechaHoy).once("value"),
+                db.ref("inventario/" + mesActual).once("value"),
                 db.ref("maquilas_productos").once("value")
             ]);
 
-            // ===== TOTAL USUARIOS =====
             let totalUsuarios = 0, admins = 0, colaboradores = 0;
             if (usuariosSnap.exists()) {
                 usuariosSnap.forEach(child => {
                     totalUsuarios++;
-                    if (child.val().rol === "admin") admins++; 
-                    else colaboradores++;
+                    if (child.val().rol === "admin") admins++; else colaboradores++;
                 });
             }
             document.getElementById("totalUsuarios").textContent = totalUsuarios;
 
-            // ===== TOTAL PRODUCTOS =====
             let totalProductos = 0;
-            if (productosSnap.exists()) {
-                productosSnap.forEach(() => totalProductos++);
-            }
-            if (maquilasProductosSnap.exists()) {
-                maquilasProductosSnap.forEach(() => totalProductos++);
-            }
+            if (productosSnap.exists()) productosSnap.forEach(() => totalProductos++);
+            if (maquilasProductosSnap.exists()) maquilasProductosSnap.forEach(() => totalProductos++);
             document.getElementById("totalProductos").textContent = totalProductos;
 
-            // ===== ASIGNACIONES DE HOY =====
-            let asignacionesSnap = await db.ref("asignaciones/" + fechaHoy).once("value");
-            let totalAsignaciones = 0;
+            let totalAsignaciones = 0, asignacionesPendientes = 0, asignacionesRespondidas = 0;
             if (asignacionesSnap.exists()) {
-                asignacionesSnap.forEach(userSnap => {
-                    userSnap.forEach(() => totalAsignaciones++);
-                });
+                asignacionesSnap.forEach(userSnap => userSnap.forEach(() => totalAsignaciones++));
             }
             document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
 
-            // ===== RESPUESTAS DE HOY =====
-            let inventarioSnap = await db.ref("inventario/" + mesActual).once("value");
             let respuestasHoy = 0;
             if (inventarioSnap.exists()) {
                 inventarioSnap.forEach(child => {
                     let inv = child.val();
-                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) {
-                        respuestasHoy++;
-                    }
+                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) respuestasHoy++;
                 });
             }
             document.getElementById("totalRespuestas").textContent = respuestasHoy;
 
-            // ===== ASIGNACIONES PENDIENTES Y RESPONDIDAS =====
-            let asignacionesPendientes = 0, asignacionesRespondidas = 0;
             if (asignacionesSnap.exists()) {
                 asignacionesSnap.forEach(userSnap => {
-                    let usuario = userSnap.key;
                     userSnap.forEach(prodSnap => {
                         let productoId = prodSnap.key;
+                        let usuario = userSnap.key;
                         let respondida = false;
-                        
                         if (inventarioSnap.exists()) {
                             inventarioSnap.forEach(child => {
                                 let inv = child.val();
-                                if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy && 
-                                    inv.nombre === usuario && inv.productoId === productoId) {
-                                    respondida = true;
-                                }
+                                if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy && inv.nombre === usuario && inv.productoId === productoId) respondida = true;
                             });
                         }
-                        
-                        if (respondida) asignacionesRespondidas++; 
-                        else asignacionesPendientes++;
+                        if (respondida) asignacionesRespondidas++; else asignacionesPendientes++;
                     });
                 });
             }
 
-            // ===== MAQUILAS: contar pendientes y asignadas (últimos 6 meses) =====
+            // ----- MAQUILAS: contar pendientes y asignadas de los últimos 6 meses (en Ecuador) -----
             let maquilasPendientes = 0, maquilasAsignadas = 0;
-            
-            // Generar últimos 6 meses
             const meses = [];
-            const fechaInicio = new Date(fechaEcuador);
-            fechaInicio.setMonth(fechaInicio.getMonth() - 5); // 6 meses incluyendo el actual
-            fechaInicio.setDate(1);
-            
+            const inicio = new Date(fechaEcuador);
+            inicio.setDate(1); // primer día del mes actual
             for (let i = 0; i < 6; i++) {
-                const fecha = new Date(fechaInicio);
-                fecha.setMonth(fechaInicio.getMonth() + i);
+                const fecha = new Date(inicio);
+                fecha.setMonth(inicio.getMonth() - i);
                 const anio = fecha.getFullYear();
                 const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
                 meses.push(`${anio}-${mes}`);
             }
-
-            // Contar maquilas por mes
             for (const mes of meses) {
                 const snap = await db.ref("maquilas/" + mes).once("value");
                 if (snap.exists()) {
                     snap.forEach(child => {
                         const m = child.val();
-                        // Verificar si tiene número de transformación válido
-                        const tieneNumero = m.numTransformacion && 
-                                          m.numTransformacion.toString().trim() !== '' && 
-                                          m.numTransformacion !== 'null' && 
-                                          m.numTransformacion !== 'undefined';
-                        
-                        if (tieneNumero) {
-                            maquilasAsignadas++;
-                        } else {
-                            maquilasPendientes++;
-                        }
+                        if (!m.numTransformacion) maquilasPendientes++;
+                        else maquilasAsignadas++;
                     });
                 }
             }
-
-            // Verificación adicional: buscar maquilas pendientes en otros meses recientes
-            if (maquilasPendientes === 0 && maquilasAsignadas > 0) {
-                const fechaActual = new Date(fechaEcuador);
-                for (let i = 0; i < 30; i++) {
-                    const fecha = new Date(fechaActual);
-                    fecha.setDate(fecha.getDate() - i);
-                    const mes = fecha.getFullYear() + '-' + (fecha.getMonth() + 1).toString().padStart(2, '0');
-                    
-                    if (!meses.includes(mes)) {
-                        const snap = await db.ref("maquilas/" + mes).once("value");
-                        if (snap.exists()) {
-                            snap.forEach(child => {
-                                const m = child.val();
-                                if (m.fecha) {
-                                    const fechaReg = new Date(m.fecha).toISOString().split('T')[0];
-                                    const hace30Dias = new Date(fechaActual);
-                                    hace30Dias.setDate(hace30Dias.getDate() - 30);
-                                    const fechaLimite = hace30Dias.toISOString().split('T')[0];
-                                    
-                                    if (fechaReg >= fechaLimite) {
-                                        const tieneNumero = m.numTransformacion && 
-                                                          m.numTransformacion.toString().trim() !== '' && 
-                                                          m.numTransformacion !== 'null' && 
-                                                          m.numTransformacion !== 'undefined';
-                                        if (!tieneNumero) {
-                                            maquilasPendientes++;
-                                        }
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-
             document.getElementById("totalMaquilasPendientes").textContent = maquilasPendientes;
 
-            // ===== RENDERIZAR GRÁFICOS =====
-            renderizarGraficos(admins, colaboradores, asignacionesPendientes, asignacionesRespondidas, 
-                              maquilasPendientes, maquilasAsignadas, fechaEcuador);
-
-        } catch (error) {
-            console.error("Error en dashboard:", error);
-            mostrarToast('Error', 'No se pudo cargar el dashboard', 'error');
-        } finally {
-            mostrarLoading(false);
-        }
-    }
-
-    // Función separada para renderizar gráficos
-    async function renderizarGraficos(admins, colaboradores, pendientes, respondidas, maqPendientes, maqAsignadas, fechaEcuador) {
-        try {
-            // Destruir gráficos existentes
-            if (chartUsuarios) chartUsuarios.destroy();
-            if (chartActividad) chartActividad.destroy();
-            if (chartAsignaciones) chartAsignaciones.destroy();
-            if (chartMaquilas) chartMaquilas.destroy();
-
-            // Configuración común para gráficos
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        labels: { color: '#fff' }
-                    }
-                }
-            };
-
-            // Gráfico de usuarios
-            chartUsuarios = new Chart(document.getElementById('chartUsuarios'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Administradores', 'Colaboradores'],
-                    datasets: [{
-                        data: [admins, colaboradores],
-                        backgroundColor: ['#ff9800', '#00c853'],
-                        borderWidth: 0
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Gráfico de asignaciones
-            chartAsignaciones = new Chart(document.getElementById('chartAsignaciones'), {
-                type: 'bar',
-                data: {
-                    labels: ['Estado'],
-                    datasets: [
-                        { label: 'Pendientes', data: [pendientes], backgroundColor: '#ff9800' },
-                        { label: 'Respondidas', data: [respondidas], backgroundColor: '#00c853' }
-                    ]
-                },
-                options: {
-                    ...chartOptions,
-                    scales: {
-                        y: {
-                            ticks: { color: '#fff' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#fff' }
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de maquilas
-            chartMaquilas = new Chart(document.getElementById('chartMaquilas'), {
-                type: 'pie',
-                data: {
-                    labels: ['Pendientes', 'Asignadas'],
-                    datasets: [{
-                        data: [maqPendientes, maqAsignadas],
-                        backgroundColor: ['#ff9800', '#00c853'],
-                        borderWidth: 0
-                    }]
-                },
-                options: chartOptions
-            });
-
-            // Datos para actividad de últimos 7 días
+            // Datos para gráfico de actividad últimos 7 días (en Ecuador)
             let fechas = [], asignacionesPorDia = [], respuestasPorDia = [];
-            
             for (let i = 6; i >= 0; i--) {
                 let fecha = new Date(fechaEcuador);
                 fecha.setDate(fecha.getDate() - i);
                 let fechaStr = fecha.toISOString().split("T")[0];
                 let fechaMes = fechaStr.substring(0,7);
                 let fechaDisplay = fecha.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric' });
-                
                 fechas.push(fechaDisplay);
-                
                 let asigDia = 0, respDia = 0;
-                
-                // Asignaciones del día
                 let asigSnap = await db.ref("asignaciones/" + fechaStr).once("value");
-                if (asigSnap.exists()) {
-                    asigSnap.forEach(u => u.forEach(() => asigDia++));
-                }
-                
-                // Respuestas del día
+                if (asigSnap.exists()) asigSnap.forEach(u => u.forEach(() => asigDia++));
                 let invSnap = await db.ref("inventario/" + fechaMes).once("value");
-                if (invSnap.exists()) {
-                    invSnap.forEach(child => {
-                        let inv = child.val();
-                        if (inv.fecha && inv.fecha.split("T")[0] === fechaStr) {
-                            respDia++;
-                        }
-                    });
-                }
-                
+                if (invSnap.exists()) invSnap.forEach(child => {
+                    let inv = child.val();
+                    if (inv.fecha && inv.fecha.split("T")[0] === fechaStr) respDia++;
+                });
                 asignacionesPorDia.push(asigDia);
                 respuestasPorDia.push(respDia);
             }
 
-            // Gráfico de actividad
+            // Renderizar gráficos
+            if (chartUsuarios) chartUsuarios.destroy();
+            if (chartActividad) chartActividad.destroy();
+            if (chartAsignaciones) chartAsignaciones.destroy();
+            if (chartMaquilas) chartMaquilas.destroy();
+
+            chartUsuarios = new Chart(document.getElementById('chartUsuarios'), {
+                type: 'doughnut',
+                data: { labels: ['Administradores', 'Colaboradores'], datasets: [{ data: [admins, colaboradores], backgroundColor: ['#ff9800', '#00c853'] }] },
+                options: { plugins: { legend: { labels: { color: '#fff' } } } }
+            });
             chartActividad = new Chart(document.getElementById('chartActividad'), {
                 type: 'line',
-                data: {
-                    labels: fechas,
-                    datasets: [
-                        {
-                            label: 'Asignaciones',
-                            data: asignacionesPorDia,
-                            borderColor: '#ff9800',
-                            backgroundColor: 'rgba(255,152,0,0.1)',
-                            tension: 0.4,
-                            fill: true
-                        },
-                        {
-                            label: 'Respuestas',
-                            data: respuestasPorDia,
-                            borderColor: '#00c853',
-                            backgroundColor: 'rgba(0,200,83,0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    ...chartOptions,
-                    scales: {
-                        y: {
-                            ticks: { color: '#fff' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#fff' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        }
-                    }
-                }
+                data: { labels: fechas, datasets: [
+                    { label: 'Asignaciones', data: asignacionesPorDia, borderColor: '#ff9800', backgroundColor: 'rgba(255,152,0,0.1)', tension: 0.4, fill: true },
+                    { label: 'Respuestas', data: respuestasPorDia, borderColor: '#00c853', backgroundColor: 'rgba(0,200,83,0.1)', tension: 0.4, fill: true }
+                ]},
+                options: { scales: { y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } } }, plugins: { legend: { labels: { color: '#fff' } } } }
             });
-
+            chartAsignaciones = new Chart(document.getElementById('chartAsignaciones'), {
+                type: 'bar',
+                data: { labels: ['Asignaciones'], datasets: [
+                    { label: 'Pendientes', data: [asignacionesPendientes], backgroundColor: '#ff9800' },
+                    { label: 'Respondidas', data: [asignacionesRespondidas], backgroundColor: '#00c853' }
+                ]},
+                options: { scales: { y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: '#fff' } } }, plugins: { legend: { labels: { color: '#fff' } } } }
+            });
+            chartMaquilas = new Chart(document.getElementById('chartMaquilas'), {
+                type: 'pie',
+                data: { labels: ['Pendientes', 'Asignadas'], datasets: [{ data: [maquilasPendientes, maquilasAsignadas], backgroundColor: ['#ff9800', '#00c853'] }] },
+                options: { plugins: { legend: { labels: { color: '#fff' } } } }
+            });
         } catch (error) {
-            console.error("Error al renderizar gráficos:", error);
+            console.error("Error en dashboard:", error);
+            mostrarToast('Error', 'No se pudo cargar el dashboard', 'error');
+        } finally {
+            mostrarLoading(false);
         }
     }
 
@@ -1552,112 +1250,63 @@
         let user = document.getElementById("nuevoUsuario").value.trim();
         let pass = document.getElementById("nuevoPassword").value.trim();
         let rol = document.getElementById("rolUsuario").value;
-        
-        if (!user || !pass) { 
-            mostrarToast('Error', 'Complete todos los campos', 'error'); 
-            return; 
-        }
-        
+        if (!user || !pass) { mostrarToast('Error', 'Complete todos los campos', 'error'); return; }
         mostrarLoading(true);
-        
         try {
             let exists = await db.ref("usuarios/" + user).once("value");
-            if (exists.exists()) { 
-                mostrarToast('Error', 'El usuario ya existe', 'error'); 
-                return; 
-            }
-            
+            if (exists.exists()) { mostrarToast('Error', 'El usuario ya existe', 'error'); return; }
             await db.ref("usuarios/" + user).set({
                 password: hashPassword(pass),
                 rol: rol,
                 fechaCreacion: new Date().toISOString()
             });
-            
-            mostrarToast('Éxito', 'Usuario creado correctamente', 'success');
+            mostrarToast('Éxito', 'Usuario creado', 'success');
             document.getElementById("nuevoUsuario").value = "";
             document.getElementById("nuevoPassword").value = "";
-            await cargarUsuarios();
-            await cargarDashboard();
-            
+            cargarUsuarios();
+            cargarDashboard();
         } catch (error) {
-            console.error("Error al crear usuario:", error);
+            console.error("Error:", error);
             mostrarToast('Error', 'Error al crear usuario', 'error');
-        } finally { 
-            mostrarLoading(false); 
-        }
+        } finally { mostrarLoading(false); }
     }
 
     async function cargarUsuarios() {
         let container = document.getElementById("listaUsuarios");
         if (!container) return;
-        
         try {
             let snap = await db.ref("usuarios").once("value");
-            
-            if (!snap.exists()) { 
-                container.innerHTML = "<p class='text-center'>No hay usuarios registrados</p>"; 
-                return; 
-            }
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Rol</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            if (!snap.exists()) { container.innerHTML = "<p class='text-center'>No hay usuarios</p>"; return; }
+            let html = `<table><thead><tr><th>Usuario</th><th>Rol</th><th>Acciones</th></tr></thead><tbody>`;
             snap.forEach(child => {
                 let u = child.val();
-                html += `<tr>
-                    <td><strong>${child.key}</strong></td>
-                    <td><span class="badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}">${u.rol}</span></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarUsuario('${child.key}')">
-                            <i class="fas fa-key"></i> Cambiar Pass
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${child.key}')">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>`;
+                html += `<tr><td><strong>${child.key}</strong></td><td><span class="badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}">${u.rol}</span></td>
+                <td><button class="btn btn-warning btn-sm" onclick="editarUsuario('${child.key}')">Cambiar Pass</button>
+                <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${child.key}')">Eliminar</button></td></tr>`;
             });
-            
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar usuarios:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar usuarios</p>"; 
-        }
+        } catch (error) { console.error("Error:", error); container.innerHTML = "<p class='text-center'>Error</p>"; }
     }
 
     async function editarUsuario(usuario) {
         let nuevaPass = prompt("Nueva contraseña para " + usuario);
-        if (nuevaPass && nuevaPass.trim() !== '') {
+        if (nuevaPass) {
             try {
                 await db.ref("usuarios/" + usuario + "/password").set(hashPassword(nuevaPass));
                 mostrarToast('Éxito', 'Contraseña actualizada', 'success');
-            } catch (error) { 
-                console.error("Error:", error);
-                mostrarToast('Error', 'Error al actualizar contraseña', 'error'); 
-            }
+            } catch (error) { mostrarToast('Error', 'Error al actualizar', 'error'); }
         }
     }
 
     async function eliminarUsuario(usuario) {
-        if (confirm(`¿Está seguro de eliminar al usuario "${usuario}"?`)) {
+        if (confirm("¿Eliminar usuario?")) {
             try {
                 await db.ref("usuarios/" + usuario).remove();
                 mostrarToast('Éxito', 'Usuario eliminado', 'success');
-                await cargarUsuarios();
-                await cargarDashboard();
-            } catch (error) { 
-                console.error("Error:", error);
-                mostrarToast('Error', 'Error al eliminar usuario', 'error'); 
-            }
+                cargarUsuarios();
+                cargarDashboard();
+            } catch (error) { mostrarToast('Error', 'Error al eliminar', 'error'); }
         }
     }
 
@@ -1668,156 +1317,69 @@
         let nombre = document.getElementById("nombreProducto").value.trim();
         let sistema = parseInt(document.getElementById("cantidadSistema").value);
         let esDuplicado = document.getElementById("esDuplicado").checked;
-        
-        if (!nombre) { 
-            mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
-            return; 
-        }
-        
-        if (isNaN(sistema) || sistema < 0) { 
-            mostrarToast('Error', 'Cantidad inválida', 'error'); 
-            return; 
-        }
-        
+        if (!nombre) { mostrarToast('Error', 'Ingrese el nombre', 'error'); return; }
+        if (isNaN(sistema) || sistema < 0) { mostrarToast('Error', 'Cantidad inválida', 'error'); return; }
         let btn = document.getElementById("btnCrearProducto");
-        btn.disabled = true; 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
         mostrarLoading(true);
-        
         try {
             let prodSnap = await db.ref("productos").once("value");
             let existe = false;
-            
-            if (prodSnap.exists()) {
-                prodSnap.forEach(child => { 
-                    if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; 
-                });
-            }
-            
-            if (existe) { 
-                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); 
-                return; 
-            }
-            
+            if (prodSnap.exists()) prodSnap.forEach(child => { if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; });
+            if (existe) { mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); return; }
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            await db.ref("productos/" + id).set({ 
-                nombre, 
-                sistema, 
-                fechaCreacion: new Date().toISOString(), 
-                esVariante: esDuplicado 
-            });
-            
-            mostrarToast('Éxito', 'Producto creado correctamente', 'success');
+            await db.ref("productos/" + id).set({ nombre, sistema, fechaCreacion: new Date().toISOString(), esVariante: esDuplicado });
+            mostrarToast('Éxito', 'Producto creado', 'success');
             document.getElementById("nombreProducto").value = "";
             document.getElementById("cantidadSistema").value = "";
             document.getElementById("esDuplicado").checked = false;
-            
             await cargarProductos();
             await cargarDashboard();
-            
-        } catch (error) { 
-            console.error("Error al crear producto:", error); 
-            mostrarToast('Error', 'Error al crear producto', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto'; 
-        }
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al crear producto', 'error'); }
+        finally { mostrarLoading(false); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto'; }
     }
 
     async function cargarProductos(filtro = "") {
         let container = document.getElementById("listaProductos");
         if (!container) return;
-        
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
         try {
             let snap = await db.ref("productos").once("value");
-            
-            if (!snap.exists()) { 
-                container.innerHTML = "<p class='text-center'>No hay productos registrados</p>"; 
-                return; 
-            }
-            
+            if (!snap.exists()) { container.innerHTML = "<p class='text-center'>No hay productos</p>"; return; }
             let prods = [];
             snap.forEach(child => {
                 let p = child.val();
-                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) {
-                    prods.push({ id: child.key, ...p });
-                }
+                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) prods.push({ id: child.key, ...p });
             });
-            
             prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Stock Sistema</th>
-                        <th>Variante</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Producto</th><th>Stock</th><th>Variante</th><th>Acciones</th></tr></thead><tbody>`;
             prods.forEach(p => {
-                html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td><span class="badge badge-primary">${p.sistema}</span></td>
-                    <td>${p.esVariante ? 'Sí' : 'No'}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>`;
+                html += `<tr><td><strong>${p.nombre}</strong></td><td><span class="badge badge-primary">${p.sistema}</span></td><td>${p.esVariante ? 'Sí' : 'No'}</td>
+                <td><button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})"><i class="fas fa-edit"></i> Editar</button>
+                <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')"><i class="fas fa-trash"></i> Eliminar</button></td></tr>`;
             });
-            
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar productos:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar productos</p>"; 
-        }
+        } catch (error) { console.error("Error:", error); container.innerHTML = "<p class='text-center'>Error</p>"; }
     }
 
-    function filtrarProductos() { 
-        cargarProductos(document.getElementById("filtroProductos").value); 
-    }
+    function filtrarProductos() { cargarProductos(document.getElementById("filtroProductos").value); }
 
     async function editarProducto(id, nombre, sistema) {
         let nuevoStock = prompt(`Nuevo stock para ${nombre}:`, sistema);
         if (nuevoStock !== null) {
             let num = parseInt(nuevoStock);
             if (!isNaN(num) && num >= 0) {
-                try { 
-                    await db.ref("productos/" + id + "/sistema").set(num); 
-                    mostrarToast('Éxito', 'Stock actualizado', 'success'); 
-                    await cargarProductos(); 
-                } catch (error) { 
-                    console.error("Error:", error);
-                    mostrarToast('Error', 'Error al actualizar stock', 'error'); 
-                }
+                try { await db.ref("productos/" + id + "/sistema").set(num); mostrarToast('Éxito', 'Stock actualizado', 'success'); cargarProductos(); }
+                catch (error) { mostrarToast('Error', 'Error al actualizar', 'error'); }
             }
         }
     }
 
     async function eliminarProducto(id) {
-        if (confirm("¿Está seguro de eliminar este producto?")) {
-            try { 
-                await db.ref("productos/" + id).remove(); 
-                mostrarToast('Éxito', 'Producto eliminado', 'success'); 
-                await cargarProductos(); 
-                await cargarDashboard(); 
-            } catch (error) { 
-                console.error("Error:", error);
-                mostrarToast('Error', 'Error al eliminar producto', 'error'); 
-            }
+        if (confirm("¿Eliminar producto?")) {
+            try { await db.ref("productos/" + id).remove(); mostrarToast('Éxito', 'Producto eliminado', 'success'); cargarProductos(); cargarDashboard(); }
+            catch (error) { mostrarToast('Error', 'Error al eliminar', 'error'); }
         }
     }
 
@@ -1827,126 +1389,54 @@
     async function crearProductoMaquila() {
         let nombre = document.getElementById("nombreProductoMaquila").value.trim();
         let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
-        
-        if (!nombre) { 
-            mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
-            return; 
-        }
-        
+        if (!nombre) { mostrarToast('Error', 'Ingrese el nombre', 'error'); return; }
         let btn = document.getElementById("btnCrearProductoMaquila");
-        btn.disabled = true; 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
         mostrarLoading(true);
-        
         try {
             let prodSnap = await db.ref("maquilas_productos").once("value");
             let existe = false;
-            
-            if (prodSnap.exists()) {
-                prodSnap.forEach(child => { 
-                    if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; 
-                });
-            }
-            
-            if (existe) { 
-                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); 
-                return; 
-            }
-            
+            if (prodSnap.exists()) prodSnap.forEach(child => { if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; });
+            if (existe) { mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); return; }
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            await db.ref("maquilas_productos/" + id).set({ 
-                nombre, 
-                descripcion, 
-                fechaCreacion: new Date().toISOString() 
-            });
-            
+            await db.ref("maquilas_productos/" + id).set({ nombre, descripcion, fechaCreacion: new Date().toISOString() });
             mostrarToast('Éxito', 'Producto de maquila creado', 'success');
             document.getElementById("nombreProductoMaquila").value = "";
             document.getElementById("descripcionProductoMaquila").value = "";
-            
-            await cargarProductosMaquila();
-            
-        } catch (error) { 
-            console.error("Error al crear producto:", error); 
-            mostrarToast('Error', 'Error al crear producto', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; 
-        }
+            cargarProductosMaquila();
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al crear producto', 'error'); }
+        finally { mostrarLoading(false); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; }
     }
 
     async function cargarProductosMaquila(filtro = "") {
         let container = document.getElementById("listaProductosMaquila");
         if (!container) return;
-        
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
         try {
             let snap = await db.ref("maquilas_productos").once("value");
-            
-            if (!snap.exists()) { 
-                container.innerHTML = "<p class='text-center'>No hay productos de maquila</p>"; 
-                return; 
-            }
-            
+            if (!snap.exists()) { container.innerHTML = "<p class='text-center'>No hay productos</p>"; return; }
             let prods = [];
             snap.forEach(child => {
                 let p = child.val();
-                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) {
-                    prods.push({ id: child.key, ...p });
-                }
+                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) prods.push({ id: child.key, ...p });
             });
-            
             prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Producto</th><th>Descripción</th><th>Acciones</th></tr></thead><tbody>`;
             prods.forEach(p => {
-                html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>${p.descripcion || '-'}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProductoMaquila('${p.id}')">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>`;
+                html += `<tr><td><strong>${p.nombre}</strong></td><td>${p.descripcion || '-'}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="eliminarProductoMaquila('${p.id}')"><i class="fas fa-trash"></i> Eliminar</button></td></tr>`;
             });
-            
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar productos:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar productos</p>"; 
-        }
+        } catch (error) { console.error("Error:", error); container.innerHTML = "<p class='text-center'>Error</p>"; }
     }
 
-    function filtrarProductosMaquila() { 
-        cargarProductosMaquila(document.getElementById("filtroProductosMaquila").value); 
-    }
+    function filtrarProductosMaquila() { cargarProductosMaquila(document.getElementById("filtroProductosMaquila").value); }
 
     async function eliminarProductoMaquila(id) {
-        if (confirm("¿Está seguro de eliminar este producto de maquila?")) {
-            try { 
-                await db.ref("maquilas_productos/" + id).remove(); 
-                mostrarToast('Éxito', 'Producto eliminado', 'success'); 
-                await cargarProductosMaquila(); 
-                await cargarDashboard(); 
-            } catch (error) { 
-                console.error("Error:", error);
-                mostrarToast('Error', 'Error al eliminar producto', 'error'); 
-            }
+        if (confirm("¿Eliminar producto de maquila?")) {
+            try { await db.ref("maquilas_productos/" + id).remove(); mostrarToast('Éxito', 'Producto eliminado', 'success'); cargarProductosMaquila(); cargarDashboard(); }
+            catch (error) { mostrarToast('Error', 'Error al eliminar', 'error'); }
         }
     }
 
@@ -1955,54 +1445,31 @@
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
-            // Cargar usuarios
             let usuariosSnap = await db.ref("usuarios").once("value");
             let selectU = document.getElementById("selectUsuario");
-            
             if (selectU) {
                 selectU.innerHTML = "<option value=''>Seleccionar usuario...</option>";
-                if (usuariosSnap.exists()) {
-                    usuariosSnap.forEach(child => {
-                        if (child.val().rol === "colaborador") {
-                            let opt = document.createElement("option"); 
-                            opt.value = child.key; 
-                            opt.textContent = child.key; 
-                            selectU.appendChild(opt);
-                        }
-                    });
-                }
+                if (usuariosSnap.exists()) usuariosSnap.forEach(child => {
+                    if (child.val().rol === "colaborador") {
+                        let opt = document.createElement("option"); opt.value = child.key; opt.textContent = child.key; selectU.appendChild(opt);
+                    }
+                });
             }
-            
-            // Cargar productos
             let productosSnap = await db.ref("productos").once("value");
             let selectP = document.getElementById("selectProducto");
-            
             if (selectP) {
                 selectP.innerHTML = "<option value=''>Seleccionar producto...</option>";
                 if (productosSnap.exists()) {
                     let prods = [];
-                    productosSnap.forEach(child => prods.push({ 
-                        id: child.key, 
-                        nombre: child.val().nombre, 
-                        sistema: child.val().sistema 
-                    }));
-                    
+                    productosSnap.forEach(child => prods.push({ id: child.key, nombre: child.val().nombre, sistema: child.val().sistema }));
                     prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                    
                     prods.forEach(p => {
-                        let opt = document.createElement("option"); 
-                        opt.value = p.id; 
-                        opt.textContent = `${p.nombre} (Stock: ${p.sistema})`; 
-                        selectP.appendChild(opt);
+                        let opt = document.createElement("option"); opt.value = p.id; opt.textContent = `${p.nombre} (Stock: ${p.sistema})`; selectP.appendChild(opt);
                     });
                 }
             }
-            
             document.getElementById("fechaAsignacion").value = new Date().toISOString().split("T")[0];
-            
-        } catch (error) { 
-            console.error("Error al cargar selectores:", error); 
-        }
+        } catch (error) { console.error("Error:", error); }
     }
 
     async function asignarProducto() {
@@ -2010,30 +1477,14 @@
         let usuario = document.getElementById("selectUsuario").value;
         let producto = document.getElementById("selectProducto").value;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
-        
-        if (!fecha || !usuario || !producto) { 
-            mostrarToast('Error', 'Complete todos los campos', 'error'); 
-            return; 
-        }
-        
+        if (!fecha || !usuario || !producto) { mostrarToast('Error', 'Complete todos los campos', 'error'); return; }
         mostrarLoading(true);
-        
         try {
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
-            
-            if (existente.exists()) { 
-                mostrarToast('Error', 'Ya existe una asignación para este usuario y producto en esta fecha', 'error'); 
-                return; 
-            }
-            
+            if (existente.exists()) { mostrarToast('Error', 'Ya existe una asignación para este usuario y producto en esta fecha', 'error'); return; }
             let prodSnap = await db.ref("productos/" + producto).once("value");
-            if (!prodSnap.exists()) { 
-                mostrarToast('Error', 'Producto no encontrado', 'error'); 
-                return; 
-            }
-            
+            if (!prodSnap.exists()) { mostrarToast('Error', 'Producto no encontrado', 'error'); return; }
             let prodData = prodSnap.val();
-            
             await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                 asignado: true,
                 nombreProducto: prodData.nombre,
@@ -2042,116 +1493,59 @@
                 fechaAsignacion: new Date().toISOString(),
                 productoId: producto
             });
-            
-            mostrarToast('Éxito', 'Producto asignado correctamente', 'success');
+            mostrarToast('Éxito', 'Producto asignado', 'success');
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
             document.getElementById("permitirMultiples").checked = false;
-            
             await cargarAsignacionesHoy();
             await cargarDashboard();
-            
-        } catch (error) { 
-            console.error("Error al asignar producto:", error); 
-            mostrarToast('Error', 'Error al asignar producto', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-        }
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al asignar', 'error'); }
+        finally { mostrarLoading(false); }
     }
 
     async function cargarAsignacionesHoy() {
         let container = document.getElementById("asignacionesHoy");
         if (!container) return;
-        
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
+        container.innerHTML = "<p class='text-center'>Cargando...</p>";
         try {
             let fechaHoy = new Date().toISOString().split("T")[0];
             let mesActual = new Date().toISOString().substring(0,7);
-            
             let snap = await db.ref("asignaciones/" + fechaHoy).once("value");
-            
-            if (!snap.exists()) { 
-                container.innerHTML = "<p class='text-center'>No hay asignaciones para hoy</p>"; 
-                return; 
-            }
-            
-            // Obtener inventarios de hoy
+            if (!snap.exists()) { container.innerHTML = "<p class='text-center'>No hay asignaciones hoy</p>"; return; }
             let inventariosHoy = new Set();
             let invSnap = await db.ref("inventario/" + mesActual).once("value");
-            
-            if (invSnap.exists()) {
-                invSnap.forEach(child => {
-                    let inv = child.val();
-                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) {
-                        inventariosHoy.add(`${inv.nombre}_${inv.productoId}`);
-                    }
-                });
-            }
-            
+            if (invSnap.exists()) invSnap.forEach(child => {
+                let inv = child.val();
+                if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) inventariosHoy.add(`${inv.nombre}_${inv.productoId}`);
+            });
             let asignaciones = [];
-            
             snap.forEach(userSnap => {
                 let usuario = userSnap.key;
                 userSnap.forEach(prodSnap => {
                     let data = prodSnap.val();
                     let keyResp = `${usuario}_${prodSnap.key}`;
                     let respondida = inventariosHoy.has(keyResp);
-                    
-                    asignaciones.push({ 
-                        usuario, 
-                        producto: data.nombreProducto, 
-                        stock: data.stockSistema, 
-                        multiples: data.permitirMultiples ? 'Sí' : 'No', 
-                        respondida 
-                    });
+                    asignaciones.push({ usuario, producto: data.nombreProducto, stock: data.stockSistema, multiples: data.permitirMultiples ? 'Sí' : 'No', respondida });
                 });
             });
-            
             asignaciones.sort((a,b) => a.respondida ? 1 : -1);
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Usuario</th>
-                        <th>Producto</th>
-                        <th>Stock Sistema</th>
-                        <th>Múltiples</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table><thead><tr><th>Usuario</th><th>Producto</th><th>Stock</th><th>Múltiples</th><th>Estado</th></tr></thead><tbody>`;
             asignaciones.forEach(a => {
                 let estadoClass = a.respondida ? 'badge-success' : 'badge-warning';
                 let estadoTexto = a.respondida ? '✓ RESPONDIDA' : '⏳ PENDIENTE';
-                
-                html += `<tr>
-                    <td><strong>${a.usuario}</strong></td>
-                    <td>${a.producto}</td>
-                    <td><span class="badge badge-primary">${a.stock}</span></td>
-                    <td>${a.multiples}</td>
-                    <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
-                </tr>`;
+                html += `<tr><td><strong>${a.usuario}</strong></td><td>${a.producto}</td><td><span class="badge badge-primary">${a.stock}</span></td><td>${a.multiples}</td><td><span class="badge ${estadoClass}">${estadoTexto}</span></td></tr>`;
             });
-            
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar asignaciones:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar asignaciones</p>"; 
-        }
+        } catch (error) { console.error("Error:", error); container.innerHTML = "<p class='text-center'>Error</p>"; }
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN)
+    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - CORREGIDO
     // ============================================
     function configurarFechas() {
         let hoy = new Date();
-        let hace7 = new Date(); 
-        hace7.setDate(hace7.getDate() - 7);
-        
+        let hace7 = new Date(); hace7.setDate(hace7.getDate() - 7);
         document.getElementById("fechaInicio").value = hace7.toISOString().split("T")[0];
         document.getElementById("fechaFin").value = hoy.toISOString().split("T")[0];
     }
@@ -2160,40 +1554,29 @@
         try {
             let snap = await db.ref("usuarios").once("value");
             let select = document.getElementById("filtroUsuario");
-            
             if (select) {
-                select.innerHTML = "<option value=''>Todos los usuarios</option>";
-                if (snap.exists()) {
-                    snap.forEach(child => {
-                        if (child.val().rol === "colaborador") {
-                            let opt = document.createElement("option"); 
-                            opt.value = child.key; 
-                            opt.textContent = child.key; 
-                            select.appendChild(opt);
-                        }
-                    });
-                }
+                select.innerHTML = "<option value=''>Todos</option>";
+                if (snap.exists()) snap.forEach(child => {
+                    if (child.val().rol === "colaborador") {
+                        let opt = document.createElement("option"); opt.value = child.key; opt.textContent = child.key; select.appendChild(opt);
+                    }
+                });
             }
-        } catch (error) { 
-            console.error("Error al cargar filtros:", error); 
-        }
+        } catch (error) { console.error("Error:", error); }
     }
 
     function obtenerMesesEntre(fechaInicio, fechaFin) {
         const meses = [];
         const inicio = new Date(fechaInicio + 'T00:00:00');
         const fin = new Date(fechaFin + 'T00:00:00');
-        
         inicio.setDate(1);
         fin.setDate(1);
-        
         while (inicio <= fin) {
             const anio = inicio.getFullYear();
             const mes = (inicio.getMonth() + 1).toString().padStart(2, '0');
             meses.push(`${anio}-${mes}`);
             inicio.setMonth(inicio.getMonth() + 1);
         }
-        
         return meses;
     }
 
@@ -2203,7 +1586,7 @@
         let filtroUsuario = document.getElementById("filtroUsuario").value;
 
         if (!fechaInicio || !fechaFin) {
-            mostrarToast('Error', 'Seleccione fechas de inicio y fin', 'error');
+            mostrarToast('Error', 'Seleccione fechas', 'error');
             return;
         }
 
@@ -2214,7 +1597,6 @@
 
         let cont = document.getElementById("resultadoInventario");
         if (!cont) return;
-        
         cont.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
 
         try {
@@ -2245,27 +1627,11 @@
                 return;
             }
 
-            let html = `<table id="tablaInventario">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Usuario</th>
-                        <th>Producto</th>
-                        <th>Stock Sistema</th>
-                        <th>Físico</th>
-                        <th>Muestras</th>
-                        <th>Caducados</th>
-                        <th>Total</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table id="tablaInventario"><thead><tr><th>Fecha</th><th>Usuario</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th><th>Total</th><th>Acciones</th></tr></thead><tbody>`;
             registros.forEach(r => {
                 let fecha = new Date(r.fecha).toLocaleString();
                 let total = (r.fisico || 0) + (r.muestras || 0) + (r.caducados || 0);
                 let cuadra = total === (r.sistema || 0);
-                
                 html += `<tr>
                     <td>${fecha}</td>
                     <td><strong>${r.nombre}</strong></td>
@@ -2275,52 +1641,33 @@
                     <td>${r.muestras || 0}</td>
                     <td>${r.caducados || 0}</td>
                     <td><span class="badge ${cuadra ? 'badge-success' : 'badge-warning'}">${total}</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn btn-primary btn-sm" onclick='abrirModalEdicion(${JSON.stringify(r).replace(/'/g, "&apos;")}, "${r.mes}", "${r.key}")'>
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-success btn-sm" onclick='reenviarRegistro(${JSON.stringify(r).replace(/'/g, "&apos;")})'>
-                                <i class="fas fa-redo-alt"></i>
-                            </button>
-                            <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${r.key}', '${r.mes}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
+                    <td><div class="action-buttons">
+                        <button class="btn btn-primary btn-sm" onclick='abrirModalEdicion(${JSON.stringify(r).replace(/'/g, "&apos;")}, "${r.mes}", "${r.key}")'><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-success btn-sm" onclick='reenviarRegistro(${JSON.stringify(r).replace(/'/g, "&apos;")})'><i class="fas fa-redo-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${r.key}', '${r.mes}')"><i class="fas fa-trash"></i></button>
+                    </div></td>
                 </tr>`;
             });
-            
             html += `</tbody></table>`;
             cont.innerHTML = html;
-            
         } catch (error) {
-            console.error("Error al cargar inventario:", error);
+            console.error("Error:", error);
             cont.innerHTML = "<p class='text-center'>Error al cargar inventario</p>";
         }
     }
 
     function exportarInventarioCSV() {
         let tabla = document.querySelector("#resultadoInventario table");
-        if (!tabla) { 
-            mostrarToast('Info', 'No hay datos para exportar', 'info'); 
-            return; 
-        }
-        
+        if (!tabla) { mostrarToast('Info', 'No hay datos para exportar', 'info'); return; }
         let filas = tabla.querySelectorAll("tr");
         let csv = [];
-        
-        // Encabezados
         let encabezados = Array.from(tabla.querySelectorAll("th")).slice(0, -1).map(th => `"${th.innerText}"`).join(",");
         csv.push(encabezados);
-        
-        // Datos
         for (let i = 1; i < filas.length; i++) {
             let celdas = filas[i].querySelectorAll("td");
             let fila = Array.from(celdas).slice(0, -1).map(td => `"${td.innerText.replace(/"/g, '""')}"`).join(",");
             csv.push(fila);
         }
-        
         let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -2330,47 +1677,22 @@
 
     function abrirModalEdicion(registro, mes, key) {
         registroEditando = { ...registro, mes, key };
-        
         let html = `
             <form onsubmit="guardarEdicion(event)">
-                <div class="form-group">
-                    <label>Usuario</label>
-                    <input class="form-control" value="${registro.nombre||''}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Producto</label>
-                    <input class="form-control" value="${registro.producto||''}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Stock Sistema</label>
-                    <input type="number" id="editSistema" class="form-control" value="${registro.sistema||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Físico</label>
-                    <input type="number" id="editFisico" class="form-control" value="${registro.fisico||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Muestras</label>
-                    <input type="number" id="editMuestras" class="form-control" value="${registro.muestras||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Caducados</label>
-                    <input type="number" id="editCaducados" class="form-control" value="${registro.caducados||0}" min="0">
-                </div>
+                <div class="form-group"><label>Usuario</label><input class="form-control" value="${registro.nombre||''}" readonly></div>
+                <div class="form-group"><label>Producto</label><input class="form-control" value="${registro.producto||''}" readonly></div>
+                <div class="form-group"><label>Stock Sistema</label><input type="number" id="editSistema" class="form-control" value="${registro.sistema||0}" min="0"></div>
+                <div class="form-group"><label>Físico</label><input type="number" id="editFisico" class="form-control" value="${registro.fisico||0}" min="0"></div>
+                <div class="form-group"><label>Muestras</label><input type="number" id="editMuestras" class="form-control" value="${registro.muestras||0}" min="0"></div>
+                <div class="form-group"><label>Caducados</label><input type="number" id="editCaducados" class="form-control" value="${registro.caducados||0}" min="0"></div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button type="submit" class="btn btn-success" style="flex:1;">
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="cerrarModal()" style="flex:1;">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
+                    <button type="submit" class="btn btn-success" style="flex:1;"><i class="fas fa-save"></i> Guardar</button>
+                    <button type="button" class="btn btn-danger" onclick="cerrarModal()" style="flex:1;"><i class="fas fa-times"></i> Cancelar</button>
                 </div>
             </form>
         `;
-        
         let modalContenido = document.getElementById('modalContenido');
         if (modalContenido) modalContenido.innerHTML = html;
-        
         let modal = document.getElementById('modalEdicion');
         if (modal) modal.classList.add('active');
     }
@@ -2384,54 +1706,38 @@
     async function guardarEdicion(event) {
         event.preventDefault();
         if (!registroEditando) return;
-        
         let nuevos = {
             sistema: parseInt(document.getElementById('editSistema').value) || 0,
             fisico: parseInt(document.getElementById('editFisico').value) || 0,
             muestras: parseInt(document.getElementById('editMuestras').value) || 0,
             caducados: parseInt(document.getElementById('editCaducados').value) || 0
         };
-        
         mostrarLoading(true);
-        
         try {
             await db.ref(`inventario/${registroEditando.mes}/${registroEditando.key}`).update(nuevos);
-            mostrarToast('Éxito', 'Registro actualizado correctamente', 'success');
+            mostrarToast('Éxito', 'Registro actualizado', 'success');
             cerrarModal();
-            await cargarInventario();
-        } catch (error) { 
-            console.error("Error al actualizar:", error); 
-            mostrarToast('Error', 'Error al actualizar registro', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-        }
+            cargarInventario();
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al actualizar', 'error'); }
+        finally { mostrarLoading(false); }
     }
 
     async function eliminarRegistro(key, mes) {
-        if (!confirm('¿Está seguro de eliminar este registro permanentemente?')) return;
-        
+        if (!confirm('¿Eliminar permanentemente?')) return;
         mostrarLoading(true);
-        
         try {
             await db.ref(`inventario/${mes}/${key}`).remove();
             mostrarToast('Éxito', 'Registro eliminado', 'success');
-            await cargarInventario();
-        } catch (error) { 
-            console.error("Error al eliminar:", error); 
-            mostrarToast('Error', 'Error al eliminar registro', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-        }
+            cargarInventario();
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al eliminar', 'error'); }
+        finally { mostrarLoading(false); }
     }
 
     async function reenviarRegistro(registro) {
-        if (!confirm('¿Reenviar este registro al colaborador para corrección?')) return;
-        
+        if (!confirm('¿Reenviar al colaborador?')) return;
         mostrarLoading(true);
-        
         try {
             let fechaHoy = new Date().toISOString().split("T")[0];
-            
             await db.ref(`asignaciones/${fechaHoy}/${registro.nombre}/${registro.productoId}`).set({
                 asignado: true,
                 nombreProducto: registro.producto,
@@ -2443,37 +1749,24 @@
                 reenviadoPor: usuario,
                 fechaReenvio: new Date().toISOString()
             });
-            
             await db.ref("notificaciones").push({
                 tipo: "inventario",
                 fecha: new Date().toISOString(),
                 leida: false,
-                detalles: { 
-                    colaborador: registro.nombre, 
-                    producto: registro.producto, 
-                    mensaje: `Registro reenviado para corrección`, 
-                    reenviadoPor: usuario 
-                }
+                detalles: { colaborador: registro.nombre, producto: registro.producto, mensaje: `Reenviado para corrección`, reenviadoPor: usuario }
             });
-            
-            mostrarToast('Éxito', `Registro reenviado a ${registro.nombre}`, 'success');
-            
-        } catch (error) { 
-            console.error("Error al reenviar:", error); 
-            mostrarToast('Error', 'Error al reenviar registro', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-        }
+            mostrarToast('Éxito', `Reenviado a ${registro.nombre}`, 'success');
+        } catch (error) { console.error("Error:", error); mostrarToast('Error', 'Error al reenviar', 'error'); }
+        finally { mostrarLoading(false); }
     }
 
     // ============================================
-    // MAQUILAS
+    // MAQUILAS - CORREGIDO (con filtro de 6 meses por defecto)
     // ============================================
     function configurarFechasMaquila() {
         let hoy = new Date();
         let hace6Meses = new Date();
-        hace6Meses.setMonth(hace6Meses.getMonth() - 5); // 6 meses incluyendo el actual
-        
+        hace6Meses.setMonth(hace6Meses.getMonth() - 6);
         document.getElementById("fechaInicioMaquila").value = hace6Meses.toISOString().split("T")[0];
         document.getElementById("fechaFinMaquila").value = hoy.toISOString().split("T")[0];
     }
@@ -2482,23 +1775,15 @@
         try {
             let snap = await db.ref("usuarios").once("value");
             let select = document.getElementById("filtroUsuarioMaquila");
-            
             if (select) {
-                select.innerHTML = "<option value=''>Todos los usuarios</option>";
-                if (snap.exists()) {
-                    snap.forEach(child => {
-                        if (child.val().rol === "colaborador") {
-                            let opt = document.createElement("option"); 
-                            opt.value = child.key; 
-                            opt.textContent = child.key; 
-                            select.appendChild(opt);
-                        }
-                    });
-                }
+                select.innerHTML = "<option value=''>Todos</option>";
+                if (snap.exists()) snap.forEach(child => {
+                    if (child.val().rol === "colaborador") {
+                        let opt = document.createElement("option"); opt.value = child.key; opt.textContent = child.key; select.appendChild(opt);
+                    }
+                });
             }
-        } catch (error) { 
-            console.error("Error al cargar filtros:", error); 
-        }
+        } catch (error) { console.error("Error:", error); }
     }
 
     async function cargarMaquilas() {
@@ -2508,7 +1793,7 @@
         let filtroEstado = document.getElementById("filtroEstadoMaquila").value;
 
         if (!fechaInicio || !fechaFin) {
-            mostrarToast('Error', 'Seleccione fechas de inicio y fin', 'error');
+            mostrarToast('Error', 'Seleccione fechas', 'error');
             return;
         }
 
@@ -2519,7 +1804,6 @@
 
         let container = document.getElementById("listaMaquilas");
         if (!container) return;
-        
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
 
         try {
@@ -2536,15 +1820,9 @@
                             if (fechaRegStr >= fechaInicio && fechaRegStr <= fechaFin) {
                                 if (!filtroUsuario || m.nombre === filtroUsuario) {
                                     let incluir = false;
-                                    const tieneNumero = m.numTransformacion && 
-                                                      m.numTransformacion.toString().trim() !== '' && 
-                                                      m.numTransformacion !== 'null' && 
-                                                      m.numTransformacion !== 'undefined';
-                                    
                                     if (filtroEstado === 'todas') incluir = true;
-                                    else if (filtroEstado === 'pendientes' && !tieneNumero) incluir = true;
-                                    else if (filtroEstado === 'asignadas' && tieneNumero) incluir = true;
-                                    
+                                    else if (filtroEstado === 'pendientes' && !m.numTransformacion) incluir = true;
+                                    else if (filtroEstado === 'asignadas' && m.numTransformacion) incluir = true;
                                     if (incluir) {
                                         maquilas.push({ key: child.key, mes, ...m });
                                     }
@@ -2562,32 +1840,10 @@
                 return;
             }
 
-            let html = `<table id="tablaMaquilas">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Usuario</th>
-                        <th>Producto</th>
-                        <th>MP Cant</th>
-                        <th>MP Pres</th>
-                        <th>PT Cant</th>
-                        <th>PT Pres</th>
-                        <th>Sobr</th>
-                        <th>N° Transformación</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
+            let html = `<table id="tablaMaquilas"><thead><tr><th>Fecha</th><th>Usuario</th><th>Producto</th><th>MP Cant</th><th>MP Pres</th><th>PT Cant</th><th>PT Pres</th><th>Sobr</th><th>N° Transf</th><th>Acción</th></tr></thead><tbody>`;
             maquilas.forEach(m => {
                 let fecha = new Date(m.fecha).toLocaleDateString();
-                const tieneNumero = m.numTransformacion && 
-                                   m.numTransformacion.toString().trim() !== '' && 
-                                   m.numTransformacion !== 'null' && 
-                                   m.numTransformacion !== 'undefined';
-                let estadoClass = tieneNumero ? 'badge-success' : 'badge-warning';
-                let numeroTexto = tieneNumero ? m.numTransformacion : 'Pendiente';
-                
+                let estadoClass = m.numTransformacion ? 'badge-success' : 'badge-warning';
                 html += `<tr>
                     <td>${fecha}</td>
                     <td><strong>${m.nombre}</strong></td>
@@ -2597,50 +1853,30 @@
                     <td>${m.ptCantidad || 0}</td>
                     <td>${m.ptPresentacion || ''}</td>
                     <td>${m.sobrantes || 0}</td>
-                    <td><span class="badge ${estadoClass}">${numeroTexto}</span></td>
-                    <td>
-                        ${!tieneNumero ? 
-                            `<button class="btn btn-primary btn-sm" onclick="asignarNumero('${m.key}','${m.mes}')">
-                                <i class="fas fa-hashtag"></i> Asignar N°
-                            </button>` : 
-                            `<button class="btn btn-warning btn-sm" onclick="editarNumero('${m.key}','${m.mes}','${m.numTransformacion}')">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>`
-                        }
-                    </td>
+                    <td><span class="badge ${estadoClass}">${m.numTransformacion || 'Pendiente'}</span></td>
+                    <td>${!m.numTransformacion ? `<button class="btn btn-primary btn-sm" onclick="asignarNumero('${m.key}','${m.mes}')">Asignar N°</button>` : `<button class="btn btn-warning btn-sm" onclick="editarNumero('${m.key}','${m.mes}','${m.numTransformacion}')">Editar</button>`}</td>
                 </tr>`;
             });
-            
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
         } catch (error) {
-            console.error("Error al cargar maquilas:", error);
+            console.error("Error:", error);
             container.innerHTML = "<p class='text-center'>Error al cargar maquilas</p>";
         }
     }
 
     function exportarMaquilasCSV() {
         let tabla = document.querySelector("#listaMaquilas table");
-        if (!tabla) { 
-            mostrarToast('Info', 'No hay datos para exportar', 'info'); 
-            return; 
-        }
-        
+        if (!tabla) { mostrarToast('Info', 'No hay datos', 'info'); return; }
         let filas = tabla.querySelectorAll("tr");
         let csv = [];
-        
-        // Encabezados
         let encabezados = Array.from(tabla.querySelectorAll("th")).slice(0, -1).map(th => `"${th.innerText}"`).join(",");
         csv.push(encabezados);
-        
-        // Datos
         for (let i = 1; i < filas.length; i++) {
             let celdas = filas[i].querySelectorAll("td");
             let fila = Array.from(celdas).slice(0, -1).map(td => `"${td.innerText.replace(/"/g, '""')}"`).join(",");
             csv.push(fila);
         }
-        
         let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
         let link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
@@ -2650,27 +1886,19 @@
 
     function asignarNumero(key, mes) {
         let num = prompt("Ingrese el número de transformación:");
-        if (num && num.trim() !== '') {
-            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim())
-                .then(() => { 
-                    mostrarToast('Éxito', 'Número asignado correctamente', 'success'); 
-                    cargarMaquilas(); 
-                    cargarDashboard(); // Actualizar dashboard después de asignar
-                })
-                .catch(() => mostrarToast('Error', 'Error al asignar número', 'error'));
+        if (num) {
+            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num)
+                .then(() => { mostrarToast('Éxito', 'Número asignado', 'success'); cargarMaquilas(); })
+                .catch(() => mostrarToast('Error', 'Error al asignar', 'error'));
         }
     }
 
     function editarNumero(key, mes, actual) {
         let num = prompt("Editar número de transformación:", actual);
-        if (num && num.trim() !== '') {
-            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim())
-                .then(() => { 
-                    mostrarToast('Éxito', 'Número actualizado', 'success'); 
-                    cargarMaquilas(); 
-                    cargarDashboard(); // Actualizar dashboard después de editar
-                })
-                .catch(() => mostrarToast('Error', 'Error al actualizar número', 'error'));
+        if (num) {
+            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num)
+                .then(() => { mostrarToast('Éxito', 'Número actualizado', 'success'); cargarMaquilas(); })
+                .catch(() => mostrarToast('Error', 'Error al actualizar', 'error'));
         }
     }
 
@@ -2678,47 +1906,30 @@
     // CERRAR SESIÓN
     // ============================================
     function cerrarSesion() {
-        if (confirm('¿Está seguro de cerrar sesión?')) {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }
+        localStorage.clear();
+        window.location.href = "index.html";
     }
 
     // ============================================
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN (asegurar que el DOM esté listo)
     // ============================================
     document.addEventListener('DOMContentLoaded', () => {
         // Actualizar elementos del header
         const userEl = document.getElementById('userName');
         if (userEl) userEl.textContent = usuario;
-        
         const dateEl = document.getElementById('currentDate');
-        if (dateEl) {
-            dateEl.textContent = new Date().toLocaleDateString('es-ES', {
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric'
-            });
-        }
+        if (dateEl) dateEl.textContent = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
 
-        // Inicializar AOS
         AOS.init({ duration: 800, once: true });
-        
-        // Verificar conexión Firebase
         verificarConexionFirebase();
-        
-        // Iniciar listener de notificaciones
         iniciarListenerNotificaciones();
-        
-        // Mostrar dashboard por defecto
         mostrarSeccion('dashboard');
-        
-        // Cargar notificaciones después de 1 segundo
         setTimeout(() => cargarNotificaciones(), 1000);
     });
 
-    // Intervalo para recargar dashboard si está visible (cada 30 segundos)
+    // Intervalo protegido para recargar dashboard si está visible
     setInterval(() => {
         const dashboardSection = document.getElementById('seccion-dashboard');
         if (dashboardSection && dashboardSection.classList.contains('active')) {
