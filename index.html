@@ -339,6 +339,11 @@
     async function login() {
         if (isLoading) return;
 
+        if (!navigator.onLine) {
+            mostrarMensaje("❌ No hay conexión a Internet", "error");
+            return;
+        }
+
         let usuario = document.getElementById("usuario").value.trim();
         let password = document.getElementById("password").value.trim();
         let btnLogin = document.getElementById("btnLogin");
@@ -365,6 +370,9 @@
 
         try {
             console.log("🔍 Buscando usuario:", usuario);
+            if (!db) {
+                throw new Error('Firebase no inicializado');
+            }
             const snapshot = await db.ref("usuarios/" + usuario).once("value");
 
             if (!snapshot.exists()) {
@@ -463,8 +471,9 @@
             }, 1000);
 
         } catch (err) {
-            console.error("❌ Error de conexión:", err);
-            mostrarMensaje("❌ Error de conexión con el servidor", "error");
+            console.error("❌ Error de conexión en login:", err);
+            let msg = err && err.message ? err.message : 'desconocido';
+            mostrarMensaje(`❌ Error de conexión: ${msg}`, "error");
             resetearBoton();
         }
     }
