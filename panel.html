@@ -81,7 +81,7 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 120px 20px 20px; /* space for fixed header */
             position: relative;
             overflow-x: hidden;
         }
@@ -126,15 +126,17 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--border-radius-xl);
             padding: 20px 30px;
-            margin-bottom: 30px;
+            /* remove margin-bottom so layout adjusts under fixed header */
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow-xl);
             animation: fadeInUp 0.6s ease;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .logo {
@@ -957,7 +959,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" style="padding-top:0;">
     <div class="toast-container" id="toastContainer"></div>
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
