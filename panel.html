@@ -2116,6 +2116,71 @@
         }
     }
 
+    // ===== FUNCIÓN AGREGADA: Cargar maquilas marcadas como devueltas =====
+    async function cargarMaquilasDevueltas() {
+        if (!db || !usuario) return;
+        const container = document.getElementById("devueltasContainer");
+        if (!container) return;
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+        
+        try {
+            // buscaremos en los últimos 6 meses por defecto
+            let meses = [];
+            for (let i = 0; i < 6; i++) {
+                let fecha = obtenerFechaEcuador();
+                fecha.setMonth(fecha.getMonth() - i);
+                meses.push(fecha.toISOString().substring(0, 7));
+            }
+
+            let devueltas = [];
+            for (let mes of meses) {
+                let snap = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        let m = child.val();
+                        if (m.devuelta) {
+                            devueltas.push({
+                                fecha: new Date(m.fecha).toLocaleDateString('es-ES'),
+                                producto: m.producto,
+                                mpCantidad: m.mpCantidad || 0,
+                                mpPresentacion: m.mpPresentacion || '-',
+                                ptCantidad: m.ptCantidad || 0,
+                                ptPresentacion: m.ptPresentacion || '-',
+                                sobrantes: m.sobrantes || 0,
+                                numTransformacion: m.numTransformacion || "Pendiente"
+                            });
+                        }
+                    });
+                }
+            }
+
+            if (devueltas.length === 0) {
+                container.innerHTML = "<p class='text-center'>No hay maquilas devueltas</p>";
+                return;
+            }
+
+            devueltas.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+            let html = `<table><thead><tr><th>Fecha</th><th>Producto</th><th>MP Cant</th><th>MP Pres</th><th>PT Cant</th><th>PT Pres</th><th>Sobr</th><th>N° Transf</th></tr></thead><tbody>`;
+            devueltas.forEach(m => {
+                html += `<tr>
+                    <td>${m.fecha}</td>
+                    <td><strong>${m.producto}</strong></td>
+                    <td>${m.mpCantidad}</td>
+                    <td>${m.mpPresentacion}</td>
+                    <td>${m.ptCantidad}</td>
+                    <td>${m.ptPresentacion}</td>
+                    <td>${m.sobrantes}</td>
+                    <td>${m.numTransformacion}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        } catch (error) {
+            console.error("Error cargando maquilas devueltas:", error);
+            container.innerHTML = "<p class='text-center'>Error al cargar maquilas devueltas</p>";
+        }
+    }
+
     // ===== NUEVA FUNCIÓN: Filtrar todas las maquilas =====
     function filtrarTodasMaquilas() {
         const container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");

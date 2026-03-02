@@ -2857,7 +2857,7 @@
                         <button class="btn btn-danger btn-sm" onclick="eliminarMaquila('${m.key}','${m.mes}')" style="margin-left:5px;">
                             <i class="fas fa-trash"></i>
                         </button>
-                        <button class="btn btn-secondary btn-sm" onclick="devolverMaquila('${m.key}','${m.mes}')" style="margin-left:5px;">
+                        <button class="btn btn-secondary btn-sm" onclick="devolverMaquila('${m.key}','${m.mes}','${m.nombre}')" style="margin-left:5px;">
                             <i class="fas fa-undo"></i>
                         </button>
                     </td>
@@ -2967,10 +2967,39 @@
         });
     }
 
-    function devolverMaquila(key, mes) {
+    // envio de notificación cuando admin devuelve una maquila
+    async function registrarNotificacionAdmin(tipo, detalles) {
+        if (!db) return;
+        try {
+            await db.ref("notificaciones").push({
+                tipo,
+                // quien recibe/está relacionado con la acción (colaborador)
+                usuario: detalles.colaborador || detalles.usuario || '',
+                fecha: obtenerFechaEcuador().toISOString(),
+                leida: false,
+                detalles
+            });
+            console.log("Notificación registrada (admin):", tipo, detalles);
+        } catch (error) {
+            console.error("Error registrando notificación admin:", error);
+        }
+    }
+
+    function devolverMaquila(key, mes, colaborador) {
         if (confirm('¿Devolver esta maquila al colaborador para corrección?')) {
-            db.ref(`maquilas/${mes}/${key}`).update({ devuelta: true, numTransformacion: null })
-                .then(() => {
+            const ref = db.ref(`maquilas/${mes}/${key}`);
+            ref.update({ devuelta: true, numTransformacion: null })
+                .then(async () => {
+                    // generar notificación para que, una vez se implemente la lectura,
+                    // el colaborador pueda enterarse de la devolución
+                    if (colaborador) {
+                        await registrarNotificacionAdmin('maquila_devuelta', {
+                            colaborador,
+                            key,
+                            mes
+                        });
+                    }
+
                     mostrarToast('Éxito', 'Maquila devuelta', 'success');
                     cargarMaquilas();
                     cargarDashboard();
