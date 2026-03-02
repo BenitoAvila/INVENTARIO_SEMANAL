@@ -194,6 +194,16 @@
             border-left: 4px solid #2e7d32;
         }
 
+        .warning {
+            background: rgba(255,152,0,0.2);
+            color: #ffb74d;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 4px solid #ff9800;
+        }
+
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -268,10 +278,21 @@
     localStorage.clear();
 
     // Inicializar Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    let db = null;
+    let firebaseReady = false;
+
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+            console.log("✅ Firebase inicializado");
+        }
+        db = firebase.database();
+        firebaseReady = true;
+        console.log("✅ Database inicializada:", db ? "OK" : "FAIL");
+    } catch (error) {
+        console.error("❌ Error inicializando Firebase:", error);
+        firebaseReady = false;
     }
-    const db = firebase.database();
 
     // ============================================
     // HANDLE GLOBAL ERRORS
@@ -364,15 +385,32 @@
             return;
         }
 
+        // Verificar que Firebase esté disponible
+        if (!firebaseReady || !db) {
+            mostrarMensaje("❌ Firebase no disponible. Recarga la página.", "error");
+            return;
+        }
+
         isLoading = true;
         btnLogin.classList.add("loading");
         btnLogin.innerHTML = ""; // El spinner se muestra vía CSS
 
         try {
             console.log("🔍 Buscando usuario:", usuario);
-            if (!db) {
-                throw new Error('Firebase no inicializado');
+            console.log("🔌 Firebase status:", firebaseReady ? "Conectado" : "No conectado");
+            
+            // Verificar conexión a Firebase
+            try {
+                const connRef = db.ref(".info/connected");
+                const connSnap = await connRef.once("value");
+                if (!connSnap.val()) {
+                    throw new Error('Sin conexión a Firebase');
+                }
+            } catch (connError) {
+                console.warn("⚠️ Verificación de conexión:", connError.message);
+                // Continuar de todas formas, a veces falla esta prueba pero funciona después
             }
+
             const snapshot = await db.ref("usuarios/" + usuario).once("value");
 
             if (!snapshot.exists()) {
@@ -466,14 +504,25 @@
                 if (data.rol === "admin") {
                     window.location.href = "admin.html";
                 } else {
-                    window.location.href = "panel.html";
+                    window.location.href = "panel.html"; // Cambiado de panel.html a colaborador.html
                 }
             }, 1000);
 
         } catch (err) {
-            console.error("❌ Error de conexión en login:", err);
-            let msg = err && err.message ? err.message : 'desconocido';
-            mostrarMensaje(`❌ Error de conexión: ${msg}`, "error");
+            console.error("❌ Error en login:", err);
+            console.error("Stack:", err?.stack);
+            let msg = err && err.message ? err.message : 'Error desconocido';
+            
+            // Mensajes más específicos
+            if (msg.includes('network')) {
+                mostrarMensaje("❌ Error de red. Verifica tu conexión a Internet.", "error");
+            } else if (msg.includes('PERMISSION_DENIED')) {
+                mostrarMensaje("❌ Error de permisos en Firebase. Contacta al administrador.", "error");
+            } else if (msg.includes('Firebase no inicializado')) {
+                mostrarMensaje("❌ Recarga la página e intenta nuevamente.", "error");
+            } else {
+                mostrarMensaje(`❌ Error: ${msg}`, "error");
+            }
             resetearBoton();
         }
     }
@@ -498,7 +547,23 @@
             document.getElementById("usuario").value = ultimoUsuario;
             document.getElementById("password").focus();
         }
-        console.log("✅ Firebase inicializado:", firebase.apps.length > 0);
+        
+        // Verificar Firebase
+        console.log("✅ Firebase apps:", firebase.apps.length);
+        console.log("🔌 Database inicializada:", firebaseReady);
+        
+        // Verificar que Firebase está realmente disponible
+        if (!firebaseReady || !db) {
+            mostrarMensaje("⚠️ Conectando a Firebase...", "warning");
+            setTimeout(() => {
+                if (!firebaseReady || !db) {
+                    mostrarMensaje("❌ No se pudo conectar a Firebase. Recarga la página.", "error");
+                    document.getElementById("btnLogin").disabled = true;
+                } else {
+                    document.getElementById("mensaje").innerHTML = "";
+                }
+            }, 3000);
+        }
     };
 </script>
 </body>

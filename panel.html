@@ -185,6 +185,26 @@
             justify-content: flex-end;
         }
 
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--white);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: var(--white);
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+
         .user-details {
             text-align: right;
         }
@@ -204,6 +224,28 @@
         .btn-header {
             padding: 8px 16px;
             font-size: 13px;
+        }
+
+        /* Dropdown notificaciones */
+        .notification-dropdown {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(30, 30, 47, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            width: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+            z-index: 10000;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .notification-dropdown.active {
+            display: block;
         }
 
         /* ===== BOTONES ===== */
@@ -253,6 +295,16 @@
         .btn-danger:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(220,53,69,0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255,193,7,0.4);
         }
 
         .btn-sm {
@@ -720,6 +772,11 @@
             color: #a3e9a4;
             border: 1px solid rgba(0, 200, 83, 0.4);
         }
+        .badge-info { 
+            background: rgba(23, 162, 184, 0.2); 
+            color: #9be1f0;
+            border: 1px solid rgba(23, 162, 184, 0.4);
+        }
 
         /* ===== MAQUILA FORMS ===== */
         .maquila-grid {
@@ -852,6 +909,7 @@
         .toast.success { border-left-color: var(--success); }
         .toast.error { border-left-color: var(--danger); }
         .toast.info { border-left-color: var(--info); }
+        .toast.warning { border-left-color: var(--warning); }
 
         .toast-icon i {
             font-size: 20px;
@@ -872,73 +930,7 @@
             color: rgba(255,255,255,0.8);
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-                padding: 15px;
-            }
-            
-            .logo {
-                justify-content: center;
-            }
-            
-            .user-info {
-                justify-content: center;
-            }
-            
-            .user-details {
-                text-align: center;
-            }
-            
-            .nav-menu {
-                border-radius: var(--border-radius);
-            }
-            
-            .nav-item {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .maquila-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filtros-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-            
-            .toast-container {
-                left: 10px;
-                right: 10px;
-                max-width: none;
-            }
-
-            .product-info-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .filtros-acciones {
-                justify-content: center;
-            }
-        }
-
-        /* Estilos adicionales */
+        /* ===== CREATE MAQUILA CONTAINER ===== */
         .create-maquila-container {
             margin-bottom: 25px;
             padding: 20px;
@@ -1016,6 +1008,72 @@
             color: rgba(255,255,255,0.8);
             font-size: 13px;
         }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 15px;
+            }
+            
+            .logo {
+                justify-content: center;
+            }
+            
+            .user-info {
+                justify-content: center;
+            }
+            
+            .user-details {
+                text-align: center;
+            }
+            
+            .nav-menu {
+                border-radius: var(--border-radius);
+            }
+            
+            .nav-item {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .maquila-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filtros-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .toast-container {
+                left: 10px;
+                right: 10px;
+                max-width: none;
+            }
+
+            .product-info-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .filtros-acciones {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1036,6 +1094,13 @@
             <span class="logo-badge">COLABORADOR</span>
         </div>
         <div class="user-info">
+            <div style="position: relative;">
+                <div class="notification-bell" onclick="toggleNotificaciones()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">0</span>
+                </div>
+                <div id="notification-dropdown" class="notification-dropdown"></div>
+            </div>
             <div class="user-details">
                 <div class="user-name" id="userName">Cargando...</div>
                 <div class="user-date" id="currentDate"></div>
@@ -1057,8 +1122,9 @@
         <div class="nav-item" onclick="cambiarVista('maquilas')">
             <i class="fas fa-industry"></i> Maquilas
         </div>
+        <!-- NUEVO: Vista de Devueltas -->
         <div class="nav-item" onclick="cambiarVista('devueltas')">
-            <i class="fas fa-undo"></i> Devolv.
+            <i class="fas fa-undo"></i> Devueltas
         </div>
         <div class="nav-item" onclick="cambiarVista('historial')">
             <i class="fas fa-history"></i> Historial
@@ -1119,7 +1185,7 @@
         </div>
     </div>
 
-    <!-- VISTA INVENTARIO (CON FILTROS MEJORADOS) -->
+    <!-- VISTA INVENTARIO -->
     <div id="viewInventario" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1195,7 +1261,7 @@
         </div>
     </div>
 
-    <!-- VISTA MAQUILAS MEJORADA CON FILTROS -->
+    <!-- VISTA MAQUILAS -->
     <div id="viewMaquilas" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1304,59 +1370,37 @@
             </div>
         </div>
 
-        <!-- NUEVO: SECCIÓN PARA VER TODAS LAS MAQUILAS CON FILTROS -->
+        <!-- SECCIÓN PARA VER TODAS LAS MAQUILAS -->
         <div class="card" data-aos="fade-up">
             <div class="card-header">
-                <h3><i class="fas fa-industry"></i> Todas mis Maquilas</h3>
+                <h3><i class="fas fa-industry"></i> Mis Maquilas</h3>
                 <button class="btn btn-primary btn-sm" onclick="cargarTodasMaquilas()">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
 
-            <!-- FILTROS PARA MAQUILAS -->
-            <div class="filtros-container">
-                <div class="filtros-grid">
-                    <div class="filtro-grupo">
-                        <i class="fas fa-search filtro-icon"></i>
-                        <label>Buscar por producto</label>
-                        <input type="text" class="filtro-input" id="filtroMaquilaProducto" placeholder="Nombre del producto..." style="padding-left: 40px;" onkeyup="filtrarTodasMaquilas()">
-                    </div>
-                    <div class="filtro-grupo">
-                        <i class="fas fa-calendar filtro-icon"></i>
-                        <label>Fecha desde</label>
-                        <input type="date" class="filtro-input" id="filtroMaquilaFechaInicio" style="padding-left: 40px;" onchange="filtrarTodasMaquilas()">
-                    </div>
-                    <div class="filtro-grupo">
-                        <i class="fas fa-calendar filtro-icon"></i>
-                        <label>Fecha hasta</label>
-                        <input type="date" class="filtro-input" id="filtroMaquilaFechaFin" style="padding-left: 40px;" onchange="filtrarTodasMaquilas()">
-                    </div>
-                </div>
-                <div class="filtros-acciones">
-                    <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosMaquilas()">
-                        <i class="fas fa-eraser"></i> Limpiar filtros
-                    </button>
-                    <button class="btn btn-primary btn-sm" onclick="exportarMaquilasCSV()">
-                        <i class="fas fa-file-excel"></i> Exportar CSV
-                    </button>
-                </div>
-            </div>
-
             <div id="todasMaquilasContainer" class="table-container">
                 <p class="text-center">Cargando maquilas...</p>
             </div>
-    </div>
-    <!-- SECCIÓN MAQUILAS DEVUELTAS -->
-    <div id="viewDevueltas" class="view" style="display:none;">
-        <h3><i class="fas fa-undo"></i> Maquilas Devueltas</h3>
-        <div id="devueltasContainer" class="table-container" style="margin-top:20px;">
-            <p class="text-center">Cargando...</p>
-        </div>
-    </div>
         </div>
     </div>
 
-    <!-- VISTA HISTORIAL MEJORADA CON FILTROS -->
+    <!-- NUEVA VISTA: DEVUELTAS -->
+    <div id="viewDevueltas" class="view">
+        <div class="card" data-aos="fade-up">
+            <div class="card-header">
+                <h3><i class="fas fa-undo"></i> Inventarios Devueltos</h3>
+                <button class="btn btn-primary btn-sm" onclick="cargarInventariosDevueltos()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            <div id="inventariosDevueltosContainer" class="table-container">
+                <p class="text-center">Cargando inventarios devueltos...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA HISTORIAL -->
     <div id="viewHistorial" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1499,6 +1543,7 @@
     let grafico = null;
     let todosLosEnvios = [];
     let todasLasMaquilas = [];
+    let notificaciones = [];
 
     console.log("Fecha Ecuador hoy:", fechaHoy, "Mes actual:", mesActual);
 
@@ -1539,8 +1584,6 @@
         document.getElementById('filtroInventarioFechaFin').value = fechaFin;
         
         // Maquilas
-        document.getElementById('filtroMaquilaFechaInicio').value = fechaInicio;
-        document.getElementById('filtroMaquilaFechaFin').value = fechaFin;
         document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
         document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
     }
@@ -1609,13 +1652,133 @@
         } else if (vista === 'devueltas') {
             document.querySelectorAll('.nav-item')[3].classList.add('active');
             document.getElementById('viewDevueltas').classList.add('active');
-            cargarMaquilasDevueltas();
+            cargarInventariosDevueltos();
         } else if (vista === 'historial') {
             document.querySelectorAll('.nav-item')[4].classList.add('active');
             document.getElementById('viewHistorial').classList.add('active');
             configurarFechasFiltros();
             cargarHistorial();
             cargarTodasMaquilas();
+        }
+    }
+
+    // ===== NOTIFICACIONES =====
+    function iniciarListenerNotificaciones() {
+        if (!db) return;
+        
+        db.ref("notificaciones").orderByChild("fecha").limitToLast(1).on("child_added", (snapshot) => {
+            console.log("📬 Nueva notificación recibida:", snapshot.val());
+            cargarNotificaciones();
+            const resumenSection = document.getElementById('viewResumen');
+            if (resumenSection && resumenSection.classList.contains('active')) {
+                cargarDashboard();
+            }
+            const devueltasSection = document.getElementById('viewDevueltas');
+            if (devueltasSection && devueltasSection.classList.contains('active')) {
+                cargarInventariosDevueltos();
+            }
+        });
+    }
+
+    async function cargarNotificaciones() {
+        if (!db) return;
+        
+        try {
+            let snap = await db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).limitToLast(50).once("value");
+            notificaciones = [];
+            
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    notificaciones.push({ id: child.key, ...child.val() });
+                });
+            }
+            
+            notificaciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+            
+            let noLeidas = notificaciones.filter(n => !n.leida).length;
+            let badge = document.getElementById('notificationCount');
+            if (badge) {
+                badge.textContent = noLeidas;
+                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
+            }
+            
+        } catch (error) {
+            console.error("Error cargando notificaciones:", error);
+        }
+    }
+
+    function toggleNotificaciones() {
+        let dropdown = document.getElementById('notification-dropdown');
+        if (!dropdown) return;
+        dropdown.classList.toggle('active');
+        if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
+    }
+
+    async function mostrarListadoNotificaciones() {
+        let container = document.getElementById("notification-dropdown");
+        if (!container) return;
+        
+        await cargarNotificaciones();
+        
+        if (notificaciones.length === 0) {
+            container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
+            return;
+        }
+        
+        let html = `<div style="max-height:600px; overflow-y:auto;">`;
+        notificaciones.slice(0, 20).forEach(n => {
+            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
+                       n.tipo === "inventario_devuelto" ? "fa-undo" :
+                       n.tipo === "maquila" ? "fa-industry" : 
+                       n.tipo === "maquila_devuelta" ? "fa-undo" : "fa-bell";
+            let color = n.tipo === "inventario" ? "badge-primary" : 
+                       n.tipo === "inventario_devuelto" ? "badge-warning" :
+                       n.tipo === "maquila" ? "badge-warning" : 
+                       n.tipo === "maquila_devuelta" ? "badge-warning" : "badge-secondary";
+            let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
+            
+            let mensaje = '';
+            if (n.tipo === 'inventario') {
+                mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
+            } else if (n.tipo === 'inventario_devuelto') {
+                mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+            } else if (n.tipo === 'maquila') {
+                mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
+            } else if (n.tipo === 'maquila_devuelta') {
+                mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+            } else {
+                mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+            }
+            
+            html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
+                    <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
+                    <small style="color:var(--light);">${fecha}</small>
+                </div>
+                <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
+                ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
+            </div>`;
+        });
+        
+        if (notificaciones.length > 20) {
+            html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${notificaciones.length} notificaciones</p>`;
+        }
+        
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    async function marcarComoLeida(id) {
+        if (!db) return;
+        
+        try {
+            await db.ref(`notificaciones/${id}/leida`).set(true);
+            mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
+            await mostrarListadoNotificaciones();
+            await cargarNotificaciones();
+        } catch (error) {
+            console.error("Error al marcar notificación:", error);
+            mostrarToast('Error', 'No se pudo marcar la notificación', 'error');
         }
     }
 
@@ -1847,6 +2010,87 @@
         }
     }
 
+    // ===== NUEVA FUNCIÓN: INVENTARIOS DEVUELTOS =====
+    async function cargarInventariosDevueltos() {
+        if (!db || !usuario) return;
+        
+        let container = document.getElementById("inventariosDevueltosContainer");
+        if (!container) return;
+        
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+        
+        try {
+            let meses = [];
+            for (let i = 0; i < 3; i++) {
+                let fecha = obtenerFechaEcuador();
+                fecha.setMonth(fecha.getMonth() - i);
+                meses.push(fecha.toISOString().substring(0, 7));
+            }
+            
+            let devueltos = [];
+            
+            for (let mes of meses) {
+                let snap = await db.ref("inventario_devuelto/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        let d = child.val();
+                        devueltos.push({
+                            fecha: new Date(d.fecha).toLocaleDateString('es-ES'),
+                            producto: d.producto,
+                            sistema: d.sistema || 0,
+                            fisico: d.fisico || 0,
+                            muestras: d.muestras || 0,
+                            caducados: d.caducados || 0,
+                            total: (d.fisico || 0) + (d.muestras || 0) + (d.caducados || 0),
+                            motivo: d.motivo || 'Sin motivo',
+                            fechaDevolucion: d.fechaDevolucion ? new Date(d.fechaDevolucion).toLocaleDateString() : 'Desconocida'
+                        });
+                    });
+                }
+            }
+            
+            if (devueltos.length === 0) {
+                container.innerHTML = "<p class='text-center'>✅ No hay inventarios devueltos</p>";
+                return;
+            }
+            
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Fecha Envío</th>
+                        <th>Producto</th>
+                        <th>Stock</th>
+                        <th>Físico</th>
+                        <th>Muestras</th>
+                        <th>Caducados</th>
+                        <th>Total</th>
+                        <th>Motivo</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            devueltos.forEach(d => {
+                html += `<tr>
+                    <td>${d.fecha}</td>
+                    <td><strong>${d.producto}</strong></td>
+                    <td>${d.sistema}</td>
+                    <td>${d.fisico}</td>
+                    <td>${d.muestras}</td>
+                    <td>${d.caducados}</td>
+                    <td>${d.total}</td>
+                    <td><small>${d.motivo}</small></td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) {
+            console.error("Error cargando inventarios devueltos:", error);
+            container.innerHTML = "<p class='text-center'>Error al cargar inventarios devueltos</p>";
+        }
+    }
+
     // ===== FUNCIONES DE MAQUILAS =====
     async function cargarProductosMaquila() {
         if (!db) return;
@@ -2063,18 +2307,16 @@
         }
     }
 
-    // ===== NUEVA FUNCIÓN: Cargar todas las maquilas =====
+    // ===== FUNCIÓN: Cargar todas las maquilas =====
     async function cargarTodasMaquilas() {
         if (!db || !usuario) return;
         
-        let container = document.getElementById("todasMaquilasContainer");
-        if (!container) container = document.getElementById("historialMaquilasContainer");
+        let container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");
         if (!container) return;
         
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
         
         try {
-            // Obtener últimos 6 meses
             let meses = [];
             for (let i = 0; i < 6; i++) {
                 let fecha = obtenerFechaEcuador();
@@ -2106,9 +2348,7 @@
             }
             
             todasLasMaquilas.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-            
-            // Aplicar filtros si existen
-            filtrarTodasMaquilas();
+            filtrarHistorialMaquilas();
             
         } catch (error) {
             console.error("Error cargando maquilas:", error);
@@ -2116,101 +2356,21 @@
         }
     }
 
-    // ===== FUNCIÓN AGREGADA: Cargar maquilas marcadas como devueltas =====
-    async function cargarMaquilasDevueltas() {
-        if (!db || !usuario) return;
-        const container = document.getElementById("devueltasContainer");
-        if (!container) return;
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
-        try {
-            // buscaremos en los últimos 6 meses por defecto
-            let meses = [];
-            for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
-                fecha.setMonth(fecha.getMonth() - i);
-                meses.push(fecha.toISOString().substring(0, 7));
-            }
-
-            let devueltas = [];
-            for (let mes of meses) {
-                let snap = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
-                if (snap.exists()) {
-                    snap.forEach(child => {
-                        let m = child.val();
-                        if (m.devuelta) {
-                            devueltas.push({
-                                fecha: new Date(m.fecha).toLocaleDateString('es-ES'),
-                                producto: m.producto,
-                                mpCantidad: m.mpCantidad || 0,
-                                mpPresentacion: m.mpPresentacion || '-',
-                                ptCantidad: m.ptCantidad || 0,
-                                ptPresentacion: m.ptPresentacion || '-',
-                                sobrantes: m.sobrantes || 0,
-                                numTransformacion: m.numTransformacion || "Pendiente"
-                            });
-                        }
-                    });
-                }
-            }
-
-            if (devueltas.length === 0) {
-                container.innerHTML = "<p class='text-center'>No hay maquilas devueltas</p>";
-                return;
-            }
-
-            devueltas.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-            let html = `<table><thead><tr><th>Fecha</th><th>Producto</th><th>MP Cant</th><th>MP Pres</th><th>PT Cant</th><th>PT Pres</th><th>Sobr</th><th>N° Transf</th></tr></thead><tbody>`;
-            devueltas.forEach(m => {
-                html += `<tr>
-                    <td>${m.fecha}</td>
-                    <td><strong>${m.producto}</strong></td>
-                    <td>${m.mpCantidad}</td>
-                    <td>${m.mpPresentacion}</td>
-                    <td>${m.ptCantidad}</td>
-                    <td>${m.ptPresentacion}</td>
-                    <td>${m.sobrantes}</td>
-                    <td>${m.numTransformacion}</td>
-                </tr>`;
-            });
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-        } catch (error) {
-            console.error("Error cargando maquilas devueltas:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar maquilas devueltas</p>";
-        }
-    }
-
-    // ===== NUEVA FUNCIÓN: Filtrar todas las maquilas =====
-    function filtrarTodasMaquilas() {
-        const container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");
+    function filtrarHistorialMaquilas() {
+        const container = document.getElementById("historialMaquilasContainer");
         if (!container) return;
         
-        const filtroProducto = document.getElementById("filtroMaquilaProducto")?.value.toLowerCase() || 
-                              document.getElementById("filtroHistorialMaquilaProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroMaquilaFechaInicio")?.value || 
-                           document.getElementById("filtroHistorialMaquilaFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroMaquilaFechaFin")?.value || 
-                        document.getElementById("filtroHistorialMaquilaFechaFin")?.value || "";
+        const filtroProducto = document.getElementById("filtroHistorialMaquilaProducto")?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById("filtroHistorialMaquilaFechaInicio")?.value || "";
+        const fechaFin = document.getElementById("filtroHistorialMaquilaFechaFin")?.value || "";
         
         let filtradas = todasLasMaquilas.filter(m => {
-            // Filtro por producto
-            if (filtroProducto && !m.producto.toLowerCase().includes(filtroProducto)) {
-                return false;
-            }
-            
-            // Filtro por fecha
+            if (filtroProducto && !m.producto.toLowerCase().includes(filtroProducto)) return false;
             if (fechaInicio || fechaFin) {
                 const fechaMaquila = new Date(m.fechaRaw).toISOString().split('T')[0];
-                
-                if (fechaInicio && fechaMaquila < fechaInicio) {
-                    return false;
-                }
-                if (fechaFin && fechaMaquila > fechaFin) {
-                    return false;
-                }
+                if (fechaInicio && fechaMaquila < fechaInicio) return false;
+                if (fechaFin && fechaMaquila > fechaFin) return false;
             }
-            
             return true;
         });
         
@@ -2257,17 +2417,6 @@
         container.innerHTML = html;
     }
 
-    // ===== NUEVA FUNCIÓN: Limpiar filtros de maquilas =====
-    function limpiarFiltrosMaquilas() {
-        document.getElementById("filtroMaquilaProducto").value = "";
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        document.getElementById("filtroMaquilaFechaInicio").value = hace30Dias.toISOString().split('T')[0];
-        document.getElementById("filtroMaquilaFechaFin").value = hoy.toISOString().split('T')[0];
-        filtrarTodasMaquilas();
-    }
-
     function limpiarFiltrosHistorialMaquilas() {
         document.getElementById("filtroHistorialMaquilaProducto").value = "";
         const hoy = obtenerFechaEcuador();
@@ -2275,7 +2424,7 @@
         hace30Dias.setDate(hace30Dias.getDate() - 30);
         document.getElementById("filtroHistorialMaquilaFechaInicio").value = hace30Dias.toISOString().split('T')[0];
         document.getElementById("filtroHistorialMaquilaFechaFin").value = hoy.toISOString().split('T')[0];
-        filtrarTodasMaquilas();
+        filtrarHistorialMaquilas();
     }
 
     // ===== FUNCIONES DE DASHBOARD =====
@@ -2485,23 +2634,12 @@
         const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
         
         let filtrados = todosLosEnvios.filter(e => {
-            // Filtro por producto
-            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) {
-                return false;
-            }
-            
-            // Filtro por fecha
+            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
             if (fechaInicio || fechaFin) {
                 const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
-                
-                if (fechaInicio && fechaEnvio < fechaInicio) {
-                    return false;
-                }
-                if (fechaFin && fechaEnvio > fechaFin) {
-                    return false;
-                }
+                if (fechaInicio && fechaEnvio < fechaInicio) return false;
+                if (fechaFin && fechaEnvio > fechaFin) return false;
             }
-            
             return true;
         });
         
@@ -2542,11 +2680,6 @@
         document.getElementById("filtroInventarioFechaInicio").value = hace30Dias.toISOString().split('T')[0];
         document.getElementById("filtroInventarioFechaFin").value = hoy.toISOString().split('T')[0];
         filtrarHistorialInventario();
-    }
-
-    function filtrarHistorialMaquilas() {
-        // Usar la misma función que para todas las maquilas pero con el contenedor correcto
-        filtrarTodasMaquilas();
     }
 
     // ===== FUNCIONES DE EXPORTACIÓN =====
@@ -2605,6 +2738,7 @@
         console.log("Inicializando con fecha Ecuador:", fechaHoy, "mes:", mesActual);
         
         configurarFechasFiltros();
+        iniciarListenerNotificaciones();
         
         await Promise.all([
             cargarDashboard(), 
@@ -2612,7 +2746,8 @@
             cargarPendientes(), 
             cargarHistorial(), 
             cargarProductosMaquila(), 
-            cargarTodasMaquilas()
+            cargarTodasMaquilas(),
+            cargarNotificaciones()
         ]);
         
         mostrarLoading(false);
