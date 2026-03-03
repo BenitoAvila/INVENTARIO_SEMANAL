@@ -1886,6 +1886,8 @@
         let sistema = parseInt(document.getElementById("cantidadSistema").value);
         let esDuplicado = document.getElementById("esDuplicado").checked;
         
+        console.log("📝 Creando producto:", { nombre, sistema, esDuplicado });
+        
         if (!nombre) { 
             mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
             return; 
@@ -1918,6 +1920,7 @@
             
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
             
+            console.log("💾 Guardando en Firebase con ID:", id);
             await db.ref("productos/" + id).set({ 
                 nombre, 
                 sistema, 
@@ -1925,16 +1928,24 @@
                 esVariante: esDuplicado 
             });
             
+            console.log("✅ Producto guardado en Firebase");
             mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             document.getElementById("nombreProducto").value = "";
             document.getElementById("cantidadSistema").value = "";
             document.getElementById("esDuplicado").checked = false;
             
+            console.log("🔄 Recargando listas...");
             await cargarProductos();
+            console.log("✅ cargarProductos completado");
+            
             await cargarDashboard();
+            console.log("✅ cargarDashboard completado");
+            
+            await cargarSelectoresAsignacion();
+            console.log("✅ cargarSelectoresAsignacion completado");
             
         } catch (error) { 
-            console.error("Error al crear producto:", error); 
+            console.error("❌ Error al crear producto:", error); 
             mostrarToast('Error', 'Error al crear producto', 'error'); 
         } finally { 
             mostrarLoading(false); 
@@ -2016,6 +2027,7 @@
                     await db.ref("productos/" + id + "/sistema").set(num); 
                     mostrarToast('Éxito', 'Stock actualizado', 'success'); 
                     await cargarProductos(); 
+                    await cargarSelectoresAsignacion();
                 } catch (error) { 
                     console.error("Error:", error);
                     mostrarToast('Error', 'Error al actualizar stock', 'error'); 
@@ -2031,6 +2043,7 @@
                 mostrarToast('Éxito', 'Producto eliminado', 'success'); 
                 await cargarProductos(); 
                 await cargarDashboard(); 
+                await cargarSelectoresAsignacion();
             } catch (error) { 
                 console.error("Error:", error);
                 mostrarToast('Error', 'Error al eliminar producto', 'error'); 
@@ -2172,6 +2185,8 @@
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
+            console.log("🔄 Iniciando cargarSelectoresAsignacion...");
+            
             let usuariosSnap = await db.ref("usuarios").once("value");
             let selectU = document.getElementById("selectUsuario");
             
@@ -2192,15 +2207,20 @@
             let productosSnap = await db.ref("productos").once("value");
             let selectP = document.getElementById("selectProducto");
             
+            console.log("📦 Productos recuperados:", productosSnap.exists() ? "SÍ" : "NO");
+            
             if (selectP) {
                 selectP.innerHTML = "<option value=''>Seleccionar producto...</option>";
                 if (productosSnap.exists()) {
                     let prods = [];
-                    productosSnap.forEach(child => prods.push({ 
-                        id: child.key, 
-                        nombre: child.val().nombre, 
-                        sistema: child.val().sistema 
-                    }));
+                    productosSnap.forEach(child => {
+                        console.log("✅ Producto encontrado:", child.key, child.val().nombre);
+                        prods.push({ 
+                            id: child.key, 
+                            nombre: child.val().nombre, 
+                            sistema: child.val().sistema 
+                        });
+                    });
                     
                     prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
                     
@@ -2209,14 +2229,21 @@
                         opt.value = p.id; 
                         opt.textContent = `${p.nombre} (Stock: ${p.sistema})`; 
                         selectP.appendChild(opt);
+                        console.log("➕ Opción agregada:", opt.textContent);
                     });
+                    
+                    console.log("✨ Total de opciones agregadas:", selectP.options.length);
+                } else {
+                    console.log("⚠️ No hay productos en Firebase");
                 }
+            } else {
+                console.log("❌ selectProducto no encontrado");
             }
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
             
         } catch (error) { 
-            console.error("Error al cargar selectores:", error); 
+            console.error("❌ Error al cargar selectores:", error); 
         }
     }
 
