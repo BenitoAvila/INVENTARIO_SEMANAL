@@ -303,6 +303,37 @@
             color: var(--white);
         }
 
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+            background: rgba(255,255,255,0.05);
+            color: var(--light);
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* Tablas */
         .table-container {
             overflow-x: auto;
@@ -545,22 +576,6 @@
             display: block;
         }
 
-        /* Estados de diferencia */
-        .diferencia-cuadra {
-            background: rgba(46, 125, 50, 0.2);
-            color: #a5d6a7;
-        }
-        
-        .diferencia-sobrante {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ffe082;
-        }
-        
-        .diferencia-faltante {
-            background: rgba(198, 40, 40, 0.2);
-            color: #ef9a9a;
-        }
-
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -640,13 +655,9 @@
             <div class="menu-icon"><i class="fas fa-users"></i></div>
             <h3>Usuarios</h3>
         </div>
-        <div class="menu-card" onclick="mostrarSeccion('productos')">
+        <div class="menu-card" onclick="mostrarSeccion('gestion-productos')">
             <div class="menu-icon"><i class="fas fa-boxes"></i></div>
-            <h3>Productos</h3>
-        </div>
-        <div class="menu-card" onclick="mostrarSeccion('asignaciones')">
-            <div class="menu-icon"><i class="fas fa-tasks"></i></div>
-            <h3>Asignaciones</h3>
+            <h3>Gestión Productos</h3>
         </div>
         <div class="menu-card" onclick="mostrarSeccion('inventario')">
             <div class="menu-icon"><i class="fas fa-clipboard-list"></i></div>
@@ -702,14 +713,12 @@
             </div>
         </div>
 
-        <!-- Botón de actualización manual -->
         <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
             <button class="btn btn-refresh" onclick="actualizarDashboard()">
                 <i class="fas fa-sync-alt"></i> Actualizar Dashboard
             </button>
         </div>
 
-        <!-- Acciones Pendientes por Colaborador -->
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-clock"></i> Acciones Pendientes por Colaborador</h3>
@@ -777,73 +786,88 @@
         <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN PRODUCTOS (INVENTARIO) -->
-    <div id="seccion-productos" class="card seccion">
+    <!-- SECCIÓN GESTIÓN DE PRODUCTOS (UNIFICADA) -->
+    <div id="seccion-gestion-productos" class="card seccion">
         <div class="card-header">
-            <h3><i class="fas fa-box"></i> Crear Producto (Inventario)</h3>
+            <h3><i class="fas fa-boxes"></i> Gestión de Productos</h3>
         </div>
 
-        <div class="form-group">
-            <label>Nombre del Producto</label>
-            <input type="text" id="nombreProducto" class="form-control" placeholder="ej: Premium x 50kg">
-        </div>
-        <div class="form-group">
-            <label>Cantidad en Sistema</label>
-            <input type="number" id="cantidadSistema" class="form-control" placeholder="0" min="0" step="1">
-        </div>
-        <div style="margin: 15px 0;">
-            <label style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="esDuplicado">
-                <span>Es una variante</span>
-            </label>
-        </div>
-        <button class="btn btn-primary btn-block" onclick="crearProducto()" id="btnCrearProducto">
-            <i class="fas fa-save"></i> Guardar Producto
-        </button>
-
-        <div class="form-group" style="margin-top: 20px;">
-            <input type="text" id="filtroProductos" class="form-control" placeholder="Buscar productos..." onkeyup="filtrarProductos()">
-        </div>
-        <h4>Productos Existentes</h4>
-        <div id="listaProductos" class="table-container">
-            <p class="text-center">Cargando productos...</p>
-        </div>
-    </div>
-
-    <!-- SECCIÓN ASIGNACIONES -->
-    <div id="seccion-asignaciones" class="card seccion">
-        <div class="card-header">
-            <h3><i class="fas fa-calendar-alt"></i> Asignar Producto</h3>
+        <!-- Tabs para cambiar entre crear producto y asignar producto -->
+        <div class="tabs">
+            <div class="tab active" onclick="cambiarTab('crear-producto')" id="tab-crear-producto">
+                <i class="fas fa-plus-circle"></i> Crear Producto
+            </div>
+            <div class="tab" onclick="cambiarTab('asignar-producto')" id="tab-asignar-producto">
+                <i class="fas fa-tasks"></i> Asignar Producto
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Fecha</label>
-            <input type="date" id="fechaAsignacion" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Usuario</label>
-            <select id="selectUsuario" class="form-control">
-                <option value="">Cargando...</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Producto</label>
-            <select id="selectProducto" class="form-control">
-                <option value="">Cargando...</option>
-            </select>
-        </div>
-        <div style="margin: 15px 0;">
-            <label style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="permitirMultiples">
-                <span>Permitir respuestas múltiples</span>
-            </label>
-        </div>
-        <button class="btn btn-primary btn-block" onclick="asignarProducto()">
-            <i class="fas fa-check-circle"></i> Asignar
-        </button>
+        <!-- TAB 1: CREAR PRODUCTO (Solo gestión de catálogo) -->
+        <div id="tab-content-crear-producto" class="tab-content active">
+            <div class="form-group" style="position: relative;">
+                <label>Nombre del Producto</label>
+                <input type="text" id="nombreProducto" class="form-control" placeholder="Escriba para buscar o crear nuevo..." autocomplete="off" onkeyup="buscarProductosExistente()">
+                <div id="sugerenciasProductos" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); border: 1px solid var(--primary); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm); max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+            </div>
+            <div class="form-group">
+                <label>Cantidad en Sistema (Stock Total)</label>
+                <input type="number" id="cantidadSistema" class="form-control" placeholder="0" min="0" step="1">
+            </div>
+            <div style="margin: 15px 0;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="esDuplicado">
+                    <span>Es una variante</span>
+                </label>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="crearProducto()" id="btnCrearProducto">
+                <i class="fas fa-save"></i> Guardar Producto
+            </button>
 
-        <h4 style="margin-top: 30px;">Asignaciones de Hoy</h4>
-        <div id="asignacionesHoy" class="table-container"></div>
+            <div class="form-group" style="margin-top: 20px;">
+                <input type="text" id="filtroProductos" class="form-control" placeholder="Buscar productos en el catálogo..." onkeyup="filtrarProductos()">
+            </div>
+            <h4>Catálogo de Productos</h4>
+            <div id="listaProductos" class="table-container">
+                <p class="text-center">Cargando productos...</p>
+            </div>
+        </div>
+
+        <!-- TAB 2: ASIGNAR PRODUCTO (Con cantidad específica) -->
+        <div id="tab-content-asignar-producto" class="tab-content">
+            <div class="form-group">
+                <label>Fecha de Asignación</label>
+                <input type="date" id="fechaAsignacion" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Colaborador</label>
+                <select id="selectUsuario" class="form-control">
+                    <option value="">Cargando colaboradores...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Producto a Asignar</label>
+                <select id="selectProducto" class="form-control">
+                    <option value="">Cargando productos...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Cantidad a Asignar</label>
+                <input type="number" id="cantidadAsignar" class="form-control" placeholder="0" min="1" step="1">
+                <small style="color: var(--light);">Stock disponible en sistema: <span id="stockDisponible">0</span></small>
+            </div>
+            <div style="margin: 15px 0;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="permitirMultiples">
+                    <span>Permitir respuestas múltiples (puede enviar varias veces)</span>
+                </label>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="asignarProducto()">
+                <i class="fas fa-check-circle"></i> Asignar Cantidad
+            </button>
+
+            <h4 style="margin-top: 30px;">Asignaciones de Hoy</h4>
+            <div id="asignacionesHoy" class="table-container"></div>
+        </div>
     </div>
 
     <!-- SECCIÓN INVENTARIO (CONSULTA) -->
@@ -1012,6 +1036,7 @@
     let firebaseConnected = true;
     let chartUsuarios, chartActividad, chartAsignaciones, chartMaquilas;
     let registroEditando = null;
+    let todosLosProductos = [];
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -1064,6 +1089,23 @@
         }, 4000);
     }
 
+    // Función para cambiar entre tabs
+    function cambiarTab(tabId) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.getElementById(`tab-content-${tabId}`).classList.add('active');
+        
+        if (tabId === 'asignar-producto') {
+            cargarSelectoresAsignacion();
+            cargarAsignacionesHoy();
+        } else if (tabId === 'crear-producto') {
+            cargarTodosLosProductos();
+            cargarProductos(document.getElementById('filtroProductos')?.value || '');
+        }
+    }
+
     function mostrarSeccion(seccion) {
         document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
         const target = document.getElementById(`seccion-${seccion}`);
@@ -1071,17 +1113,17 @@
         
         if (seccion === 'dashboard') cargarDashboard();
         if (seccion === 'usuarios') cargarUsuarios();
-        if (seccion === 'productos') cargarProductos();
-        if (seccion === 'asignaciones') { 
-            cargarSelectoresAsignacion(); 
-            cargarAsignacionesHoy(); 
+        if (seccion === 'gestion-productos') {
+            cambiarTab('crear-producto');
+            cargarTodosLosProductos();
+            cargarProductos(document.getElementById('filtroProductos')?.value || '');
         }
         if (seccion === 'inventario') { 
             configurarFechas(); 
             cargarFiltrosUsuarios(); 
             cargarInventario(); 
         }
-        if (seccion === 'productosMaquila') cargarProductosMaquila();
+        if (seccion === 'productosMaquila') cargarProductosMaquila(document.getElementById('filtroProductosMaquila')?.value || '');
         if (seccion === 'maquilas') { 
             configurarFechasMaquila(); 
             cargarFiltrosUsuariosMaquila(); 
@@ -1258,7 +1300,7 @@
     }
 
     // ============================================
-    // DASHBOARD
+    // DASHBOARD (Funciones existentes, se mantienen igual)
     // ============================================
     async function cargarDashboard() {
         try {
@@ -1527,7 +1569,7 @@
                         <thead>
                             <tr>
                                 <th>Producto</th>
-                                <th>Stock</th>
+                                <th>Cantidad Asignada</th>
                             </tr>
                         </thead>
                         <tbody>`;
@@ -1539,7 +1581,7 @@
                         tienePendientes = true;
                         html += `<tr>
                             <td>${prodSnap.val().nombreProducto || 'Producto'}</td>
-                            <td><span class="badge badge-primary">${prodSnap.val().stockSistema || 0}</span></td>
+                            <td><span class="badge badge-primary">${prodSnap.val().cantidadAsignada || prodSnap.val().stockSistema || 0}</span></td>
                         </tr>`;
                     }
                 });
@@ -1879,14 +1921,79 @@
     }
 
     // ============================================
-    // PRODUCTOS DE INVENTARIO
+    // PRODUCTOS DE INVENTARIO (CREAR PRODUCTO - SOLO CATÁLOGO)
     // ============================================
+    
+    async function cargarTodosLosProductos() {
+        try {
+            let snap = await db.ref("productos").once("value");
+            todosLosProductos = [];
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    todosLosProductos.push({
+                        id: child.key,
+                        nombre: child.val().nombre,
+                        sistema: child.val().sistema,
+                        esVariante: child.val().esVariante || false
+                    });
+                });
+                todosLosProductos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            }
+            console.log("📦 Productos cargados para autocompletado:", todosLosProductos.length);
+        } catch (error) {
+            console.error("Error cargando productos para autocompletado:", error);
+        }
+    }
+
+    function buscarProductosExistente() {
+        let input = document.getElementById("nombreProducto");
+        let sugerenciasDiv = document.getElementById("sugerenciasProductos");
+        if (!input || !sugerenciasDiv) return;
+        
+        let texto = input.value.trim().toLowerCase();
+        
+        if (texto.length < 1) {
+            sugerenciasDiv.style.display = "none";
+            return;
+        }
+        
+        let resultados = todosLosProductos.filter(p => 
+            p.nombre.toLowerCase().includes(texto)
+        );
+        
+        if (resultados.length === 0) {
+            sugerenciasDiv.style.display = "none";
+            return;
+        }
+        
+        let html = "";
+        resultados.slice(0, 10).forEach(p => {
+            html += `<div onclick="seleccionarProducto('${p.id}', '${p.nombre.replace(/'/g, "\\'")}', ${p.sistema})" 
+                        style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                        onmouseout="this.style.background='transparent'">
+                        <strong>${p.nombre}</strong> <span class="badge badge-primary" style="margin-left: 10px;">Stock Total: ${p.sistema}</span>
+                        ${p.esVariante ? '<span class="badge badge-info">Variante</span>' : ''}
+                    </div>`;
+        });
+        
+        sugerenciasDiv.innerHTML = html;
+        sugerenciasDiv.style.display = "block";
+    }
+
+    function seleccionarProducto(id, nombre, stock) {
+        document.getElementById("nombreProducto").value = nombre;
+        document.getElementById("cantidadSistema").value = stock;
+        document.getElementById("sugerenciasProductos").style.display = "none";
+        mostrarToast('Producto seleccionado', `Has seleccionado "${nombre}" con stock ${stock}`, 'info');
+    }
+
     async function crearProducto() {
         let nombre = document.getElementById("nombreProducto").value.trim();
         let sistema = parseInt(document.getElementById("cantidadSistema").value);
         let esDuplicado = document.getElementById("esDuplicado").checked;
         
-        console.log("📝 Creando producto:", { nombre, sistema, esDuplicado });
+        console.log("📝 Creando/actualizando producto:", { nombre, sistema, esDuplicado });
         
         if (!nombre) { 
             mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
@@ -1904,45 +2011,44 @@
         mostrarLoading(true);
         
         try {
-            let prodSnap = await db.ref("productos").once("value");
-            let existe = false;
+            let productoExistente = todosLosProductos.find(p => 
+                p.nombre.toLowerCase() === nombre.toLowerCase()
+            );
             
-            if (prodSnap.exists()) {
-                prodSnap.forEach(child => { 
-                    if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; 
+            if (productoExistente) {
+                if (confirm(`El producto "${nombre}" ya existe con stock total ${productoExistente.sistema}. ¿Desea actualizar el stock a ${sistema}?`)) {
+                    await db.ref("productos/" + productoExistente.id + "/sistema").set(sistema);
+                    mostrarToast('Éxito', 'Stock actualizado correctamente', 'success');
+                } else {
+                    mostrarToast('Info', 'Operación cancelada', 'info');
+                    btn.disabled = false; 
+                    btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+                    mostrarLoading(false);
+                    return;
+                }
+            } else {
+                let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+                
+                await db.ref("productos/" + id).set({ 
+                    nombre, 
+                    sistema, 
+                    fechaCreacion: obtenerFechaEcuador().toISOString(), 
+                    esVariante: esDuplicado 
                 });
+                
+                mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             }
             
-            if (existe) { 
-                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); 
-                return; 
-            }
-            
-            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            console.log("💾 Guardando en Firebase con ID:", id);
-            await db.ref("productos/" + id).set({ 
-                nombre, 
-                sistema, 
-                fechaCreacion: obtenerFechaEcuador().toISOString(), 
-                esVariante: esDuplicado 
-            });
-            
-            console.log("✅ Producto guardado en Firebase");
-            mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             document.getElementById("nombreProducto").value = "";
             document.getElementById("cantidadSistema").value = "";
             document.getElementById("esDuplicado").checked = false;
+            document.getElementById("filtroProductos").value = "";
             
             console.log("🔄 Recargando listas...");
+            await cargarTodosLosProductos();
             await cargarProductos();
-            console.log("✅ cargarProductos completado");
-            
             await cargarDashboard();
-            console.log("✅ cargarDashboard completado");
-            
             await cargarSelectoresAsignacion();
-            console.log("✅ cargarSelectoresAsignacion completado");
             
         } catch (error) { 
             console.error("❌ Error al crear producto:", error); 
@@ -1971,18 +2077,27 @@
             let prods = [];
             snap.forEach(child => {
                 let p = child.val();
-                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) {
-                    prods.push({ id: child.key, ...p });
-                }
+                prods.push({ id: child.key, ...p });
             });
             
             prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            
+            if (filtro && filtro.trim() !== '') {
+                prods = prods.filter(p => 
+                    p.nombre.toLowerCase().includes(filtro.toLowerCase())
+                );
+            }
+            
+            if (prods.length === 0) {
+                container.innerHTML = "<p class='text-center'>No se encontraron productos con ese filtro</p>";
+                return;
+            }
             
             let html = `<table>
                 <thead>
                     <tr>
                         <th>Producto</th>
-                        <th>Stock Sistema</th>
+                        <th>Stock Total</th>
                         <th>Variante</th>
                         <th>Acciones</th>
                     </tr>
@@ -1996,7 +2111,7 @@
                     <td>${p.esVariante ? 'Sí' : 'No'}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">
-                            <i class="fas fa-edit"></i> Editar
+                            <i class="fas fa-edit"></i> Editar Stock
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
                             <i class="fas fa-trash"></i> Eliminar
@@ -2008,6 +2123,8 @@
             html += `</tbody></table>`;
             container.innerHTML = html;
             
+            await cargarTodosLosProductos();
+            
         } catch (error) { 
             console.error("Error al cargar productos:", error); 
             container.innerHTML = "<p class='text-center'>Error al cargar productos</p>"; 
@@ -2015,18 +2132,20 @@
     }
 
     function filtrarProductos() { 
-        cargarProductos(document.getElementById("filtroProductos").value); 
+        let filtro = document.getElementById("filtroProductos").value;
+        cargarProductos(filtro); 
     }
 
     async function editarProducto(id, nombre, sistema) {
-        let nuevoStock = prompt(`Nuevo stock para ${nombre}:`, sistema);
+        let nuevoStock = prompt(`Nuevo stock total para ${nombre}:`, sistema);
         if (nuevoStock !== null) {
             let num = parseInt(nuevoStock);
             if (!isNaN(num) && num >= 0) {
                 try { 
                     await db.ref("productos/" + id + "/sistema").set(num); 
                     mostrarToast('Éxito', 'Stock actualizado', 'success'); 
-                    await cargarProductos(); 
+                    await cargarProductos(document.getElementById('filtroProductos')?.value || ''); 
+                    await cargarTodosLosProductos();
                     await cargarSelectoresAsignacion();
                 } catch (error) { 
                     console.error("Error:", error);
@@ -2037,11 +2156,12 @@
     }
 
     async function eliminarProducto(id) {
-        if (confirm("¿Está seguro de eliminar este producto?")) {
+        if (confirm("¿Está seguro de eliminar este producto del catálogo?")) {
             try { 
                 await db.ref("productos/" + id).remove(); 
                 mostrarToast('Éxito', 'Producto eliminado', 'success'); 
-                await cargarProductos(); 
+                await cargarProductos(document.getElementById('filtroProductos')?.value || ''); 
+                await cargarTodosLosProductos();
                 await cargarDashboard(); 
                 await cargarSelectoresAsignacion();
             } catch (error) { 
@@ -2052,136 +2172,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE MAQUILA
-    // ============================================
-    async function crearProductoMaquila() {
-        let nombre = document.getElementById("nombreProductoMaquila").value.trim();
-        let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
-        
-        if (!nombre) { 
-            mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
-            return; 
-        }
-        
-        let btn = document.getElementById("btnCrearProductoMaquila");
-        btn.disabled = true; 
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-        mostrarLoading(true);
-        
-        try {
-            let prodSnap = await db.ref("maquilas_productos").once("value");
-            let existe = false;
-            
-            if (prodSnap.exists()) {
-                prodSnap.forEach(child => { 
-                    if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; 
-                });
-            }
-            
-            if (existe) { 
-                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); 
-                return; 
-            }
-            
-            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            await db.ref("maquilas_productos/" + id).set({ 
-                nombre, 
-                descripcion, 
-                fechaCreacion: obtenerFechaEcuador().toISOString() 
-            });
-            
-            mostrarToast('Éxito', 'Producto de maquila creado', 'success');
-            document.getElementById("nombreProductoMaquila").value = "";
-            document.getElementById("descripcionProductoMaquila").value = "";
-            
-            await cargarProductosMaquila();
-            
-        } catch (error) { 
-            console.error("Error al crear producto:", error); 
-            mostrarToast('Error', 'Error al crear producto', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; 
-        }
-    }
-
-    async function cargarProductosMaquila(filtro = "") {
-        let container = document.getElementById("listaProductosMaquila");
-        if (!container) return;
-        
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
-        try {
-            let snap = await db.ref("maquilas_productos").once("value");
-            
-            if (!snap.exists()) { 
-                container.innerHTML = "<p class='text-center'>No hay productos de maquila</p>"; 
-                return; 
-            }
-            
-            let prods = [];
-            snap.forEach(child => {
-                let p = child.val();
-                if (!filtro || p.nombre.toLowerCase().includes(filtro.toLowerCase())) {
-                    prods.push({ id: child.key, ...p });
-                }
-            });
-            
-            prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Descripción</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
-            prods.forEach(p => {
-                html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>${p.descripcion || '-'}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProductoMaquila('${p.id}')">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>`;
-            });
-            
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar productos:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar productos</p>"; 
-        }
-    }
-
-    function filtrarProductosMaquila() { 
-        cargarProductosMaquila(document.getElementById("filtroProductosMaquila").value); 
-    }
-
-    async function eliminarProductoMaquila(id) {
-        if (confirm("¿Está seguro de eliminar este producto de maquila?")) {
-            try { 
-                await db.ref("maquilas_productos/" + id).remove(); 
-                mostrarToast('Éxito', 'Producto eliminado', 'success'); 
-                await cargarProductosMaquila(); 
-                await cargarDashboard(); 
-            } catch (error) { 
-                console.error("Error:", error);
-                mostrarToast('Error', 'Error al eliminar producto', 'error'); 
-            }
-        }
-    }
-
-    // ============================================
-    // ASIGNACIONES
+    // ASIGNACIONES (CON CANTIDAD ESPECÍFICA)
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
@@ -2191,7 +2182,7 @@
             let selectU = document.getElementById("selectUsuario");
             
             if (selectU) {
-                selectU.innerHTML = "<option value=''>Seleccionar usuario...</option>";
+                selectU.innerHTML = "<option value=''>Seleccionar colaborador...</option>";
                 if (usuariosSnap.exists()) {
                     usuariosSnap.forEach(child => {
                         if (child.val().rol === "colaborador") {
@@ -2207,14 +2198,11 @@
             let productosSnap = await db.ref("productos").once("value");
             let selectP = document.getElementById("selectProducto");
             
-            console.log("📦 Productos recuperados:", productosSnap.exists() ? "SÍ" : "NO");
-            
             if (selectP) {
                 selectP.innerHTML = "<option value=''>Seleccionar producto...</option>";
                 if (productosSnap.exists()) {
                     let prods = [];
                     productosSnap.forEach(child => {
-                        console.log("✅ Producto encontrado:", child.key, child.val().nombre);
                         prods.push({ 
                             id: child.key, 
                             nombre: child.val().nombre, 
@@ -2227,17 +2215,18 @@
                     prods.forEach(p => {
                         let opt = document.createElement("option"); 
                         opt.value = p.id; 
-                        opt.textContent = `${p.nombre} (Stock: ${p.sistema})`; 
+                        opt.setAttribute('data-stock', p.sistema);
+                        opt.textContent = `${p.nombre} (Stock disponible: ${p.sistema})`; 
                         selectP.appendChild(opt);
-                        console.log("➕ Opción agregada:", opt.textContent);
                     });
                     
-                    console.log("✨ Total de opciones agregadas:", selectP.options.length);
-                } else {
-                    console.log("⚠️ No hay productos en Firebase");
+                    // Agregar evento para mostrar stock disponible
+                    selectP.addEventListener('change', function() {
+                        let selected = this.options[this.selectedIndex];
+                        let stock = selected.getAttribute('data-stock') || 0;
+                        document.getElementById('stockDisponible').textContent = stock;
+                    });
                 }
-            } else {
-                console.log("❌ selectProducto no encontrado");
             }
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
@@ -2251,6 +2240,7 @@
         let fecha = document.getElementById("fechaAsignacion").value;
         let usuario = document.getElementById("selectUsuario").value;
         let producto = document.getElementById("selectProducto").value;
+        let cantidad = parseInt(document.getElementById("cantidadAsignar").value);
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
         
         if (!fecha || !usuario || !producto) { 
@@ -2258,16 +2248,15 @@
             return; 
         }
         
+        if (isNaN(cantidad) || cantidad <= 0) {
+            mostrarToast('Error', 'Ingrese una cantidad válida', 'error');
+            return;
+        }
+        
         mostrarLoading(true);
         
         try {
-            let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
-            
-            if (existente.exists()) { 
-                mostrarToast('Error', 'Ya existe una asignación para este usuario y producto en esta fecha', 'error'); 
-                return; 
-            }
-            
+            // Verificar stock disponible
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) { 
                 mostrarToast('Error', 'Producto no encontrado', 'error'); 
@@ -2276,19 +2265,51 @@
             
             let prodData = prodSnap.val();
             
-            await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
-                asignado: true,
-                nombreProducto: prodData.nombre,
-                stockSistema: prodData.sistema,
-                permitirMultiples,
-                fechaAsignacion: obtenerFechaEcuador().toISOString(),
-                productoId: producto
-            });
+            if (cantidad > prodData.sistema) {
+                mostrarToast('Error', `Stock insuficiente. Disponible: ${prodData.sistema}`, 'error');
+                return;
+            }
             
-            mostrarToast('Éxito', 'Producto asignado correctamente', 'success');
+            // Verificar si ya existe asignación
+            let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
+            
+            if (existente.exists() && !permitirMultiples) { 
+                mostrarToast('Error', 'Ya existe una asignación para este usuario y producto en esta fecha. Marque "Permitir múltiples" si desea asignar más.', 'error'); 
+                return; 
+            }
+            
+            // Si existe y permite múltiples, sumar la cantidad
+            if (existente.exists() && permitirMultiples) {
+                let dataActual = existente.val();
+                let nuevaCantidad = (dataActual.cantidadAsignada || 0) + cantidad;
+                
+                await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).update({
+                    cantidadAsignada: nuevaCantidad,
+                    fechaActualizacion: obtenerFechaEcuador().toISOString()
+                });
+                
+                mostrarToast('Éxito', `Se agregaron ${cantidad} unidades a la asignación existente`, 'success');
+            } else {
+                // Crear nueva asignación
+                await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
+                    asignado: true,
+                    nombreProducto: prodData.nombre,
+                    stockSistema: prodData.sistema,
+                    cantidadAsignada: cantidad,
+                    permitirMultiples,
+                    fechaAsignacion: obtenerFechaEcuador().toISOString(),
+                    productoId: producto
+                });
+                
+                mostrarToast('Éxito', `${cantidad} unidades asignadas correctamente`, 'success');
+            }
+            
+            // Limpiar formulario
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
+            document.getElementById("cantidadAsignar").value = "";
             document.getElementById("permitirMultiples").checked = false;
+            document.getElementById("stockDisponible").textContent = "0";
             
             await cargarAsignacionesHoy();
             await cargarDashboard();
@@ -2343,7 +2364,7 @@
                         usuario, 
                         producto: data.nombreProducto, 
                         productoId: prodSnap.key,
-                        stock: data.stockSistema, 
+                        cantidadAsignada: data.cantidadAsignada || data.stockSistema || 0,
                         multiples: data.permitirMultiples ? 'Sí' : 'No', 
                         respondida 
                     });
@@ -2355,7 +2376,7 @@
                     <tr>
                         <th>Usuario</th>
                         <th>Producto</th>
-                        <th>Stock Sistema</th>
+                        <th>Cantidad Asignada</th>
                         <th>Múltiples</th>
                         <th>Estado</th>
                         <th>Acción</th>
@@ -2370,7 +2391,7 @@
                 html += `<tr>
                     <td><strong>${a.usuario}</strong></td>
                     <td>${a.producto}</td>
-                    <td><span class="badge badge-primary">${a.stock}</span></td>
+                    <td><span class="badge badge-primary">${a.cantidadAsignada}</span></td>
                     <td>${a.multiples}</td>
                     <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
                     <td>
@@ -2393,7 +2414,6 @@
         }
     }
 
-    // ===== funciones para modificar/eliminar asignaciones =====
     function eliminarAsignacion(usuario, productoId) {
         if (!confirm('¿Eliminar esta asignación?')) return;
         let fechaHoy = obtenerFechaHoyEcuador();
@@ -2412,11 +2432,11 @@
             .then(snap => {
                 if (!snap.exists()) return;
                 let data = snap.val();
-                let nuevoStock = prompt('Stock sistema:', data.stockSistema || '');
+                let nuevaCantidad = prompt('Nueva cantidad a asignar:', data.cantidadAsignada || data.stockSistema || '');
                 let permitirMult = confirm('Permitir múltiples?');
-                if (nuevoStock == null) return;
+                if (nuevaCantidad == null) return;
                 db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoId}`).update({
-                    stockSistema: parseInt(nuevoStock) || 0,
+                    cantidadAsignada: parseInt(nuevaCantidad) || 0,
                     permitirMultiples: permitirMult
                 }).then(() => {
                     mostrarToast('Éxito', 'Asignación actualizada', 'success');
@@ -2427,6 +2447,146 @@
                     mostrarToast('Error', 'No se pudo actualizar asignación', 'error');
                 });
             });
+    }
+
+    // ============================================
+    // PRODUCTOS DE MAQUILA
+    // ============================================
+    async function crearProductoMaquila() {
+        let nombre = document.getElementById("nombreProductoMaquila").value.trim();
+        let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
+        
+        if (!nombre) { 
+            mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
+            return; 
+        }
+        
+        let btn = document.getElementById("btnCrearProductoMaquila");
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        mostrarLoading(true);
+        
+        try {
+            let prodSnap = await db.ref("maquilas_productos").once("value");
+            let existe = false;
+            
+            if (prodSnap.exists()) {
+                prodSnap.forEach(child => { 
+                    if (child.val().nombre.toLowerCase() === nombre.toLowerCase()) existe = true; 
+                });
+            }
+            
+            if (existe) { 
+                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error'); 
+                return; 
+            }
+            
+            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+            
+            await db.ref("maquilas_productos/" + id).set({ 
+                nombre, 
+                descripcion, 
+                fechaCreacion: obtenerFechaEcuador().toISOString() 
+            });
+            
+            mostrarToast('Éxito', 'Producto de maquila creado', 'success');
+            document.getElementById("nombreProductoMaquila").value = "";
+            document.getElementById("descripcionProductoMaquila").value = "";
+            document.getElementById("filtroProductosMaquila").value = "";
+            
+            await cargarProductosMaquila();
+            
+        } catch (error) { 
+            console.error("Error al crear producto:", error); 
+            mostrarToast('Error', 'Error al crear producto', 'error'); 
+        } finally { 
+            mostrarLoading(false); 
+            btn.disabled = false; 
+            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; 
+        }
+    }
+
+    async function cargarProductosMaquila(filtro = "") {
+        let container = document.getElementById("listaProductosMaquila");
+        if (!container) return;
+        
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+        
+        try {
+            let snap = await db.ref("maquilas_productos").once("value");
+            
+            if (!snap.exists()) { 
+                container.innerHTML = "<p class='text-center'>No hay productos de maquila</p>"; 
+                return; 
+            }
+            
+            let prods = [];
+            snap.forEach(child => {
+                let p = child.val();
+                prods.push({ id: child.key, ...p });
+            });
+            
+            prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            
+            if (filtro && filtro.trim() !== '') {
+                prods = prods.filter(p => 
+                    p.nombre.toLowerCase().includes(filtro.toLowerCase())
+                );
+            }
+            
+            if (prods.length === 0) {
+                container.innerHTML = "<p class='text-center'>No se encontraron productos con ese filtro</p>";
+                return;
+            }
+            
+            let html = `<table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+            
+            prods.forEach(p => {
+                html += `<tr>
+                    <td><strong>${p.nombre}</strong></td>
+                    <td>${p.descripcion || '-'}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProductoMaquila('${p.id}')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+            
+        } catch (error) { 
+            console.error("Error al cargar productos:", error); 
+            container.innerHTML = "<p class='text-center'>Error al cargar productos</p>"; 
+        }
+    }
+
+    function filtrarProductosMaquila() { 
+        let filtro = document.getElementById("filtroProductosMaquila").value;
+        cargarProductosMaquila(filtro); 
+    }
+
+    async function eliminarProductoMaquila(id) {
+        if (confirm("¿Está seguro de eliminar este producto de maquila?")) {
+            try { 
+                await db.ref("maquilas_productos/" + id).remove(); 
+                mostrarToast('Éxito', 'Producto eliminado', 'success'); 
+                await cargarProductosMaquila(document.getElementById('filtroProductosMaquila')?.value || ''); 
+                await cargarDashboard(); 
+            } catch (error) { 
+                console.error("Error:", error);
+                mostrarToast('Error', 'Error al eliminar producto', 'error'); 
+            }
+        }
     }
 
     // ============================================
@@ -2612,9 +2772,6 @@
         }
     }
 
-    // ============================================
-    // NUEVAS FUNCIONES: DEVOLUCIÓN DE INVENTARIO
-    // ============================================
     async function devolverInventario(key, mes, colaborador, producto) {
         let motivo = prompt("Motivo de la devolución:");
         if (!motivo) return;
@@ -2622,7 +2779,6 @@
         mostrarLoading(true);
         
         try {
-            // Obtener el registro original
             const snap = await db.ref(`inventario/${mes}/${key}`).once("value");
             if (!snap.exists()) {
                 mostrarToast('Error', 'El registro ya no existe', 'error');
@@ -2631,7 +2787,6 @@
             
             const registroOriginal = snap.val();
             
-            // 1. Guardar en inventario_devuelto
             await db.ref(`inventario_devuelto/${mes}/${key}`).set({
                 ...registroOriginal,
                 motivo,
@@ -2639,10 +2794,8 @@
                 devueltoPor: usuario
             });
             
-            // 2. Eliminar de inventario aprobado
             await db.ref(`inventario/${mes}/${key}`).remove();
             
-            // 3. Crear notificación para el colaborador
             await db.ref("notificaciones").push({
                 tipo: "inventario_devuelto",
                 usuario: colaborador,
@@ -3073,9 +3226,6 @@
         });
     }
 
-    // ============================================
-    // NUEVAS FUNCIONES: DEVOLUCIÓN DE MAQUILAS
-    // ============================================
     async function devolverMaquila(key, mes, colaborador, producto) {
         let motivo = prompt("Motivo de la devolución:");
         if (!motivo) return;
@@ -3091,7 +3241,6 @@
             
             const maquilaOriginal = snap.val();
             
-            // 1. Guardar en maquilas_devueltas
             await db.ref(`maquilas_devueltas/${mes}/${key}`).set({
                 ...maquilaOriginal,
                 motivo,
@@ -3099,10 +3248,8 @@
                 devueltoPor: usuario
             });
             
-            // 2. Eliminar de maquilas activas
             await db.ref(`maquilas/${mes}/${key}`).remove();
             
-            // 3. Crear notificación
             await db.ref("notificaciones").push({
                 tipo: "maquila_devuelta",
                 usuario: colaborador,
@@ -3140,6 +3287,15 @@
         }
     }
 
+    // Cerrar sugerencias al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        let sugerencias = document.getElementById('sugerenciasProductos');
+        let input = document.getElementById('nombreProducto');
+        if (sugerencias && input && !input.contains(e.target) && !sugerencias.contains(e.target)) {
+            sugerencias.style.display = 'none';
+        }
+    });
+
     // ============================================
     // INICIALIZACIÓN
     // ============================================
@@ -3150,8 +3306,9 @@
         mostrarSeccion('dashboard');
         
         setTimeout(() => {
+            cargarTodosLosProductos();
             cargarNotificaciones();
-            console.log("⏰ Carga inicial de notificaciones");
+            console.log("⏰ Carga inicial de notificaciones y productos");
         }, 1000);
     });
 </script>
