@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BENITO AVILA · Iniciar Sesión</title>
+    <title>Eurofert · Acceso</title>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    <!-- Font Awesome 6 (última versión) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- jsSHA para hash -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.3.0/sha.min.js"></script>
 
-    <!-- Google Fonts - Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -26,26 +26,26 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 20px;
             position: relative;
             overflow: hidden;
         }
 
-        /* Fondo animado */
-        .bg-animation {
+        body::before {
+            content: '';
             position: absolute;
             top: -50%;
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 30s linear infinite;
             z-index: 0;
         }
 
@@ -54,15 +54,25 @@
             to { transform: rotate(360deg); }
         }
 
-        .container {
-            width: 100%;
-            max-width: 450px;
-            z-index: 10;
+        .login-container {
             position: relative;
-            animation: fadeInUp 0.8s ease;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
         }
 
-        @keyframes fadeInUp {
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
@@ -73,40 +83,35 @@
             }
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 32px;
-            padding: 40px 35px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-header {
+        .logo {
             text-align: center;
             margin-bottom: 30px;
         }
 
-        .card-header h1 {
-            color: white;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
+        .logo i {
+            font-size: 50px;
+            color: #00c853;
+            background: rgba(0, 200, 83, 0.2);
+            padding: 20px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .card-header h1 i {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .logo h2 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #e0e0e0);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-right: 10px;
+            background-clip: text;
+            letter-spacing: -0.5px;
         }
 
-        .card-header p {
-            color: rgba(255, 255, 255, 0.7);
+        .logo p {
+            color: rgba(255,255,255,0.6);
             font-size: 14px;
-            font-weight: 400;
+            margin-top: 5px;
         }
 
         .input-group {
@@ -116,89 +121,95 @@
         .input-group label {
             display: block;
             margin-bottom: 8px;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255,255,255,0.8);
             font-size: 14px;
             font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .input-group label i {
-            margin-right: 8px;
-            color: #667eea;
+            letter-spacing: 0.3px;
         }
 
         .input-wrapper {
             position: relative;
-            display: flex;
-            align-items: center;
+        }
+
+        .input-wrapper i.input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.5);
+            font-size: 16px;
+            transition: color 0.3s;
         }
 
         .input-wrapper input {
             width: 100%;
-            padding: 16px 20px;
-            padding-right: 50px;
-            border: 2px solid transparent;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.15);
+            padding: 14px 16px 14px 48px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
             color: white;
-            font-size: 16px;
-            font-weight: 400;
-            transition: all 0.3s ease;
-        }
-
-        .input-wrapper input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 300;
+            font-size: 15px;
+            transition: all 0.3s;
         }
 
         .input-wrapper input:focus {
             outline: none;
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+            border-color: #00c853;
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .input-wrapper input:focus + i.input-icon {
+            color: #00c853;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 50px;
         }
 
         .toggle-password {
             position: absolute;
-            right: 20px;
-            color: rgba(255, 255, 255, 0.6);
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.5);
             cursor: pointer;
-            font-size: 20px;
+            font-size: 18px;
             transition: color 0.3s;
-            z-index: 20;
+            z-index: 2;
         }
 
         .toggle-password:hover {
-            color: #667eea;
+            color: #00c853;
         }
 
         .btn-login {
             width: 100%;
             padding: 16px;
-            margin-top: 10px;
+            background: linear-gradient(135deg, #00c853, #009624);
             border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
             color: white;
+            font-weight: 700;
             font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            margin: 25px 0 15px;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 20px -5px rgba(0, 200, 83, 0.4);
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px -10px rgba(102, 126, 234, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(0, 200, 83, 0.6);
         }
 
         .btn-login:active {
             transform: translateY(0);
-        }
-
-        .btn-login i {
-            margin-right: 8px;
         }
 
         .btn-login.loading {
@@ -213,8 +224,7 @@
             height: 24px;
             top: 50%;
             left: 50%;
-            margin-left: -12px;
-            margin-top: -12px;
+            margin: -12px 0 0 -12px;
             border: 3px solid rgba(255,255,255,0.3);
             border-top-color: white;
             border-radius: 50%;
@@ -225,98 +235,83 @@
             to { transform: rotate(360deg); }
         }
 
-        .message {
-            margin-top: 20px;
+        .alert {
             padding: 14px 18px;
             border-radius: 16px;
+            margin: 20px 0 0;
             font-size: 14px;
-            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 10px;
-            animation: slideIn 0.3s ease;
+            gap: 12px;
+            animation: shake 0.5s;
         }
 
-        .message i {
-            font-size: 18px;
+        .alert i {
+            font-size: 20px;
         }
 
-        .message.error {
-            background: rgba(239, 68, 68, 0.15);
-            border-left: 4px solid #ef4444;
-            color: #fee2e2;
+        .alert.error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #ffb3b3;
         }
 
-        .message.success {
-            background: rgba(16, 185, 129, 0.15);
-            border-left: 4px solid #10b981;
-            color: #d1fae5;
+        .alert.success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            color: #b5e6b5;
         }
 
-        .message.warning {
-            background: rgba(245, 158, 11, 0.15);
-            border-left: 4px solid #f59e0b;
-            color: #fef3c7;
+        .alert.warning {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            color: #ffe083;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%,60% { transform: translateX(-5px); }
+            40%,80% { transform: translateX(5px); }
         }
 
         .footer {
             text-align: center;
             margin-top: 25px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255,255,255,0.4);
             font-size: 13px;
         }
 
-        .footer .version {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            font-size: 11px;
-            margin-top: 10px;
-        }
-
-        /* Efecto de partículas flotantes (opcional) */
-        .particle {
+        .version {
             position: absolute;
-            width: 6px;
-            height: 6px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 50%;
-            pointer-events: none;
+            bottom: 15px;
+            right: 20px;
+            color: rgba(255,255,255,0.2);
+            font-size: 12px;
+            z-index: 2;
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-
-    <div class="container">
+    <div class="login-container">
         <div class="card">
-            <div class="card-header">
-                <h1><i class="fas fa-cube"></i> BENITO AVILA</h1>
-                <p>Ingresa tus credenciales para continuar</p>
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <h2>EUROFERT</h2>
+                <p>Panel de Control</p>
             </div>
 
             <div class="input-group">
-                <label><i class="fas fa-user-circle"></i> Usuario</label>
+                <label>Usuario</label>
                 <div class="input-wrapper">
-                    <input type="text" id="usuario" placeholder="ej. juan.perez" autocomplete="off">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="usuario" placeholder="ej: juan.perez" autocomplete="off">
                 </div>
             </div>
 
             <div class="input-group">
-                <label><i class="fas fa-lock"></i> Contraseña</label>
-                <div class="input-wrapper">
+                <label>Contraseña</label>
+                <div class="input-wrapper password-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
                     <input type="password" id="password" placeholder="••••••••">
                     <span class="toggle-password" id="togglePassword">
                         <i class="fas fa-eye"></i>
@@ -325,17 +320,18 @@
             </div>
 
             <button class="btn-login" id="btnLogin">
-                <i class="fas fa-arrow-right-to-bracket"></i> Iniciar Sesión
+                <i class="fas fa-arrow-right-to-bracket" style="margin-right: 8px;"></i> Ingresar
             </button>
 
-            <div id="mensaje" class="message" style="display: none;"></div>
+            <div id="mensaje"></div>
 
             <div class="footer">
-                <span>© 2026 ControlStock BA</span>
-                <div class="version">v3.0 · build 03.2026</div>
+                © 2026 · Control de Inventarios
             </div>
         </div>
     </div>
+
+    <div class="version">v3.0</div>
 
     <script>
         // ============================================
@@ -351,29 +347,30 @@
             appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
         };
 
-        // Limpiar sesión al cargar login (por seguridad)
+        // Limpiar sesión anterior
         localStorage.clear();
 
-        // Inicializar Firebase
         let db = null;
         let firebaseReady = false;
 
         try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-                console.log("✅ Firebase inicializado");
-            }
+            if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.database();
             firebaseReady = true;
-            console.log("✅ Database inicializada");
+            console.log("✅ Firebase listo");
         } catch (error) {
-            console.error("❌ Error inicializando Firebase:", error);
-            firebaseReady = false;
+            console.error("❌ Error Firebase:", error);
         }
 
         // ============================================
-        // VARIABLES GLOBALES
+        // ELEMENTOS DEL DOM
         // ============================================
+        const usuarioInput = document.getElementById('usuario');
+        const passwordInput = document.getElementById('password');
+        const btnLogin = document.getElementById('btnLogin');
+        const mensajeDiv = document.getElementById('mensaje');
+        const togglePassword = document.getElementById('togglePassword');
+
         let isLoading = false;
 
         // ============================================
@@ -386,123 +383,77 @@
         }
 
         // ============================================
-        // FUNCIONES DE UTILIDAD
+        // MOSTRAR MENSAJE
         // ============================================
         function mostrarMensaje(texto, tipo) {
-            let mensajeDiv = document.getElementById("mensaje");
-            mensajeDiv.style.display = "flex";
-            mensajeDiv.className = `message ${tipo}`;
-            
-            // Elegir icono según tipo
-            let icono = '';
-            if (tipo === 'error') icono = '<i class="fas fa-circle-exclamation"></i>';
-            else if (tipo === 'success') icono = '<i class="fas fa-circle-check"></i>';
-            else if (tipo === 'warning') icono = '<i class="fas fa-triangle-exclamation"></i>';
-            
-            mensajeDiv.innerHTML = icono + texto;
-            
+            mensajeDiv.className = `alert ${tipo}`;
+            const icono = tipo === 'success' ? 'fa-circle-check' : 
+                          tipo === 'error' ? 'fa-circle-exclamation' : 'fa-triangle-exclamation';
+            mensajeDiv.innerHTML = `<i class="fas ${icono}"></i> ${texto}`;
             setTimeout(() => {
-                mensajeDiv.style.display = "none";
-                mensajeDiv.innerHTML = "";
+                mensajeDiv.innerHTML = '';
+                mensajeDiv.className = '';
             }, 5000);
         }
 
-        function validarUsuario(usuario) {
-            if (!usuario || usuario.trim() === "") return false;
-            // No permitir caracteres que rompan la ruta de Firebase: . $ # [ ] /
-            let prohibidos = /[.$#\[\]\/]/;
-            return !prohibidos.test(usuario);
-        }
-
-        function validarPassword(password) {
-            return password.length >= 4;
-        }
-
-        function resetearBoton() {
-            isLoading = false;
-            let btn = document.getElementById("btnLogin");
-            btn.classList.remove("loading");
-            btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Iniciar Sesión';
-        }
+        // ============================================
+        // TOGGLE PASSWORD (corregido con event listener)
+        // ============================================
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
 
         // ============================================
-        // FUNCIÓN PRINCIPAL DE LOGIN
+        // LOGIN
         // ============================================
         async function login() {
             if (isLoading) return;
 
-            if (!navigator.onLine) {
-                mostrarMensaje("No hay conexión a Internet", "error");
-                return;
-            }
+            const usuario = usuarioInput.value.trim();
+            const password = passwordInput.value.trim();
 
-            let usuario = document.getElementById("usuario").value.trim();
-            let password = document.getElementById("password").value.trim();
-            let btnLogin = document.getElementById("btnLogin");
-
-            // Ocultar mensaje anterior
-            document.getElementById("mensaje").style.display = "none";
-
-            // Validaciones
-            if (usuario === "" || password === "") {
-                mostrarMensaje("Complete todos los campos", "error");
-                return;
-            }
-            if (!validarUsuario(usuario)) {
-                mostrarMensaje("Usuario contiene caracteres no permitidos", "error");
-                return;
-            }
-            if (!validarPassword(password)) {
-                mostrarMensaje("La contraseña debe tener al menos 4 caracteres", "error");
+            if (!usuario || !password) {
+                mostrarMensaje('Completa todos los campos', 'error');
                 return;
             }
 
             if (!firebaseReady || !db) {
-                mostrarMensaje("Firebase no disponible. Recarga la página.", "error");
+                mostrarMensaje('Firebase no disponible. Recarga.', 'error');
                 return;
             }
 
             isLoading = true;
-            btnLogin.classList.add("loading");
+            btnLogin.classList.add('loading');
+            btnLogin.innerHTML = ''; // El spinner se ve vía CSS
 
             try {
-                // Verificar conexión a Firebase (opcional)
-                try {
-                    const connRef = db.ref(".info/connected");
-                    const connSnap = await connRef.once("value");
-                    if (!connSnap.val()) {
-                        throw new Error('Sin conexión a Firebase');
-                    }
-                } catch (connError) {
-                    console.warn("⚠️ Verificación de conexión:", connError.message);
-                }
-
-                const snapshot = await db.ref("usuarios/" + usuario).once("value");
+                const snapshot = await db.ref('usuarios/' + usuario).once('value');
 
                 if (!snapshot.exists()) {
-                    mostrarMensaje("Usuario o contraseña incorrectos", "error");
+                    mostrarMensaje('Usuario o contraseña incorrectos', 'error');
                     resetearBoton();
                     return;
                 }
 
-                let data = snapshot.val();
+                const data = snapshot.val();
 
-                // Verificar si la cuenta está bloqueada
+                // Bloqueo por intentos
                 if (data.bloqueadoHasta) {
-                    let fechaBloqueo = new Date(data.bloqueadoHasta);
-                    let ahora = new Date();
-                    if (fechaBloqueo > ahora) {
-                        let minutos = Math.ceil((fechaBloqueo - ahora) / 60000);
-                        mostrarMensaje(`Cuenta bloqueada. Intenta en ${minutos} minutos`, "error");
+                    const bloqueo = new Date(data.bloqueadoHasta);
+                    if (bloqueo > new Date()) {
+                        const minutos = Math.ceil((bloqueo - new Date()) / 60000);
+                        mostrarMensaje(`Cuenta bloqueada. Intenta en ${minutos} min`, 'error');
                         resetearBoton();
                         return;
                     }
                 }
 
-                // --- LÓGICA DE MIGRACIÓN AUTOMÁTICA ---
+                // Verificar contraseña (con migración automática si es texto plano)
                 const storedPass = data.password;
                 const esHash = storedPass && storedPass.length === 64 && /^[a-f0-9]+$/.test(storedPass);
-
                 let passwordValida = false;
                 let necesitaMigracion = false;
 
@@ -510,133 +461,85 @@
                     passwordValida = (storedPass === hashPassword(password));
                 } else {
                     passwordValida = (storedPass === password);
-                    if (passwordValida) {
-                        necesitaMigracion = true;
-                    }
+                    if (passwordValida) necesitaMigracion = true;
                 }
 
                 if (!passwordValida) {
-                    console.log("❌ Contraseña incorrecta");
-                    let intentos = (data.intentosFallidos || 0) + 1;
-                    let updates = {};
-                    updates["/usuarios/" + usuario + "/intentosFallidos"] = intentos;
+                    // Incrementar intentos fallidos
+                    const intentos = (data.intentosFallidos || 0) + 1;
+                    const updates = {};
+                    updates[`/usuarios/${usuario}/intentosFallidos`] = intentos;
 
                     if (intentos >= 3) {
-                        let bloqueoHasta = new Date();
-                        bloqueoHasta.setMinutes(bloqueoHasta.getMinutes() + 5);
-                        updates["/usuarios/" + usuario + "/bloqueadoHasta"] = bloqueoHasta.toISOString();
-                        updates["/usuarios/" + usuario + "/intentosFallidos"] = 0;
+                        const bloqueoHasta = new Date(Date.now() + 5 * 60000).toISOString();
+                        updates[`/usuarios/${usuario}/bloqueadoHasta`] = bloqueoHasta;
+                        updates[`/usuarios/${usuario}/intentosFallidos`] = 0;
                         await db.ref().update(updates);
-                        mostrarMensaje("Demasiados intentos. Bloqueado 5 minutos", "error");
+                        mostrarMensaje('Demasiados intentos. Bloqueado 5 min', 'error');
                     } else {
                         await db.ref().update(updates);
-                        mostrarMensaje("Usuario o contraseña incorrectos", "error");
+                        mostrarMensaje('Usuario o contraseña incorrectos', 'error');
                     }
                     resetearBoton();
                     return;
                 }
 
-                // ===== CONTRASEÑA CORRECTA =====
+                // Migrar a hash si era texto plano
                 if (necesitaMigracion) {
-                    console.log("Migrando contraseña a hash para", usuario);
-                    await db.ref("usuarios/" + usuario).update({
+                    await db.ref(`usuarios/${usuario}`).update({
                         password: hashPassword(password)
                     });
                 }
 
-                // Resetear intentos fallidos
-                await db.ref("usuarios/" + usuario).update({
+                // Resetear intentos fallidos y guardar sesión
+                await db.ref(`usuarios/${usuario}`).update({
                     intentosFallidos: 0,
                     bloqueadoHasta: null,
                     ultimoAcceso: new Date().toISOString()
                 });
 
-                // Guardar sesión
-                localStorage.setItem("usuario", usuario);
-                localStorage.setItem("rol", data.rol);
-                localStorage.setItem("ultimoAcceso", new Date().toISOString());
-                localStorage.setItem("ultimoUsuario", usuario);
+                localStorage.setItem('usuario', usuario);
+                localStorage.setItem('rol', data.rol);
+                localStorage.setItem('ultimoUsuario', usuario);
 
-                mostrarMensaje("Acceso correcto! Redirigiendo...", "success");
+                mostrarMensaje('Acceso correcto. Redirigiendo...', 'success');
 
-                // Redirigir según rol
                 setTimeout(() => {
-                    if (data.rol === "admin") {
-                        window.location.href = "admin.html";
+                    if (data.rol === 'admin') {
+                        window.location.href = 'admin.html';
                     } else {
-                        window.location.href = "panel.html";
+                        window.location.href = 'panel.html';
                     }
-                }, 1500);
+                }, 1000);
 
-            } catch (err) {
-                console.error("❌ Error en login:", err);
-                let msg = err?.message || 'Error desconocido';
-                
-                if (msg.includes('network')) {
-                    mostrarMensaje("Error de red. Verifica tu conexión.", "error");
-                } else if (msg.includes('PERMISSION_DENIED')) {
-                    mostrarMensaje("Error de permisos. Contacta al administrador.", "error");
-                } else {
-                    mostrarMensaje(`Error: ${msg}`, "error");
-                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                mostrarMensaje('Error de conexión. Intenta de nuevo.', 'error');
                 resetearBoton();
             }
         }
 
-        // ============================================
-        // EVENTOS
-        // ============================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Enfocar campo usuario
-            document.getElementById("usuario").focus();
+        function resetearBoton() {
+            isLoading = false;
+            btnLogin.classList.remove('loading');
+            btnLogin.innerHTML = '<i class="fas fa-arrow-right-to-bracket" style="margin-right: 8px;"></i> Ingresar';
+        }
 
-            // Cargar último usuario si existe
-            let ultimoUsuario = localStorage.getItem("ultimoUsuario");
-            if (ultimoUsuario) {
-                document.getElementById("usuario").value = ultimoUsuario;
-                document.getElementById("password").focus();
+        // Eventos Enter
+        usuarioInput.addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
+        btnLogin.addEventListener('click', login);
+
+        // Precargar último usuario
+        window.addEventListener('load', () => {
+            const ultimo = localStorage.getItem('ultimoUsuario');
+            if (ultimo) {
+                usuarioInput.value = ultimo;
+                passwordInput.focus();
+            } else {
+                usuarioInput.focus();
             }
-
-            // Evento para el botón de mostrar/ocultar contraseña
-            const togglePassword = document.getElementById('togglePassword');
-            const passwordInput = document.getElementById('password');
-
-            togglePassword.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // Cambiar el ícono
-                const icon = this.querySelector('i');
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
-
-            // Eventos de teclado (Enter)
-            document.getElementById("usuario").addEventListener("keypress", e => {
-                if (e.key === "Enter") login();
-            });
-            document.getElementById("password").addEventListener("keypress", e => {
-                if (e.key === "Enter") login();
-            });
-
-            // Evento del botón login
-            document.getElementById("btnLogin").addEventListener("click", login);
         });
-
-        // ============================================
-        // VERIFICACIÓN INICIAL DE FIREBASE
-        // ============================================
-        setTimeout(() => {
-            if (!firebaseReady || !db) {
-                mostrarMensaje("No se pudo conectar a Firebase. Recarga la página.", "warning");
-                document.getElementById("btnLogin").disabled = true;
-            }
-        }, 3000);
     </script>
 </body>
 </html>

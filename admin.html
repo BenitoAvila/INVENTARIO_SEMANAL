@@ -1301,7 +1301,7 @@
     }
 
     // ============================================
-    // DASHBOARD (se mantiene igual)
+    // DASHBOARD
     // ============================================
     async function cargarDashboard() {
         try {
@@ -1798,7 +1798,7 @@
     }
 
     // ============================================
-    // USUARIOS (sin cambios)
+    // USUARIOS
     // ============================================
     async function crearUsuario() {
         let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1938,6 +1938,27 @@
         }
     }
 
+    async function cargarColaboradores() {
+        try {
+            let snap = await db.ref("usuarios").once("value");
+            todosLosColaboradores = [];
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    if (child.val().rol === "colaborador") {
+                        todosLosColaboradores.push({
+                            id: child.key,
+                            nombre: child.key
+                        });
+                    }
+                });
+                todosLosColaboradores.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            }
+            console.log("👥 Colaboradores cargados:", todosLosColaboradores.length);
+        } catch (error) {
+            console.error("Error cargando colaboradores:", error);
+        }
+    }
+
     function buscarProductosExistente() {
         let input = document.getElementById("nombreProducto");
         let sugerenciasDiv = document.getElementById("sugerenciasProductos");
@@ -2012,9 +2033,11 @@
             
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
             
+            // Guardar producto con stock inicial 0
             await db.ref("productos/" + id).set({ 
                 nombre, 
                 presentacion,
+                sistema: 0,  // <--- CORRECIÓN: inicializar stock en 0
                 fechaCreacion: obtenerFechaEcuador().toISOString() 
             });
             
@@ -2076,18 +2099,22 @@
                     <tr>
                         <th>Producto</th>
                         <th>Presentación</th>
+                        <th>Stock</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>`;
             
             prods.forEach(p => {
+                // Mostrar stock usando p.sistema || 0 por seguridad
+                let stock = p.sistema || 0;
                 html += `<tr>
                     <td><strong>${p.nombre}</strong></td>
                     <td>${p.presentacion || '-'}</td>
+                    <td><span class="badge badge-primary">${stock}</span></td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarProductoInfo('${p.id}', '${p.nombre}', '${p.presentacion || ''}')">
-                            <i class="fas fa-edit"></i> Editar Producto
+                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}', '${p.nombre}', ${stock})">
+                            <i class="fas fa-edit"></i> Editar Stock
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
                             <i class="fas fa-trash"></i> Eliminar
@@ -2112,37 +2139,21 @@
         cargarProductos(filtro); 
     }
 
-    async function editarProductoInfo(id, nombreActual, presentacionActual) {
-        let nuevoNombre = prompt("Nuevo nombre del producto:", nombreActual);
-        if (nuevoNombre === null) return;
-        nuevoNombre = nuevoNombre.trim();
-        if (nuevoNombre === "") {
-            mostrarToast('Error', 'El nombre no puede estar vacío', 'error');
-            return;
-        }
-        
-        let nuevaPresentacion = prompt("Nueva presentación:", presentacionActual || "");
-        if (nuevaPresentacion === null) return;
-        nuevaPresentacion = nuevaPresentacion.trim();
-        
-        // Verificar si ya existe otro producto con ese nombre (excepto él mismo)
-        let existe = todosLosProductos.find(p => p.nombre.toLowerCase() === nuevoNombre.toLowerCase() && p.id !== id);
-        if (existe) {
-            mostrarToast('Error', 'Ya existe otro producto con ese nombre', 'error');
-            return;
-        }
-        
-        try {
-            await db.ref("productos/" + id).update({
-                nombre: nuevoNombre,
-                presentacion: nuevaPresentacion
-            });
-            mostrarToast('Éxito', 'Producto actualizado', 'success');
-            await cargarProductos(document.getElementById('filtroProductos')?.value || '');
-            await cargarTodosLosProductos();
-        } catch (error) {
-            console.error("Error al editar producto:", error);
-            mostrarToast('Error', 'Error al actualizar producto', 'error');
+    async function editarProducto(id, nombre, stockActual) {
+        let nuevoStock = prompt(`Nuevo stock total para ${nombre}:`, stockActual);
+        if (nuevoStock !== null) {
+            let num = parseInt(nuevoStock);
+            if (!isNaN(num) && num >= 0) {
+                try { 
+                    await db.ref("productos/" + id + "/sistema").set(num); 
+                    mostrarToast('Éxito', 'Stock actualizado', 'success'); 
+                    await cargarProductos(document.getElementById('filtroProductos')?.value || ''); 
+                    await cargarTodosLosProductos();
+                } catch (error) { 
+                    console.error("Error:", error);
+                    mostrarToast('Error', 'Error al actualizar stock', 'error'); 
+                }
+            }
         }
     }
 
@@ -2164,27 +2175,6 @@
     // ============================================
     // ASIGNACIONES (con filtros de búsqueda)
     // ============================================
-    async function cargarColaboradores() {
-        try {
-            let snap = await db.ref("usuarios").once("value");
-            todosLosColaboradores = [];
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    if (child.val().rol === "colaborador") {
-                        todosLosColaboradores.push({
-                            id: child.key,
-                            nombre: child.key
-                        });
-                    }
-                });
-                todosLosColaboradores.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            }
-            console.log("👥 Colaboradores cargados:", todosLosColaboradores.length);
-        } catch (error) {
-            console.error("Error cargando colaboradores:", error);
-        }
-    }
-
     function filtrarColaboradores() {
         let input = document.getElementById("buscarColaborador");
         let sugerenciasDiv = document.getElementById("sugerenciasColaboradores");
@@ -2328,6 +2318,7 @@
             }
             
             let prodData = prodSnap.val();
+            let stockSistema = prodData.sistema || 0;  // <--- CORRECIÓN: forzar número
             
             // Verificar si ya existe asignación
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
@@ -2352,6 +2343,7 @@
                     asignado: true,
                     nombreProducto: prodData.nombre,
                     presentacion: prodData.presentacion || '',
+                    stockSistema: stockSistema,  // <--- CORRECIÓN: usar variable numérica
                     cantidadAsignada: cantidad,
                     permitirMultiples,
                     fechaAsignacion: obtenerFechaEcuador().toISOString(),
@@ -2508,7 +2500,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE MAQUILA (sin cambios)
+    // PRODUCTOS DE MAQUILA
     // ============================================
     async function crearProductoMaquila() {
         let nombre = document.getElementById("nombreProductoMaquila").value.trim();
@@ -2648,7 +2640,7 @@
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - MODIFICADO
+    // INVENTARIO (CONSULTA Y EXPORTACIÓN)
     // ============================================
     function configurarFechas() {
         let hoy = obtenerFechaEcuador();
@@ -3049,7 +3041,7 @@
     }
 
     // ============================================
-    // MAQUILAS (sin cambios)
+    // MAQUILAS
     // ============================================
     function configurarFechasMaquila() {
         let hoy = obtenerFechaEcuador();
