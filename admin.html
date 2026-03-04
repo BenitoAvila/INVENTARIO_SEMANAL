@@ -272,6 +272,7 @@
         /* Formularios */
         .form-group {
             margin-bottom: 15px;
+            position: relative;
         }
 
         .form-group label {
@@ -792,7 +793,7 @@
             <h3><i class="fas fa-boxes"></i> Gestión de Productos</h3>
         </div>
 
-        <!-- Tabs para cambiar entre crear producto y asignar producto -->
+        <!-- Tabs -->
         <div class="tabs">
             <div class="tab active" onclick="cambiarTab('crear-producto')" id="tab-crear-producto">
                 <i class="fas fa-plus-circle"></i> Crear Producto
@@ -802,22 +803,16 @@
             </div>
         </div>
 
-        <!-- TAB 1: CREAR PRODUCTO (Solo gestión de catálogo) -->
+        <!-- TAB 1: CREAR PRODUCTO (solo nombre y descripción) -->
         <div id="tab-content-crear-producto" class="tab-content active">
-            <div class="form-group" style="position: relative;">
+            <div class="form-group">
                 <label>Nombre del Producto</label>
-                <input type="text" id="nombreProducto" class="form-control" placeholder="Escriba para buscar o crear nuevo..." autocomplete="off" onkeyup="buscarProductosExistente()">
+                <input type="text" id="nombreProducto" class="form-control" placeholder="Ej: Fertilizante Premium" autocomplete="off" onkeyup="buscarProductosExistente()">
                 <div id="sugerenciasProductos" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); border: 1px solid var(--primary); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm); max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
             </div>
             <div class="form-group">
-                <label>Cantidad en Sistema (Stock Total)</label>
-                <input type="number" id="cantidadSistema" class="form-control" placeholder="0" min="0" step="1">
-            </div>
-            <div style="margin: 15px 0;">
-                <label style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="esDuplicado">
-                    <span>Es una variante</span>
-                </label>
+                <label>Descripción (opcional)</label>
+                <input type="text" id="descripcionProducto" class="form-control" placeholder="Ej: Bolsa de 50kg">
             </div>
             <button class="btn btn-primary btn-block" onclick="crearProducto()" id="btnCrearProducto">
                 <i class="fas fa-save"></i> Guardar Producto
@@ -832,7 +827,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: ASIGNAR PRODUCTO (Con cantidad específica) -->
+        <!-- TAB 2: ASIGNAR PRODUCTO (con cantidad y opción de variante) -->
         <div id="tab-content-asignar-producto" class="tab-content">
             <div class="form-group">
                 <label>Fecha de Asignación</label>
@@ -854,6 +849,12 @@
                 <label>Cantidad a Asignar</label>
                 <input type="number" id="cantidadAsignar" class="form-control" placeholder="0" min="1" step="1">
                 <small style="color: var(--light);">Stock disponible en sistema: <span id="stockDisponible">0</span></small>
+            </div>
+            <div style="margin: 15px 0;">
+                <label style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="marcarVariante">
+                    <span>Marcar como variante (si el producto no lo es, se actualizará)</span>
+                </label>
             </div>
             <div style="margin: 15px 0;">
                 <label style="display: flex; align-items: center; gap: 10px;">
@@ -1089,7 +1090,7 @@
         }, 4000);
     }
 
-    // Función para cambiar entre tabs
+    // Cambiar entre tabs
     function cambiarTab(tabId) {
         document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -1300,7 +1301,7 @@
     }
 
     // ============================================
-    // DASHBOARD (Funciones existentes, se mantienen igual)
+    // DASHBOARD (se mantiene igual)
     // ============================================
     async function cargarDashboard() {
         try {
@@ -1320,7 +1321,6 @@
                 db.ref("inventario/" + mesActual).once("value").catch(e => ({ exists: () => false }))
             ]);
 
-            // Estadísticas de usuarios
             let totalUsuarios = 0, admins = 0, colaboradores = 0;
             let colaboradoresList = [];
             
@@ -1336,13 +1336,11 @@
             }
             document.getElementById("totalUsuarios").textContent = totalUsuarios;
 
-            // Total productos
             let totalProductos = 0;
             if (productosSnap && productosSnap.exists()) productosSnap.forEach(() => totalProductos++);
             if (maquilasProductosSnap && maquilasProductosSnap.exists()) maquilasProductosSnap.forEach(() => totalProductos++);
             document.getElementById("totalProductos").textContent = totalProductos;
 
-            // Análisis de asignaciones
             let totalAsignaciones = 0;
             let asignacionesPendientes = 0;
             let asignacionesRespondidas = 0;
@@ -1382,7 +1380,7 @@
                             }
                             accionesPorColaborador[usuario].pendientes.push({
                                 producto: prodSnap.val().nombreProducto || 'Producto',
-                                stock: prodSnap.val().stockSistema || 0
+                                cantidad: prodSnap.val().cantidadAsignada || prodSnap.val().stockSistema || 0
                             });
                         }
                     });
@@ -1391,7 +1389,6 @@
             
             document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
 
-            // Respuestas de hoy
             let respuestasHoy = 0;
             if (inventarioHoySnap && inventarioHoySnap.exists()) {
                 inventarioHoySnap.forEach(child => {
@@ -1403,7 +1400,6 @@
             }
             document.getElementById("totalRespuestas").textContent = respuestasHoy;
 
-            // Maquilas pendientes
             let maquilasPendientes = 0, maquilasAsignadas = 0;
             let maquilasPorColaborador = {};
             
@@ -1452,10 +1448,7 @@
             
             document.getElementById("totalMaquilasPendientes").textContent = maquilasPendientes;
 
-            // Renderizar tabla de acciones pendientes
             renderizarAccionesPendientes(accionesPorColaborador, maquilasPorColaborador, colaboradoresList);
-
-            // Renderizar gráficos
             await renderizarGraficos(admins, colaboradores, asignacionesPendientes, asignacionesRespondidas, 
                               maquilasPendientes, maquilasAsignadas, fechaEcuador);
 
@@ -1508,7 +1501,7 @@
             let detalleInventario = '';
             if (invPendientes > 0 && accionesInventario[colab]?.pendientes) {
                 detalleInventario = accionesInventario[colab].pendientes.slice(0, 3).map(p => 
-                    `${p.producto} (${p.stock})`
+                    `${p.producto} (${p.cantidad})`
                 ).join('<br>');
                 if (accionesInventario[colab].pendientes.length > 3) {
                     detalleInventario += `<br><small>... y ${accionesInventario[colab].pendientes.length - 3} más</small>`;
@@ -1648,6 +1641,7 @@
     }
 
     async function renderizarGraficos(admins, colaboradores, pendientes, respondidas, maqPendientes, maqAsignadas, fechaEcuador) {
+        // ... (código de gráficos sin cambios)
         try {
             if (chartUsuarios) chartUsuarios.destroy();
             if (chartActividad) chartActividad.destroy();
@@ -1805,7 +1799,7 @@
     }
 
     // ============================================
-    // USUARIOS
+    // USUARIOS (sin cambios)
     // ============================================
     async function crearUsuario() {
         let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1921,7 +1915,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE INVENTARIO (CREAR PRODUCTO - SOLO CATÁLOGO)
+    // PRODUCTOS DE INVENTARIO (CREAR PRODUCTO SIMPLIFICADO)
     // ============================================
     
     async function cargarTodosLosProductos() {
@@ -1934,7 +1928,8 @@
                         id: child.key,
                         nombre: child.val().nombre,
                         sistema: child.val().sistema,
-                        esVariante: child.val().esVariante || false
+                        esVariante: child.val().esVariante || false,
+                        descripcion: child.val().descripcion || ''
                     });
                 });
                 todosLosProductos.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -1972,7 +1967,7 @@
                         style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
                         onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                         onmouseout="this.style.background='transparent'">
-                        <strong>${p.nombre}</strong> <span class="badge badge-primary" style="margin-left: 10px;">Stock Total: ${p.sistema}</span>
+                        <strong>${p.nombre}</strong> <span class="badge badge-primary" style="margin-left: 10px;">Stock: ${p.sistema}</span>
                         ${p.esVariante ? '<span class="badge badge-info">Variante</span>' : ''}
                     </div>`;
         });
@@ -1983,25 +1978,19 @@
 
     function seleccionarProducto(id, nombre, stock) {
         document.getElementById("nombreProducto").value = nombre;
-        document.getElementById("cantidadSistema").value = stock;
+        // No llenamos stock porque en creación ya no se pide
         document.getElementById("sugerenciasProductos").style.display = "none";
-        mostrarToast('Producto seleccionado', `Has seleccionado "${nombre}" con stock ${stock}`, 'info');
+        mostrarToast('Producto seleccionado', `Has seleccionado "${nombre}"`, 'info');
     }
 
     async function crearProducto() {
         let nombre = document.getElementById("nombreProducto").value.trim();
-        let sistema = parseInt(document.getElementById("cantidadSistema").value);
-        let esDuplicado = document.getElementById("esDuplicado").checked;
+        let descripcion = document.getElementById("descripcionProducto").value.trim();
         
-        console.log("📝 Creando/actualizando producto:", { nombre, sistema, esDuplicado });
+        console.log("📝 Creando producto:", { nombre, descripcion });
         
         if (!nombre) { 
             mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
-            return; 
-        }
-        
-        if (isNaN(sistema) || sistema < 0) { 
-            mostrarToast('Error', 'Cantidad inválida', 'error'); 
             return; 
         }
         
@@ -2016,32 +2005,26 @@
             );
             
             if (productoExistente) {
-                if (confirm(`El producto "${nombre}" ya existe con stock total ${productoExistente.sistema}. ¿Desea actualizar el stock a ${sistema}?`)) {
-                    await db.ref("productos/" + productoExistente.id + "/sistema").set(sistema);
-                    mostrarToast('Éxito', 'Stock actualizado correctamente', 'success');
-                } else {
-                    mostrarToast('Info', 'Operación cancelada', 'info');
-                    btn.disabled = false; 
-                    btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
-                    mostrarLoading(false);
-                    return;
-                }
-            } else {
-                let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-                
-                await db.ref("productos/" + id).set({ 
-                    nombre, 
-                    sistema, 
-                    fechaCreacion: obtenerFechaEcuador().toISOString(), 
-                    esVariante: esDuplicado 
-                });
-                
-                mostrarToast('Éxito', 'Producto creado correctamente', 'success');
+                mostrarToast('Error', 'Ya existe un producto con ese nombre', 'error');
+                btn.disabled = false; 
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto';
+                mostrarLoading(false);
+                return;
             }
             
+            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+            
+            await db.ref("productos/" + id).set({ 
+                nombre, 
+                descripcion,
+                sistema: 0, // Stock inicial cero
+                esVariante: false,
+                fechaCreacion: obtenerFechaEcuador().toISOString() 
+            });
+            
+            mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             document.getElementById("nombreProducto").value = "";
-            document.getElementById("cantidadSistema").value = "";
-            document.getElementById("esDuplicado").checked = false;
+            document.getElementById("descripcionProducto").value = "";
             document.getElementById("filtroProductos").value = "";
             
             console.log("🔄 Recargando listas...");
@@ -2097,6 +2080,7 @@
                 <thead>
                     <tr>
                         <th>Producto</th>
+                        <th>Descripción</th>
                         <th>Stock Total</th>
                         <th>Variante</th>
                         <th>Acciones</th>
@@ -2107,11 +2091,15 @@
             prods.forEach(p => {
                 html += `<tr>
                     <td><strong>${p.nombre}</strong></td>
-                    <td><span class="badge badge-primary">${p.sistema}</span></td>
+                    <td>${p.descripcion || '-'}</td>
+                    <td><span class="badge badge-primary">${p.sistema || 0}</span></td>
                     <td>${p.esVariante ? 'Sí' : 'No'}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">
                             <i class="fas fa-edit"></i> Editar Stock
+                        </button>
+                        <button class="btn btn-info btn-sm" onclick="editarVariante('${p.id}', ${p.esVariante})">
+                            <i class="fas fa-tag"></i> ${p.esVariante ? 'Quitar Variante' : 'Marcar Variante'}
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
                             <i class="fas fa-trash"></i> Eliminar
@@ -2155,6 +2143,18 @@
         }
     }
 
+    async function editarVariante(id, esVarianteActual) {
+        try {
+            await db.ref("productos/" + id + "/esVariante").set(!esVarianteActual);
+            mostrarToast('Éxito', `Producto ${!esVarianteActual ? 'marcado como variante' : 'ya no es variante'}`, 'success');
+            await cargarProductos(document.getElementById('filtroProductos')?.value || '');
+            await cargarTodosLosProductos();
+        } catch (error) {
+            console.error("Error al cambiar variante:", error);
+            mostrarToast('Error', 'Error al cambiar estado de variante', 'error');
+        }
+    }
+
     async function eliminarProducto(id) {
         if (confirm("¿Está seguro de eliminar este producto del catálogo?")) {
             try { 
@@ -2172,7 +2172,7 @@
     }
 
     // ============================================
-    // ASIGNACIONES (CON CANTIDAD ESPECÍFICA)
+    // ASIGNACIONES (con cantidad y opción de variante)
     // ============================================
     async function cargarSelectoresAsignacion() {
         try {
@@ -2206,7 +2206,8 @@
                         prods.push({ 
                             id: child.key, 
                             nombre: child.val().nombre, 
-                            sistema: child.val().sistema 
+                            sistema: child.val().sistema,
+                            esVariante: child.val().esVariante || false
                         });
                     });
                     
@@ -2216,11 +2217,11 @@
                         let opt = document.createElement("option"); 
                         opt.value = p.id; 
                         opt.setAttribute('data-stock', p.sistema);
-                        opt.textContent = `${p.nombre} (Stock disponible: ${p.sistema})`; 
+                        opt.setAttribute('data-variante', p.esVariante);
+                        opt.textContent = `${p.nombre} (Stock: ${p.sistema})${p.esVariante ? ' [Variante]' : ''}`; 
                         selectP.appendChild(opt);
                     });
                     
-                    // Agregar evento para mostrar stock disponible
                     selectP.addEventListener('change', function() {
                         let selected = this.options[this.selectedIndex];
                         let stock = selected.getAttribute('data-stock') || 0;
@@ -2230,6 +2231,7 @@
             }
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
+            document.getElementById("stockDisponible").textContent = "0";
             
         } catch (error) { 
             console.error("❌ Error al cargar selectores:", error); 
@@ -2241,6 +2243,7 @@
         let usuario = document.getElementById("selectUsuario").value;
         let producto = document.getElementById("selectProducto").value;
         let cantidad = parseInt(document.getElementById("cantidadAsignar").value);
+        let marcarVariante = document.getElementById("marcarVariante").checked;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
         
         if (!fecha || !usuario || !producto) { 
@@ -2270,6 +2273,12 @@
                 return;
             }
             
+            // Si se marcó "marcar como variante" y el producto no lo es, actualizarlo
+            if (marcarVariante && !prodData.esVariante) {
+                await db.ref("productos/" + producto + "/esVariante").set(true);
+                console.log("Producto marcado como variante");
+            }
+            
             // Verificar si ya existe asignación
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
             
@@ -2278,7 +2287,6 @@
                 return; 
             }
             
-            // Si existe y permite múltiples, sumar la cantidad
             if (existente.exists() && permitirMultiples) {
                 let dataActual = existente.val();
                 let nuevaCantidad = (dataActual.cantidadAsignada || 0) + cantidad;
@@ -2290,7 +2298,6 @@
                 
                 mostrarToast('Éxito', `Se agregaron ${cantidad} unidades a la asignación existente`, 'success');
             } else {
-                // Crear nueva asignación
                 await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                     asignado: true,
                     nombreProducto: prodData.nombre,
@@ -2308,11 +2315,13 @@
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
             document.getElementById("cantidadAsignar").value = "";
+            document.getElementById("marcarVariante").checked = false;
             document.getElementById("permitirMultiples").checked = false;
             document.getElementById("stockDisponible").textContent = "0";
             
             await cargarAsignacionesHoy();
             await cargarDashboard();
+            await cargarTodosLosProductos(); // Para reflejar cambio de variante si se marcó
             
         } catch (error) { 
             console.error("Error al asignar producto:", error); 
@@ -2450,7 +2459,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE MAQUILA
+    // PRODUCTOS DE MAQUILA (sin cambios)
     // ============================================
     async function crearProductoMaquila() {
         let nombre = document.getElementById("nombreProductoMaquila").value.trim();
@@ -2590,7 +2599,7 @@
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN)
+    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - sin cambios
     // ============================================
     function configurarFechas() {
         let hoy = obtenerFechaEcuador();
@@ -2967,7 +2976,7 @@
     }
 
     // ============================================
-    // MAQUILAS
+    // MAQUILAS (sin cambios)
     // ============================================
     function configurarFechasMaquila() {
         let hoy = obtenerFechaEcuador();
