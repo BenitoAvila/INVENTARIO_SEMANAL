@@ -1122,7 +1122,7 @@
         <div class="nav-item" onclick="cambiarVista('maquilas')">
             <i class="fas fa-industry"></i> Maquilas
         </div>
-        <!-- NUEVO: Vista de Devueltas -->
+        <!-- Vista de Devueltas -->
         <div class="nav-item" onclick="cambiarVista('devueltas')">
             <i class="fas fa-undo"></i> Devueltas
         </div>
@@ -1219,7 +1219,7 @@
                         <span id="productoNombre">-</span>
                     </div>
                     <div class="product-stock">
-                        Stock: <span id="productoStock">0</span>
+                        Cantidad a verificar: <span id="productoCantidad">0</span>
                     </div>
                 </div>
             </div>
@@ -1242,7 +1242,7 @@
             <div class="total-card" id="totalCard">
                 <div>Total Contado</div>
                 <div class="total-value" id="totalCalculado">0</div>
-                <div id="comparacionStock">vs Stock: 0</div>
+                <div id="comparacionStock">vs Cantidad asignada: 0</div>
             </div>
 
             <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
@@ -1385,7 +1385,7 @@
         </div>
     </div>
 
-    <!-- NUEVA VISTA: DEVUELTAS -->
+    <!-- VISTA DEVUELTAS -->
     <div id="viewDevueltas" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1666,18 +1666,30 @@
     function iniciarListenerNotificaciones() {
         if (!db) return;
         
-        db.ref("notificaciones").orderByChild("fecha").limitToLast(1).on("child_added", (snapshot) => {
-            console.log("📬 Nueva notificación recibida:", snapshot.val());
+        db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).on("child_added", (snapshot) => {
+            const notificacion = snapshot.val();
+            console.log("📬 Nueva notificación recibida:", notificacion);
+            
+            // Recargar notificaciones y contador
             cargarNotificaciones();
-            const resumenSection = document.getElementById('viewResumen');
-            if (resumenSection && resumenSection.classList.contains('active')) {
-                cargarDashboard();
+            
+            // Recargar vistas activas según el tipo
+            if (notificacion.tipo === 'inventario_devuelto') {
+                if (document.getElementById('viewDevueltas').classList.contains('active')) {
+                    cargarInventariosDevueltos();
+                }
+                // También podría mostrar un toast
+                mostrarToast('Devolución', 'Un inventario ha sido devuelto para corrección', 'warning');
             }
-            const devueltasSection = document.getElementById('viewDevueltas');
-            if (devueltasSection && devueltasSection.classList.contains('active')) {
-                cargarInventariosDevueltos();
+            if (notificacion.tipo === 'inventario_aprobado') {
+                if (document.getElementById('viewHistorial').classList.contains('active')) {
+                    cargarHistorial();
+                }
+                mostrarToast('Aprobado', notificacion.mensaje || '¡Tu inventario fue aprobado!', 'success');
             }
         });
+        
+        console.log("✅ Listener de notificaciones iniciado");
     }
 
     async function cargarNotificaciones() {
@@ -1727,35 +1739,37 @@
         
         let html = `<div style="max-height:600px; overflow-y:auto;">`;
         notificaciones.slice(0, 20).forEach(n => {
-            // Determinar icono según tipo
             let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
                        n.tipo === "inventario_devuelto" ? "fa-undo" :
-                       n.tipo === "inventario_aprobado" ? "fa-check-circle" : // NUEVO
+                       n.tipo === "inventario_aprobado" ? "fa-check-circle" :
                        n.tipo === "maquila" ? "fa-industry" : 
-                       n.tipo === "maquila_devuelta" ? "fa-undo" : "fa-bell";
-            
-            // Determinar color del badge según tipo
+                       n.tipo === "maquila_devuelta" ? "fa-undo" :
+                       n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
             let color = n.tipo === "inventario" ? "badge-primary" : 
                        n.tipo === "inventario_devuelto" ? "badge-warning" :
-                       n.tipo === "inventario_aprobado" ? "badge-success" : // NUEVO
+                       n.tipo === "inventario_aprobado" ? "badge-success" :
                        n.tipo === "maquila" ? "badge-warning" : 
-                       n.tipo === "maquila_devuelta" ? "badge-warning" : "badge-secondary";
-            
+                       n.tipo === "maquila_devuelta" ? "badge-warning" :
+                       n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
             
-            let mensaje = '';
-            if (n.tipo === 'inventario') {
-                mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
-            } else if (n.tipo === 'inventario_devuelto') {
-                mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
-            } else if (n.tipo === 'inventario_aprobado') {
-                mensaje = n.mensaje || `✅ ¡Felicidades! Tu reporte de inventario ha sido aprobado.`; // Usa el mensaje enviado por el admin
-            } else if (n.tipo === 'maquila') {
-                mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
-            } else if (n.tipo === 'maquila_devuelta') {
-                mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
-            } else {
-                mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+            let mensaje = n.mensaje || '';
+            if (!mensaje) {
+                if (n.tipo === 'inventario') {
+                    mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
+                } else if (n.tipo === 'inventario_devuelto') {
+                    mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+                } else if (n.tipo === 'inventario_aprobado') {
+                    mensaje = n.mensaje || `✅ ¡Felicidades! Tu reporte de inventario ha sido aprobado.`;
+                } else if (n.tipo === 'maquila') {
+                    mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
+                } else if (n.tipo === 'maquila_devuelta') {
+                    mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+                } else if (n.tipo === 'producto_maquila') {
+                    mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
+                } else {
+                    mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+                }
             }
             
             html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
@@ -1799,7 +1813,7 @@
         document.getElementById("totalCalculado").textContent = total;
         
         if (productoSeleccionado) {
-            let diferencia = total - productoSeleccionado.stock;
+            let diferencia = total - productoSeleccionado.cantidadAsignada;
             let comparacion = document.getElementById("comparacionStock");
             
             if (diferencia === 0) {
@@ -1822,11 +1836,15 @@
         let selectedOption = select.options[select.selectedIndex];
         if (selectedOption && selectedOption.value) {
             let nombre = selectedOption.getAttribute("data-nombre");
-            let stock = selectedOption.getAttribute("data-stock");
+            let cantidad = selectedOption.getAttribute("data-cantidad");
             document.getElementById("productoNombre").textContent = nombre;
-            document.getElementById("productoStock").textContent = stock;
+            document.getElementById("productoCantidad").textContent = cantidad;
             document.getElementById("productoInfo").style.display = "flex";
-            productoSeleccionado = { id: selectedOption.value, nombre, stock: parseInt(stock) };
+            productoSeleccionado = { 
+                id: selectedOption.value, 
+                nombre, 
+                cantidadAsignada: parseInt(cantidad) 
+            };
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
@@ -1903,24 +1921,21 @@
             
             let asignaciones = asignacionesSnap.val();
             for (let productoId in asignaciones) {
-                try {
-                    let prodSnap = await db.ref("productos/" + productoId).once("value");
-                    if (prodSnap.exists()) {
-                        let data = prodSnap.val();
-                        let stock = asignaciones[productoId].stockSistema || data.sistema || 0;
-                        
-                        if (!productosEnviadosHoy.has(productoId)) {
-                            let option = document.createElement("option");
-                            option.value = productoId;
-                            option.textContent = `${data.nombre} (Stock: ${stock})`;
-                            option.setAttribute("data-nombre", data.nombre);
-                            option.setAttribute("data-stock", stock);
-                            select.appendChild(option);
-                            productosPendientes.push({ id: productoId, nombre: data.nombre, stock });
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error cargando producto:", productoId, error);
+                let data = asignaciones[productoId];
+                let cantidadAsignada = data.cantidadAsignada || 0;
+                
+                if (!productosEnviadosHoy.has(productoId)) {
+                    let option = document.createElement("option");
+                    option.value = productoId;
+                    option.textContent = `${data.nombreProducto} (Cant: ${cantidadAsignada})`;
+                    option.setAttribute("data-nombre", data.nombreProducto);
+                    option.setAttribute("data-cantidad", cantidadAsignada);
+                    select.appendChild(option);
+                    productosPendientes.push({ 
+                        id: productoId, 
+                        nombre: data.nombreProducto, 
+                        cantidadAsignada 
+                    });
                 }
             }
             
@@ -1957,13 +1972,11 @@
         let caducados = parseInt(document.getElementById("caducados").value) || 0;
         let total = fisico + muestras + caducados;
         
-        let asignacionSnap = await db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoSeleccionado.id}`).once("value");
-        let asignacion = asignacionSnap.val();
-        let permitirMultiples = asignacion?.permitirMultiples || false;
-        
-        if (total !== productoSeleccionado.stock && !permitirMultiples) {
-            let diferencia = total - productoSeleccionado.stock;
-            if (!confirm(`⚠ El total (${total}) no coincide con el stock (${productoSeleccionado.stock}).\n${diferencia > 0 ? 'Sobrante: +' + diferencia : 'Faltante: ' + diferencia}\n¿Continuar?`)) return;
+        // Ya no hay permitirMultiples; siempre se envía una vez por producto.
+        // Si el total no coincide, preguntamos igual.
+        if (total !== productoSeleccionado.cantidadAsignada) {
+            let diferencia = total - productoSeleccionado.cantidadAsignada;
+            if (!confirm(`⚠ El total (${total}) no coincide con la cantidad asignada (${productoSeleccionado.cantidadAsignada}).\n${diferencia > 0 ? 'Sobrante: +' + diferencia : 'Faltante: ' + diferencia}\n¿Continuar?`)) return;
         }
         
         mostrarLoading(true);
@@ -1977,7 +1990,7 @@
                 nombre: usuario, 
                 producto: productoSeleccionado.nombre, 
                 productoId: productoSeleccionado.id,
-                sistema: productoSeleccionado.stock, 
+                sistema: productoSeleccionado.cantidadAsignada, // Guardamos la cantidad asignada como referencia
                 fisico, 
                 muestras, 
                 caducados, 
@@ -2018,7 +2031,7 @@
         }
     }
 
-    // ===== NUEVA FUNCIÓN: INVENTARIOS DEVUELTOS =====
+    // ===== FUNCIÓN: INVENTARIOS DEVUELTOS =====
     async function cargarInventariosDevueltos() {
         if (!db || !usuario) return;
         
@@ -2555,17 +2568,11 @@
             let asignaciones = asignacionesSnap.val();
             
             for (let productoId in asignaciones) {
-                try {
-                    let prodSnap = await db.ref("productos/" + productoId).once("value");
-                    if (prodSnap.exists() && !enviadosHoy.has(productoId)) {
-                        let data = prodSnap.val();
-                        pendientes.push({ 
-                            nombre: data.nombre, 
-                            stock: asignaciones[productoId].stockSistema || data.sistema || 0 
-                        });
-                    }
-                } catch (error) { 
-                    console.error("Error cargando producto:", productoId, error); 
+                if (!enviadosHoy.has(productoId)) {
+                    pendientes.push({ 
+                        nombre: asignaciones[productoId].nombreProducto, 
+                        cantidad: asignaciones[productoId].cantidadAsignada || 0 
+                    });
                 }
             }
             
@@ -2574,8 +2581,8 @@
                 return;
             }
             
-            let html = `<table><thead><tr><th>Producto</th><th>Stock a verificar</th></tr></thead><tbody>`;
-            pendientes.forEach(p => html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.stock}</span></td></tr>`);
+            let html = `<table><thead><tr><th>Producto</th><th>Cantidad a verificar</th></tr></thead><tbody>`;
+            pendientes.forEach(p => html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.cantidad}</span></td></tr>`);
             html += `</tbody></table>`;
             container.innerHTML = html;
             
@@ -2585,7 +2592,7 @@
         }
     }
 
-    // ===== FUNCIONES DE HISTORIAL MEJORADAS =====
+    // ===== FUNCIONES DE HISTORIAL =====
     async function cargarHistorial() {
         if (!db || !usuario) return;
         let container = document.getElementById("historialContainer");
@@ -2617,7 +2624,7 @@
                             muestras: envio.muestras || 0,
                             caducados: envio.caducados || 0,
                             total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0),
-                            aprobado: envio.aprobado || false // NUEVO: estado de aprobación
+                            aprobado: envio.aprobado || false
                         });
                     });
                 }
@@ -2667,7 +2674,7 @@
             <th>Caducados</th>
             <th>Total</th>
             <th>Estado</th>
-            <th>Aprobado</th> <!-- NUEVA COLUMNA -->
+            <th>Aprobado</th>
         </tr></thead><tbody>`;
         
         filtrados.slice(0, 50).forEach(e => {
@@ -2683,7 +2690,7 @@
                 <td>${e.caducados}</td>
                 <td><strong>${e.total}</strong></td>
                 <td>${estado}</td>
-                <td>${aprobadoHtml}</td> <!-- NUEVA CELDA -->
+                <td>${aprobadoHtml}</td>
             </tr>`;
         });
         
