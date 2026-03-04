@@ -1727,14 +1727,20 @@
         
         let html = `<div style="max-height:600px; overflow-y:auto;">`;
         notificaciones.slice(0, 20).forEach(n => {
+            // Determinar icono según tipo
             let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
                        n.tipo === "inventario_devuelto" ? "fa-undo" :
+                       n.tipo === "inventario_aprobado" ? "fa-check-circle" : // NUEVO
                        n.tipo === "maquila" ? "fa-industry" : 
                        n.tipo === "maquila_devuelta" ? "fa-undo" : "fa-bell";
+            
+            // Determinar color del badge según tipo
             let color = n.tipo === "inventario" ? "badge-primary" : 
                        n.tipo === "inventario_devuelto" ? "badge-warning" :
+                       n.tipo === "inventario_aprobado" ? "badge-success" : // NUEVO
                        n.tipo === "maquila" ? "badge-warning" : 
                        n.tipo === "maquila_devuelta" ? "badge-warning" : "badge-secondary";
+            
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
             
             let mensaje = '';
@@ -1742,6 +1748,8 @@
                 mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
             } else if (n.tipo === 'inventario_devuelto') {
                 mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+            } else if (n.tipo === 'inventario_aprobado') {
+                mensaje = n.mensaje || `✅ ¡Felicidades! Tu reporte de inventario ha sido aprobado.`; // Usa el mensaje enviado por el admin
             } else if (n.tipo === 'maquila') {
                 mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
             } else if (n.tipo === 'maquila_devuelta') {
@@ -2608,7 +2616,8 @@
                             fisico: envio.fisico || 0,
                             muestras: envio.muestras || 0,
                             caducados: envio.caducados || 0,
-                            total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0)
+                            total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0),
+                            aprobado: envio.aprobado || false // NUEVO: estado de aprobación
                         });
                     });
                 }
@@ -2648,10 +2657,23 @@
             return;
         }
         
-        let html = `<table><thead><tr><th>Fecha</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th><th>Total</th><th>Estado</th></tr></thead><tbody>`;
+        // Tabla con nueva columna "Aprobado"
+        let html = `<table><thead><tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Stock</th>
+            <th>Físico</th>
+            <th>Muestras</th>
+            <th>Caducados</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Aprobado</th> <!-- NUEVA COLUMNA -->
+        </tr></thead><tbody>`;
         
         filtrados.slice(0, 50).forEach(e => {
             let estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
+            let aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
+            
             html += `<tr>
                 <td>${e.fecha}</td>
                 <td><strong>${e.producto}</strong></td>
@@ -2661,6 +2683,7 @@
                 <td>${e.caducados}</td>
                 <td><strong>${e.total}</strong></td>
                 <td>${estado}</td>
+                <td>${aprobadoHtml}</td> <!-- NUEVA CELDA -->
             </tr>`;
         });
         
@@ -2690,11 +2713,12 @@
         }
         
         let csv = [];
-        csv.push('Fecha,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Estado');
+        csv.push('Fecha,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Estado,Aprobado');
         
         todosLosEnvios.forEach(e => {
             let estado = e.total === e.sistema ? 'Correcto' : 'Diferencia';
-            csv.push(`"${e.fecha}","${e.producto}",${e.sistema},${e.fisico},${e.muestras},${e.caducados},${e.total},"${estado}"`);
+            let aprobado = e.aprobado ? 'Sí' : 'No';
+            csv.push(`"${e.fecha}","${e.producto}",${e.sistema},${e.fisico},${e.muestras},${e.caducados},${e.total},"${estado}","${aprobado}"`);
         });
         
         let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });

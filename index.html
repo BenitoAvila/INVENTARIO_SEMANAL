@@ -2,17 +2,21 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA BENITO AVILA - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BENITO AVILA · Iniciar Sesión</title>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Font Awesome 6 (última versión) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- jsSHA para hash -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.3.0/sha.min.js"></script>
+
+    <!-- Google Fonts - Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         * {
@@ -22,140 +26,195 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fondo animado */
+        .bg-animation {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            z-index: 10;
+            position: relative;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card {
-            background: rgba(32, 58, 67, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.5s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 32px;
+            padding: 40px 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        h2 {
+        .card-header {
             text-align: center;
             margin-bottom: 30px;
-            color: #fff;
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        }
+
+        .card-header h1 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .card-header h1 i {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+
+        .card-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            font-weight: 400;
         }
 
         .input-group {
             margin-bottom: 20px;
-            position: relative;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #a8dadc;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
             font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
-        input {
+        .input-group label i {
+            margin-right: 8px;
+            color: #667eea;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input {
             width: 100%;
-            padding: 12px 15px;
-            border-radius: 8px;
+            padding: 16px 20px;
+            padding-right: 50px;
             border: 2px solid transparent;
-            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.15);
             color: white;
             font-size: 16px;
-            transition: all 0.3s;
+            font-weight: 400;
+            transition: all 0.3s ease;
         }
 
-        input:focus {
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+        }
+
+        .input-wrapper input:focus {
             outline: none;
-            border-color: #00c853;
-            background: rgba(255,255,255,0.15);
-        }
-
-        input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .password-container {
-            position: relative;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
         }
 
         .toggle-password {
             position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 20px;
+            color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
-            color: rgba(255,255,255,0.7);
-            font-size: 18px;
+            font-size: 20px;
             transition: color 0.3s;
+            z-index: 20;
         }
 
         .toggle-password:hover {
-            color: #00c853;
+            color: #667eea;
         }
 
-        button {
+        .btn-login {
             width: 100%;
-            padding: 14px;
-            margin: 20px 0 10px;
-            border-radius: 8px;
+            padding: 16px;
+            margin-top: 10px;
             border: none;
-            background: #00c853;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            font-weight: bold;
-            cursor: pointer;
             font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
         }
 
-        button:hover {
-            background: #00a844;
+        .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,200,83,0.3);
+            box-shadow: 0 15px 30px -10px rgba(102, 126, 234, 0.5);
         }
 
-        button:active {
+        .btn-login:active {
             transform: translateY(0);
         }
 
-        button.loading {
-            background: #2e7d32;
-            pointer-events: none;
-            color: transparent;
+        .btn-login i {
+            margin-right: 8px;
         }
 
-        button.loading::after {
-            content: "";
+        .btn-login.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .btn-login.loading::after {
+            content: '';
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             top: 50%;
             left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
+            margin-left: -12px;
+            margin-top: -12px;
             border: 3px solid rgba(255,255,255,0.3);
             border-top-color: white;
             border-radius: 50%;
@@ -166,405 +225,418 @@
             to { transform: rotate(360deg); }
         }
 
-        .error {
-            background: rgba(198,40,40,0.2);
-            color: #ff8a80;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            border-left: 4px solid #c62828;
+        .message {
+            margin-top: 20px;
+            padding: 14px 18px;
+            border-radius: 16px;
             font-size: 14px;
-            animation: shake 0.5s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
         }
 
-        @keyframes shake {
-            0%,100%{transform:translateX(0);}
-            10%,30%,50%,70%,90%{transform:translateX(-5px);}
-            20%,40%,60%,80%{transform:translateX(5px);}
+        .message i {
+            font-size: 18px;
         }
 
-        .success {
-            background: rgba(46,125,50,0.2);
-            color: #b9f6ca;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            border-left: 4px solid #2e7d32;
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border-left: 4px solid #ef4444;
+            color: #fee2e2;
         }
 
-        .warning {
-            background: rgba(255,152,0,0.2);
-            color: #ffb74d;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            border-left: 4px solid #ff9800;
+        .message.success {
+            background: rgba(16, 185, 129, 0.15);
+            border-left: 4px solid #10b981;
+            color: #d1fae5;
+        }
+
+        .message.warning {
+            background: rgba(245, 158, 11, 0.15);
+            border-left: 4px solid #f59e0b;
+            color: #fef3c7;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .footer {
             text-align: center;
-            margin-top: 20px;
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
         }
 
-        .footer a {
-            color: #00c853;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        .version {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            color: rgba(255,255,255,0.3);
+        .footer .version {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
             font-size: 11px;
+            margin-top: 10px;
+        }
+
+        /* Efecto de partículas flotantes (opcional) */
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
+    <div class="bg-animation"></div>
 
-<div class="card">
-    <h2><i class="fas fa-lock"></i> SISTEMA BENITO AVILA</h2>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="fas fa-cube"></i> BENITO AVILA</h1>
+                <p>Ingresa tus credenciales para continuar</p>
+            </div>
 
-    <div class="input-group">
-        <label><i class="fas fa-user"></i> Usuario</label>
-        <input type="text" id="usuario" placeholder="Ingresa tu usuario" autocomplete="off">
-    </div>
+            <div class="input-group">
+                <label><i class="fas fa-user-circle"></i> Usuario</label>
+                <div class="input-wrapper">
+                    <input type="text" id="usuario" placeholder="ej. juan.perez" autocomplete="off">
+                </div>
+            </div>
 
-    <div class="input-group">
-        <label><i class="fas fa-key"></i> Contraseña</label>
-        <div class="password-container">
-            <input type="password" id="password" placeholder="Ingresa tu contraseña">
-            <span class="toggle-password" onclick="togglePassword()">
-                <i class="fas fa-eye"></i>
-            </span>
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Contraseña</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="••••••••">
+                    <span class="toggle-password" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+            </div>
+
+            <button class="btn-login" id="btnLogin">
+                <i class="fas fa-arrow-right-to-bracket"></i> Iniciar Sesión
+            </button>
+
+            <div id="mensaje" class="message" style="display: none;"></div>
+
+            <div class="footer">
+                <span>© 2026 ControlStock BA</span>
+                <div class="version">v3.0 · build 03.2026</div>
+            </div>
         </div>
     </div>
 
-    <button onclick="login()" id="btnLogin"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
-    <div id="mensaje"></div>
+    <script>
+        // ============================================
+        // CONFIGURACIÓN FIREBASE
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
+            authDomain: "inventario-eurofert.firebaseapp.com",
+            databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
+            projectId: "inventario-eurofert",
+            storageBucket: "inventario-eurofert.firebasestorage.app",
+            messagingSenderId: "786796692081",
+            appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
+        };
 
-    <div class="footer">
-        © 2026 ControlStock BA · <a href="#">¿Olvidaste tu contraseña?</a><br>
-        <small>v2.2</small>
-    </div>
-</div>
+        // Limpiar sesión al cargar login (por seguridad)
+        localStorage.clear();
 
-<div class="version">build 2026.02.28</div>
-
-<script>
-    // ============================================
-    // CONFIGURACIÓN FIREBASE
-    // ============================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
-        authDomain: "inventario-eurofert.firebaseapp.com",
-        databaseURL: "https://inventario-eurofert-default-rtdb.firebaseio.com",
-        projectId: "inventario-eurofert",
-        storageBucket: "inventario-eurofert.firebasestorage.app",
-        messagingSenderId: "786796692081",
-        appId: "1:786796692081:web:c742cfbd1d23c3347f91d0"
-    };
-
-    // Limpiar sesión al cargar login (por seguridad)
-    localStorage.clear();
-
-    // Inicializar Firebase
-    let db = null;
-    let firebaseReady = false;
-
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-            console.log("✅ Firebase inicializado");
-        }
-        db = firebase.database();
-        firebaseReady = true;
-        console.log("✅ Database inicializada:", db ? "OK" : "FAIL");
-    } catch (error) {
-        console.error("❌ Error inicializando Firebase:", error);
-        firebaseReady = false;
-    }
-
-    // ============================================
-    // HANDLE GLOBAL ERRORS
-    // ============================================
-    window.onerror = function(message, source, lineno, colno, error) {
-        alert('Error de JavaScript: ' + message + '\nRevisa la consola para más detalles');
-        console.error('Global error caught', message, source, lineno, colno, error);
-    };
-
-    // ============================================
-    // VARIABLES GLOBALES
-    // ============================================
-    let isLoading = false;
-
-    // ============================================
-    // FUNCIÓN HASH (SHA-256)
-    // ============================================
-    function hashPassword(password) {
-        const shaObj = new jsSHA("SHA-256", "TEXT");
-        shaObj.update(password);
-        return shaObj.getHash("HEX");
-    }
-
-    // ============================================
-    // FUNCIONES DE UTILIDAD
-    // ============================================
-    function togglePassword() {
-        let passwordInput = document.getElementById("password");
-        let toggleBtn = document.querySelector(".toggle-password i");
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            toggleBtn.classList.remove("fa-eye");
-            toggleBtn.classList.add("fa-eye-slash");
-        } else {
-            passwordInput.type = "password";
-            toggleBtn.classList.remove("fa-eye-slash");
-            toggleBtn.classList.add("fa-eye");
-        }
-    }
-
-    function mostrarMensaje(texto, tipo) {
-        let mensajeDiv = document.getElementById("mensaje");
-        mensajeDiv.className = tipo;
-        mensajeDiv.innerHTML = texto;
-        setTimeout(() => {
-            mensajeDiv.innerHTML = "";
-            mensajeDiv.className = "";
-        }, 5000);
-    }
-
-    function validarUsuario(usuario) {
-        if (!usuario || usuario.trim() === "") return false;
-        // No permitir caracteres que rompan la ruta de Firebase: . $ # [ ] /
-        let prohibidos = /[.$#\[\]\/]/;
-        return !prohibidos.test(usuario);
-    }
-
-    function validarPassword(password) {
-        return password.length >= 4;
-    }
-
-    // ============================================
-    // FUNCIÓN PRINCIPAL DE LOGIN (con migración automática)
-    // ============================================
-    async function login() {
-        if (isLoading) return;
-
-        if (!navigator.onLine) {
-            mostrarMensaje("❌ No hay conexión a Internet", "error");
-            return;
-        }
-
-        let usuario = document.getElementById("usuario").value.trim();
-        let password = document.getElementById("password").value.trim();
-        let btnLogin = document.getElementById("btnLogin");
-
-        document.getElementById("mensaje").innerHTML = "";
-
-        // Validaciones de entrada
-        if (usuario === "" || password === "") {
-            mostrarMensaje("❌ Complete todos los campos", "error");
-            return;
-        }
-        if (!validarUsuario(usuario)) {
-            mostrarMensaje("❌ Usuario contiene caracteres no permitidos", "error");
-            return;
-        }
-        if (!validarPassword(password)) {
-            mostrarMensaje("❌ La contraseña debe tener al menos 4 caracteres", "error");
-            return;
-        }
-
-        // Verificar que Firebase esté disponible
-        if (!firebaseReady || !db) {
-            mostrarMensaje("❌ Firebase no disponible. Recarga la página.", "error");
-            return;
-        }
-
-        isLoading = true;
-        btnLogin.classList.add("loading");
-        btnLogin.innerHTML = ""; // El spinner se muestra vía CSS
+        // Inicializar Firebase
+        let db = null;
+        let firebaseReady = false;
 
         try {
-            console.log("🔍 Buscando usuario:", usuario);
-            console.log("🔌 Firebase status:", firebaseReady ? "Conectado" : "No conectado");
-            
-            // Verificar conexión a Firebase
-            try {
-                const connRef = db.ref(".info/connected");
-                const connSnap = await connRef.once("value");
-                if (!connSnap.val()) {
-                    throw new Error('Sin conexión a Firebase');
-                }
-            } catch (connError) {
-                console.warn("⚠️ Verificación de conexión:", connError.message);
-                // Continuar de todas formas, a veces falla esta prueba pero funciona después
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                console.log("✅ Firebase inicializado");
             }
+            db = firebase.database();
+            firebaseReady = true;
+            console.log("✅ Database inicializada");
+        } catch (error) {
+            console.error("❌ Error inicializando Firebase:", error);
+            firebaseReady = false;
+        }
 
-            const snapshot = await db.ref("usuarios/" + usuario).once("value");
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
+        let isLoading = false;
 
-            if (!snapshot.exists()) {
-                // Mensaje genérico por seguridad
-                mostrarMensaje("❌ Usuario o contraseña incorrectos", "error");
-                resetearBoton();
+        // ============================================
+        // FUNCIÓN HASH
+        // ============================================
+        function hashPassword(password) {
+            const shaObj = new jsSHA("SHA-256", "TEXT");
+            shaObj.update(password);
+            return shaObj.getHash("HEX");
+        }
+
+        // ============================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================
+        function mostrarMensaje(texto, tipo) {
+            let mensajeDiv = document.getElementById("mensaje");
+            mensajeDiv.style.display = "flex";
+            mensajeDiv.className = `message ${tipo}`;
+            
+            // Elegir icono según tipo
+            let icono = '';
+            if (tipo === 'error') icono = '<i class="fas fa-circle-exclamation"></i>';
+            else if (tipo === 'success') icono = '<i class="fas fa-circle-check"></i>';
+            else if (tipo === 'warning') icono = '<i class="fas fa-triangle-exclamation"></i>';
+            
+            mensajeDiv.innerHTML = icono + texto;
+            
+            setTimeout(() => {
+                mensajeDiv.style.display = "none";
+                mensajeDiv.innerHTML = "";
+            }, 5000);
+        }
+
+        function validarUsuario(usuario) {
+            if (!usuario || usuario.trim() === "") return false;
+            // No permitir caracteres que rompan la ruta de Firebase: . $ # [ ] /
+            let prohibidos = /[.$#\[\]\/]/;
+            return !prohibidos.test(usuario);
+        }
+
+        function validarPassword(password) {
+            return password.length >= 4;
+        }
+
+        function resetearBoton() {
+            isLoading = false;
+            let btn = document.getElementById("btnLogin");
+            btn.classList.remove("loading");
+            btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Iniciar Sesión';
+        }
+
+        // ============================================
+        // FUNCIÓN PRINCIPAL DE LOGIN
+        // ============================================
+        async function login() {
+            if (isLoading) return;
+
+            if (!navigator.onLine) {
+                mostrarMensaje("No hay conexión a Internet", "error");
                 return;
             }
 
-            let data = snapshot.val();
+            let usuario = document.getElementById("usuario").value.trim();
+            let password = document.getElementById("password").value.trim();
+            let btnLogin = document.getElementById("btnLogin");
 
-            // Verificar si la cuenta está bloqueada
-            if (data.bloqueadoHasta) {
-                let fechaBloqueo = new Date(data.bloqueadoHasta);
-                let ahora = new Date();
-                if (fechaBloqueo > ahora) {
-                    let minutos = Math.ceil((fechaBloqueo - ahora) / 60000);
-                    mostrarMensaje(`⏳ Cuenta bloqueada. Intenta en ${minutos} minutos`, "error");
+            // Ocultar mensaje anterior
+            document.getElementById("mensaje").style.display = "none";
+
+            // Validaciones
+            if (usuario === "" || password === "") {
+                mostrarMensaje("Complete todos los campos", "error");
+                return;
+            }
+            if (!validarUsuario(usuario)) {
+                mostrarMensaje("Usuario contiene caracteres no permitidos", "error");
+                return;
+            }
+            if (!validarPassword(password)) {
+                mostrarMensaje("La contraseña debe tener al menos 4 caracteres", "error");
+                return;
+            }
+
+            if (!firebaseReady || !db) {
+                mostrarMensaje("Firebase no disponible. Recarga la página.", "error");
+                return;
+            }
+
+            isLoading = true;
+            btnLogin.classList.add("loading");
+
+            try {
+                // Verificar conexión a Firebase (opcional)
+                try {
+                    const connRef = db.ref(".info/connected");
+                    const connSnap = await connRef.once("value");
+                    if (!connSnap.val()) {
+                        throw new Error('Sin conexión a Firebase');
+                    }
+                } catch (connError) {
+                    console.warn("⚠️ Verificación de conexión:", connError.message);
+                }
+
+                const snapshot = await db.ref("usuarios/" + usuario).once("value");
+
+                if (!snapshot.exists()) {
+                    mostrarMensaje("Usuario o contraseña incorrectos", "error");
                     resetearBoton();
                     return;
                 }
-            }
 
-            // --- LÓGICA DE MIGRACIÓN AUTOMÁTICA ---
-            // Determinamos si la contraseña almacenada es un hash (SHA-256 hex = 64 caracteres)
-            const storedPass = data.password;
-            const esHash = storedPass && storedPass.length === 64 && /^[a-f0-9]+$/.test(storedPass);
+                let data = snapshot.val();
 
-            let passwordValida = false;
-            let necesitaMigracion = false;
-
-            if (esHash) {
-                // Ya es hash: comparamos con hash de la ingresada
-                passwordValida = (storedPass === hashPassword(password));
-            } else {
-                // Es texto plano: comparamos directamente
-                passwordValida = (storedPass === password);
-                if (passwordValida) {
-                    necesitaMigracion = true; // Marcar para actualizar a hash
+                // Verificar si la cuenta está bloqueada
+                if (data.bloqueadoHasta) {
+                    let fechaBloqueo = new Date(data.bloqueadoHasta);
+                    let ahora = new Date();
+                    if (fechaBloqueo > ahora) {
+                        let minutos = Math.ceil((fechaBloqueo - ahora) / 60000);
+                        mostrarMensaje(`Cuenta bloqueada. Intenta en ${minutos} minutos`, "error");
+                        resetearBoton();
+                        return;
+                    }
                 }
-            }
 
-            if (!passwordValida) {
-                // Contraseña incorrecta: manejar intentos fallidos
-                console.log("❌ Contraseña incorrecta");
-                let intentos = (data.intentosFallidos || 0) + 1;
-                let updates = {};
-                updates["/usuarios/" + usuario + "/intentosFallidos"] = intentos;
+                // --- LÓGICA DE MIGRACIÓN AUTOMÁTICA ---
+                const storedPass = data.password;
+                const esHash = storedPass && storedPass.length === 64 && /^[a-f0-9]+$/.test(storedPass);
 
-                if (intentos >= 3) {
-                    let bloqueoHasta = new Date();
-                    bloqueoHasta.setMinutes(bloqueoHasta.getMinutes() + 5);
-                    updates["/usuarios/" + usuario + "/bloqueadoHasta"] = bloqueoHasta.toISOString();
-                    updates["/usuarios/" + usuario + "/intentosFallidos"] = 0;
-                    await db.ref().update(updates);
-                    mostrarMensaje("⏳ Demasiados intentos. Bloqueado 5 minutos", "error");
+                let passwordValida = false;
+                let necesitaMigracion = false;
+
+                if (esHash) {
+                    passwordValida = (storedPass === hashPassword(password));
                 } else {
-                    await db.ref().update(updates);
-                    mostrarMensaje("❌ Usuario o contraseña incorrectos", "error");
+                    passwordValida = (storedPass === password);
+                    if (passwordValida) {
+                        necesitaMigracion = true;
+                    }
+                }
+
+                if (!passwordValida) {
+                    console.log("❌ Contraseña incorrecta");
+                    let intentos = (data.intentosFallidos || 0) + 1;
+                    let updates = {};
+                    updates["/usuarios/" + usuario + "/intentosFallidos"] = intentos;
+
+                    if (intentos >= 3) {
+                        let bloqueoHasta = new Date();
+                        bloqueoHasta.setMinutes(bloqueoHasta.getMinutes() + 5);
+                        updates["/usuarios/" + usuario + "/bloqueadoHasta"] = bloqueoHasta.toISOString();
+                        updates["/usuarios/" + usuario + "/intentosFallidos"] = 0;
+                        await db.ref().update(updates);
+                        mostrarMensaje("Demasiados intentos. Bloqueado 5 minutos", "error");
+                    } else {
+                        await db.ref().update(updates);
+                        mostrarMensaje("Usuario o contraseña incorrectos", "error");
+                    }
+                    resetearBoton();
+                    return;
+                }
+
+                // ===== CONTRASEÑA CORRECTA =====
+                if (necesitaMigracion) {
+                    console.log("Migrando contraseña a hash para", usuario);
+                    await db.ref("usuarios/" + usuario).update({
+                        password: hashPassword(password)
+                    });
+                }
+
+                // Resetear intentos fallidos
+                await db.ref("usuarios/" + usuario).update({
+                    intentosFallidos: 0,
+                    bloqueadoHasta: null,
+                    ultimoAcceso: new Date().toISOString()
+                });
+
+                // Guardar sesión
+                localStorage.setItem("usuario", usuario);
+                localStorage.setItem("rol", data.rol);
+                localStorage.setItem("ultimoAcceso", new Date().toISOString());
+                localStorage.setItem("ultimoUsuario", usuario);
+
+                mostrarMensaje("Acceso correcto! Redirigiendo...", "success");
+
+                // Redirigir según rol
+                setTimeout(() => {
+                    if (data.rol === "admin") {
+                        window.location.href = "admin.html";
+                    } else {
+                        window.location.href = "panel.html";
+                    }
+                }, 1500);
+
+            } catch (err) {
+                console.error("❌ Error en login:", err);
+                let msg = err?.message || 'Error desconocido';
+                
+                if (msg.includes('network')) {
+                    mostrarMensaje("Error de red. Verifica tu conexión.", "error");
+                } else if (msg.includes('PERMISSION_DENIED')) {
+                    mostrarMensaje("Error de permisos. Contacta al administrador.", "error");
+                } else {
+                    mostrarMensaje(`Error: ${msg}`, "error");
                 }
                 resetearBoton();
-                return;
+            }
+        }
+
+        // ============================================
+        // EVENTOS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enfocar campo usuario
+            document.getElementById("usuario").focus();
+
+            // Cargar último usuario si existe
+            let ultimoUsuario = localStorage.getItem("ultimoUsuario");
+            if (ultimoUsuario) {
+                document.getElementById("usuario").value = ultimoUsuario;
+                document.getElementById("password").focus();
             }
 
-            // ===== CONTRASEÑA CORRECTA =====
-            // Si la contraseña estaba en texto plano, la actualizamos a hash
-            if (necesitaMigracion) {
-                console.log("Migrando contraseña a hash para", usuario);
-                await db.ref("usuarios/" + usuario).update({
-                    password: hashPassword(password)
-                });
-            }
+            // Evento para el botón de mostrar/ocultar contraseña
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
 
-            // Resetear intentos fallidos
-            await db.ref("usuarios/" + usuario).update({
-                intentosFallidos: 0,
-                bloqueadoHasta: null,
-                ultimoAcceso: new Date().toISOString()
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Cambiar el ícono
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
             });
 
-            // Guardar sesión
-            localStorage.setItem("usuario", usuario);
-            localStorage.setItem("rol", data.rol);
-            localStorage.setItem("ultimoAcceso", new Date().toISOString());
-            localStorage.setItem("ultimoUsuario", usuario); // recordar último usuario
+            // Eventos de teclado (Enter)
+            document.getElementById("usuario").addEventListener("keypress", e => {
+                if (e.key === "Enter") login();
+            });
+            document.getElementById("password").addEventListener("keypress", e => {
+                if (e.key === "Enter") login();
+            });
 
-            mostrarMensaje("✅ Acceso correcto! Redirigiendo...", "success");
+            // Evento del botón login
+            document.getElementById("btnLogin").addEventListener("click", login);
+        });
 
-            // Redirigir según rol
-            setTimeout(() => {
-                if (data.rol === "admin") {
-                    window.location.href = "admin.html";
-                } else {
-                    window.location.href = "panel.html"; // Cambiado de panel.html a colaborador.html
-                }
-            }, 1000);
-
-        } catch (err) {
-            console.error("❌ Error en login:", err);
-            console.error("Stack:", err?.stack);
-            let msg = err && err.message ? err.message : 'Error desconocido';
-            
-            // Mensajes más específicos
-            if (msg.includes('network')) {
-                mostrarMensaje("❌ Error de red. Verifica tu conexión a Internet.", "error");
-            } else if (msg.includes('PERMISSION_DENIED')) {
-                mostrarMensaje("❌ Error de permisos en Firebase. Contacta al administrador.", "error");
-            } else if (msg.includes('Firebase no inicializado')) {
-                mostrarMensaje("❌ Recarga la página e intenta nuevamente.", "error");
-            } else {
-                mostrarMensaje(`❌ Error: ${msg}`, "error");
+        // ============================================
+        // VERIFICACIÓN INICIAL DE FIREBASE
+        // ============================================
+        setTimeout(() => {
+            if (!firebaseReady || !db) {
+                mostrarMensaje("No se pudo conectar a Firebase. Recarga la página.", "warning");
+                document.getElementById("btnLogin").disabled = true;
             }
-            resetearBoton();
-        }
-    }
-
-    function resetearBoton() {
-        isLoading = false;
-        let btn = document.getElementById("btnLogin");
-        btn.classList.remove("loading");
-        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Ingresar';
-    }
-
-    // ============================================
-    // EVENTOS E INICIALIZACIÓN
-    // ============================================
-    document.getElementById("usuario").addEventListener("keypress", e => { if (e.key === "Enter") login(); });
-    document.getElementById("password").addEventListener("keypress", e => { if (e.key === "Enter") login(); });
-
-    window.onload = function() {
-        document.getElementById("usuario").focus();
-        let ultimoUsuario = localStorage.getItem("ultimoUsuario");
-        if (ultimoUsuario) {
-            document.getElementById("usuario").value = ultimoUsuario;
-            document.getElementById("password").focus();
-        }
-        
-        // Verificar Firebase
-        console.log("✅ Firebase apps:", firebase.apps.length);
-        console.log("🔌 Database inicializada:", firebaseReady);
-        
-        // Verificar que Firebase está realmente disponible
-        if (!firebaseReady || !db) {
-            mostrarMensaje("⚠️ Conectando a Firebase...", "warning");
-            setTimeout(() => {
-                if (!firebaseReady || !db) {
-                    mostrarMensaje("❌ No se pudo conectar a Firebase. Recarga la página.", "error");
-                    document.getElementById("btnLogin").disabled = true;
-                } else {
-                    document.getElementById("mensaje").innerHTML = "";
-                }
-            }, 3000);
-        }
-    };
-</script>
+        }, 3000);
+    </script>
 </body>
 </html>

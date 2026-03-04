@@ -787,7 +787,7 @@
         <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN GESTIÓN DE PRODUCTOS (UNIFICADA) -->
+    <!-- SECCIÓN GESTIÓN DE PRODUCTOS (UNIFICADA) - MODIFICADA -->
     <div id="seccion-gestion-productos" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-boxes"></i> Gestión de Productos</h3>
@@ -803,7 +803,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: CREAR PRODUCTO (solo nombre y descripción) -->
+        <!-- TAB 1: CREAR PRODUCTO (solo nombre y presentación) -->
         <div id="tab-content-crear-producto" class="tab-content active">
             <div class="form-group">
                 <label>Nombre del Producto</label>
@@ -811,8 +811,8 @@
                 <div id="sugerenciasProductos" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); border: 1px solid var(--primary); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm); max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
             </div>
             <div class="form-group">
-                <label>Descripción (opcional)</label>
-                <input type="text" id="descripcionProducto" class="form-control" placeholder="Ej: Bolsa de 50kg">
+                <label>Presentación</label>
+                <input type="text" id="presentacionProducto" class="form-control" placeholder="Ej: Bolsa 50kg, Bidón 20L, etc.">
             </div>
             <button class="btn btn-primary btn-block" onclick="crearProducto()" id="btnCrearProducto">
                 <i class="fas fa-save"></i> Guardar Producto
@@ -827,34 +827,27 @@
             </div>
         </div>
 
-        <!-- TAB 2: ASIGNAR PRODUCTO (con cantidad y opción de variante) -->
+        <!-- TAB 2: ASIGNAR PRODUCTO (con filtros de búsqueda) -->
         <div id="tab-content-asignar-producto" class="tab-content">
             <div class="form-group">
                 <label>Fecha de Asignación</label>
                 <input type="date" id="fechaAsignacion" class="form-control">
             </div>
-            <div class="form-group">
-                <label>Colaborador</label>
-                <select id="selectUsuario" class="form-control">
-                    <option value="">Cargando colaboradores...</option>
-                </select>
+            <div class="form-group" style="position: relative;">
+                <label>Buscar Colaborador</label>
+                <input type="text" id="buscarColaborador" class="form-control" placeholder="Escriba nombre del colaborador..." autocomplete="off" onkeyup="filtrarColaboradores()">
+                <div id="sugerenciasColaboradores" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); border: 1px solid var(--primary); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm); max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+                <input type="hidden" id="selectUsuario" value="">
             </div>
-            <div class="form-group">
-                <label>Producto a Asignar</label>
-                <select id="selectProducto" class="form-control">
-                    <option value="">Cargando productos...</option>
-                </select>
+            <div class="form-group" style="position: relative;">
+                <label>Buscar Producto</label>
+                <input type="text" id="buscarProductoAsignar" class="form-control" placeholder="Escriba nombre del producto..." autocomplete="off" onkeyup="filtrarProductosAsignar()">
+                <div id="sugerenciasProductosAsignar" style="position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); border: 1px solid var(--primary); border-radius: 0 0 var(--border-radius-sm) var(--border-radius-sm); max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+                <input type="hidden" id="selectProducto" value="">
             </div>
             <div class="form-group">
                 <label>Cantidad a Asignar</label>
                 <input type="number" id="cantidadAsignar" class="form-control" placeholder="0" min="1" step="1">
-                <small style="color: var(--light);">Stock disponible en sistema: <span id="stockDisponible">0</span></small>
-            </div>
-            <div style="margin: 15px 0;">
-                <label style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="marcarVariante">
-                    <span>Marcar como variante (si el producto no lo es, se actualizará)</span>
-                </label>
             </div>
             <div style="margin: 15px 0;">
                 <label style="display: flex; align-items: center; gap: 10px;">
@@ -1038,6 +1031,7 @@
     let chartUsuarios, chartActividad, chartAsignaciones, chartMaquilas;
     let registroEditando = null;
     let todosLosProductos = [];
+    let todosLosColaboradores = [];
 
     // ============================================
     // VERIFICAR SESIÓN
@@ -1227,30 +1221,36 @@
         notificaciones.slice(0, 20).forEach(n => {
             let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
                        n.tipo === "inventario_devuelto" ? "fa-undo" :
+                       n.tipo === "inventario_aprobado" ? "fa-check-circle" :
                        n.tipo === "maquila" ? "fa-industry" : 
                        n.tipo === "maquila_devuelta" ? "fa-undo" :
                        n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
             let color = n.tipo === "inventario" ? "badge-primary" : 
                        n.tipo === "inventario_devuelto" ? "badge-warning" :
+                       n.tipo === "inventario_aprobado" ? "badge-success" :
                        n.tipo === "maquila" ? "badge-warning" : 
                        n.tipo === "maquila_devuelta" ? "badge-warning" :
                        n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
             let usuario = n.usuario || n.detalles?.colaborador || 'Sistema';
             
-            let mensaje = '';
-            if (n.tipo === 'inventario') {
-                mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'} (F:${n.detalles?.fisico || 0}, M:${n.detalles?.muestras || 0}, C:${n.detalles?.caducados || 0})`;
-            } else if (n.tipo === 'inventario_devuelto') {
-                mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
-            } else if (n.tipo === 'maquila') {
-                mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'} (MP:${n.detalles?.mpCantidad || 0}, PT:${n.detalles?.ptCantidad || 0})`;
-            } else if (n.tipo === 'maquila_devuelta') {
-                mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
-            } else if (n.tipo === 'producto_maquila') {
-                mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
-            } else {
-                mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+            let mensaje = n.mensaje || '';
+            if (!mensaje) {
+                if (n.tipo === 'inventario') {
+                    mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'} (F:${n.detalles?.fisico || 0}, M:${n.detalles?.muestras || 0}, C:${n.detalles?.caducados || 0})`;
+                } else if (n.tipo === 'inventario_devuelto') {
+                    mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
+                } else if (n.tipo === 'inventario_aprobado') {
+                    mensaje = `✅ ¡Felicidades! Tu reporte de inventario para ${n.detalles?.producto || 'producto'} ha sido aprobado. ¡Excelente trabajo!`;
+                } else if (n.tipo === 'maquila') {
+                    mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'} (MP:${n.detalles?.mpCantidad || 0}, PT:${n.detalles?.ptCantidad || 0})`;
+                } else if (n.tipo === 'maquila_devuelta') {
+                    mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
+                } else if (n.tipo === 'producto_maquila') {
+                    mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
+                } else {
+                    mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
+                }
             }
             
             html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
@@ -1641,7 +1641,6 @@
     }
 
     async function renderizarGraficos(admins, colaboradores, pendientes, respondidas, maqPendientes, maqAsignadas, fechaEcuador) {
-        // ... (código de gráficos sin cambios)
         try {
             if (chartUsuarios) chartUsuarios.destroy();
             if (chartActividad) chartActividad.destroy();
@@ -1915,7 +1914,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE INVENTARIO (CREAR PRODUCTO SIMPLIFICADO)
+    // PRODUCTOS DE INVENTARIO
     // ============================================
     
     async function cargarTodosLosProductos() {
@@ -1927,9 +1926,8 @@
                     todosLosProductos.push({
                         id: child.key,
                         nombre: child.val().nombre,
-                        sistema: child.val().sistema,
-                        esVariante: child.val().esVariante || false,
-                        descripcion: child.val().descripcion || ''
+                        presentacion: child.val().presentacion || '',
+                        sistema: child.val().sistema || 0
                     });
                 });
                 todosLosProductos.sort((a, b) => a.nombre.localeCompare(b.nombre));
@@ -1963,12 +1961,13 @@
         
         let html = "";
         resultados.slice(0, 10).forEach(p => {
-            html += `<div onclick="seleccionarProducto('${p.id}', '${p.nombre.replace(/'/g, "\\'")}', ${p.sistema})" 
+            html += `<div onclick="seleccionarProductoExistente('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')" 
                         style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
                         onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                         onmouseout="this.style.background='transparent'">
-                        <strong>${p.nombre}</strong> <span class="badge badge-primary" style="margin-left: 10px;">Stock: ${p.sistema}</span>
-                        ${p.esVariante ? '<span class="badge badge-info">Variante</span>' : ''}
+                        <i class="fas fa-box" style="margin-right: 10px; color: var(--primary);"></i>
+                        <strong>${p.nombre}</strong>
+                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${p.presentacion || ''}</small>
                     </div>`;
         });
         
@@ -1976,18 +1975,17 @@
         sugerenciasDiv.style.display = "block";
     }
 
-    function seleccionarProducto(id, nombre, stock) {
+    function seleccionarProductoExistente(id, nombre) {
         document.getElementById("nombreProducto").value = nombre;
-        // No llenamos stock porque en creación ya no se pide
         document.getElementById("sugerenciasProductos").style.display = "none";
-        mostrarToast('Producto seleccionado', `Has seleccionado "${nombre}"`, 'info');
+        mostrarToast('Producto existente', `El producto "${nombre}" ya está en el catálogo. Puedes editarlo desde la lista.`, 'info');
     }
 
     async function crearProducto() {
         let nombre = document.getElementById("nombreProducto").value.trim();
-        let descripcion = document.getElementById("descripcionProducto").value.trim();
+        let presentacion = document.getElementById("presentacionProducto").value.trim();
         
-        console.log("📝 Creando producto:", { nombre, descripcion });
+        console.log("📝 Creando producto:", { nombre, presentacion });
         
         if (!nombre) { 
             mostrarToast('Error', 'Ingrese el nombre del producto', 'error'); 
@@ -2016,22 +2014,19 @@
             
             await db.ref("productos/" + id).set({ 
                 nombre, 
-                descripcion,
-                sistema: 0, // Stock inicial cero
-                esVariante: false,
+                presentacion,
                 fechaCreacion: obtenerFechaEcuador().toISOString() 
             });
             
             mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             document.getElementById("nombreProducto").value = "";
-            document.getElementById("descripcionProducto").value = "";
+            document.getElementById("presentacionProducto").value = "";
             document.getElementById("filtroProductos").value = "";
             
             console.log("🔄 Recargando listas...");
             await cargarTodosLosProductos();
             await cargarProductos();
             await cargarDashboard();
-            await cargarSelectoresAsignacion();
             
         } catch (error) { 
             console.error("❌ Error al crear producto:", error); 
@@ -2080,9 +2075,7 @@
                 <thead>
                     <tr>
                         <th>Producto</th>
-                        <th>Descripción</th>
-                        <th>Stock Total</th>
-                        <th>Variante</th>
+                        <th>Presentación</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -2091,15 +2084,10 @@
             prods.forEach(p => {
                 html += `<tr>
                     <td><strong>${p.nombre}</strong></td>
-                    <td>${p.descripcion || '-'}</td>
-                    <td><span class="badge badge-primary">${p.sistema || 0}</span></td>
-                    <td>${p.esVariante ? 'Sí' : 'No'}</td>
+                    <td>${p.presentacion || '-'}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}','${p.nombre}',${p.sistema})">
-                            <i class="fas fa-edit"></i> Editar Stock
-                        </button>
-                        <button class="btn btn-info btn-sm" onclick="editarVariante('${p.id}', ${p.esVariante})">
-                            <i class="fas fa-tag"></i> ${p.esVariante ? 'Quitar Variante' : 'Marcar Variante'}
+                        <button class="btn btn-warning btn-sm" onclick="editarProductoInfo('${p.id}', '${p.nombre}', '${p.presentacion || ''}')">
+                            <i class="fas fa-edit"></i> Editar Producto
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
                             <i class="fas fa-trash"></i> Eliminar
@@ -2124,34 +2112,37 @@
         cargarProductos(filtro); 
     }
 
-    async function editarProducto(id, nombre, sistema) {
-        let nuevoStock = prompt(`Nuevo stock total para ${nombre}:`, sistema);
-        if (nuevoStock !== null) {
-            let num = parseInt(nuevoStock);
-            if (!isNaN(num) && num >= 0) {
-                try { 
-                    await db.ref("productos/" + id + "/sistema").set(num); 
-                    mostrarToast('Éxito', 'Stock actualizado', 'success'); 
-                    await cargarProductos(document.getElementById('filtroProductos')?.value || ''); 
-                    await cargarTodosLosProductos();
-                    await cargarSelectoresAsignacion();
-                } catch (error) { 
-                    console.error("Error:", error);
-                    mostrarToast('Error', 'Error al actualizar stock', 'error'); 
-                }
-            }
+    async function editarProductoInfo(id, nombreActual, presentacionActual) {
+        let nuevoNombre = prompt("Nuevo nombre del producto:", nombreActual);
+        if (nuevoNombre === null) return;
+        nuevoNombre = nuevoNombre.trim();
+        if (nuevoNombre === "") {
+            mostrarToast('Error', 'El nombre no puede estar vacío', 'error');
+            return;
         }
-    }
-
-    async function editarVariante(id, esVarianteActual) {
+        
+        let nuevaPresentacion = prompt("Nueva presentación:", presentacionActual || "");
+        if (nuevaPresentacion === null) return;
+        nuevaPresentacion = nuevaPresentacion.trim();
+        
+        // Verificar si ya existe otro producto con ese nombre (excepto él mismo)
+        let existe = todosLosProductos.find(p => p.nombre.toLowerCase() === nuevoNombre.toLowerCase() && p.id !== id);
+        if (existe) {
+            mostrarToast('Error', 'Ya existe otro producto con ese nombre', 'error');
+            return;
+        }
+        
         try {
-            await db.ref("productos/" + id + "/esVariante").set(!esVarianteActual);
-            mostrarToast('Éxito', `Producto ${!esVarianteActual ? 'marcado como variante' : 'ya no es variante'}`, 'success');
+            await db.ref("productos/" + id).update({
+                nombre: nuevoNombre,
+                presentacion: nuevaPresentacion
+            });
+            mostrarToast('Éxito', 'Producto actualizado', 'success');
             await cargarProductos(document.getElementById('filtroProductos')?.value || '');
             await cargarTodosLosProductos();
         } catch (error) {
-            console.error("Error al cambiar variante:", error);
-            mostrarToast('Error', 'Error al cambiar estado de variante', 'error');
+            console.error("Error al editar producto:", error);
+            mostrarToast('Error', 'Error al actualizar producto', 'error');
         }
     }
 
@@ -2163,7 +2154,6 @@
                 await cargarProductos(document.getElementById('filtroProductos')?.value || ''); 
                 await cargarTodosLosProductos();
                 await cargarDashboard(); 
-                await cargarSelectoresAsignacion();
             } catch (error) { 
                 console.error("Error:", error);
                 mostrarToast('Error', 'Error al eliminar producto', 'error'); 
@@ -2172,66 +2162,138 @@
     }
 
     // ============================================
-    // ASIGNACIONES (con cantidad y opción de variante)
+    // ASIGNACIONES (con filtros de búsqueda)
     // ============================================
+    async function cargarColaboradores() {
+        try {
+            let snap = await db.ref("usuarios").once("value");
+            todosLosColaboradores = [];
+            if (snap.exists()) {
+                snap.forEach(child => {
+                    if (child.val().rol === "colaborador") {
+                        todosLosColaboradores.push({
+                            id: child.key,
+                            nombre: child.key
+                        });
+                    }
+                });
+                todosLosColaboradores.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            }
+            console.log("👥 Colaboradores cargados:", todosLosColaboradores.length);
+        } catch (error) {
+            console.error("Error cargando colaboradores:", error);
+        }
+    }
+
+    function filtrarColaboradores() {
+        let input = document.getElementById("buscarColaborador");
+        let sugerenciasDiv = document.getElementById("sugerenciasColaboradores");
+        let hiddenInput = document.getElementById("selectUsuario");
+        if (!input || !sugerenciasDiv) return;
+        
+        let texto = input.value.trim().toLowerCase();
+        
+        if (texto.length < 1) {
+            sugerenciasDiv.style.display = "none";
+            hiddenInput.value = "";
+            return;
+        }
+        
+        let resultados = todosLosColaboradores.filter(c => 
+            c.nombre.toLowerCase().includes(texto)
+        );
+        
+        if (resultados.length === 0) {
+            sugerenciasDiv.style.display = "none";
+            return;
+        }
+        
+        let html = "";
+        resultados.slice(0, 10).forEach(c => {
+            html += `<div onclick="seleccionarColaborador('${c.id}')" 
+                        style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                        onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-user" style="margin-right: 10px; color: var(--primary);"></i>
+                        <strong>${c.nombre}</strong>
+                    </div>`;
+        });
+        
+        sugerenciasDiv.innerHTML = html;
+        sugerenciasDiv.style.display = "block";
+    }
+
+    function seleccionarColaborador(id) {
+        let input = document.getElementById("buscarColaborador");
+        let hiddenInput = document.getElementById("selectUsuario");
+        let colaborador = todosLosColaboradores.find(c => c.id === id);
+        if (colaborador) {
+            input.value = colaborador.nombre;
+            hiddenInput.value = id;
+            document.getElementById("sugerenciasColaboradores").style.display = "none";
+        }
+    }
+
+    function filtrarProductosAsignar() {
+        let input = document.getElementById("buscarProductoAsignar");
+        let sugerenciasDiv = document.getElementById("sugerenciasProductosAsignar");
+        let hiddenInput = document.getElementById("selectProducto");
+        if (!input || !sugerenciasDiv) return;
+        
+        let texto = input.value.trim().toLowerCase();
+        
+        if (texto.length < 1) {
+            sugerenciasDiv.style.display = "none";
+            hiddenInput.value = "";
+            return;
+        }
+        
+        let resultados = todosLosProductos.filter(p => 
+            p.nombre.toLowerCase().includes(texto)
+        );
+        
+        if (resultados.length === 0) {
+            sugerenciasDiv.style.display = "none";
+            return;
+        }
+        
+        let html = "";
+        resultados.slice(0, 10).forEach(p => {
+            html += `<div onclick="seleccionarProductoAsignar('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')" 
+                        style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                        onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-box" style="margin-right: 10px; color: var(--primary);"></i>
+                        <strong>${p.nombre}</strong>
+                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${p.presentacion || ''}</small>
+                    </div>`;
+        });
+        
+        sugerenciasDiv.innerHTML = html;
+        sugerenciasDiv.style.display = "block";
+    }
+
+    function seleccionarProductoAsignar(id, nombre) {
+        let input = document.getElementById("buscarProductoAsignar");
+        let hiddenInput = document.getElementById("selectProducto");
+        input.value = nombre;
+        hiddenInput.value = id;
+        document.getElementById("sugerenciasProductosAsignar").style.display = "none";
+    }
+
     async function cargarSelectoresAsignacion() {
         try {
             console.log("🔄 Iniciando cargarSelectoresAsignacion...");
-            
-            let usuariosSnap = await db.ref("usuarios").once("value");
-            let selectU = document.getElementById("selectUsuario");
-            
-            if (selectU) {
-                selectU.innerHTML = "<option value=''>Seleccionar colaborador...</option>";
-                if (usuariosSnap.exists()) {
-                    usuariosSnap.forEach(child => {
-                        if (child.val().rol === "colaborador") {
-                            let opt = document.createElement("option"); 
-                            opt.value = child.key; 
-                            opt.textContent = child.key; 
-                            selectU.appendChild(opt);
-                        }
-                    });
-                }
-            }
-            
-            let productosSnap = await db.ref("productos").once("value");
-            let selectP = document.getElementById("selectProducto");
-            
-            if (selectP) {
-                selectP.innerHTML = "<option value=''>Seleccionar producto...</option>";
-                if (productosSnap.exists()) {
-                    let prods = [];
-                    productosSnap.forEach(child => {
-                        prods.push({ 
-                            id: child.key, 
-                            nombre: child.val().nombre, 
-                            sistema: child.val().sistema,
-                            esVariante: child.val().esVariante || false
-                        });
-                    });
-                    
-                    prods.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                    
-                    prods.forEach(p => {
-                        let opt = document.createElement("option"); 
-                        opt.value = p.id; 
-                        opt.setAttribute('data-stock', p.sistema);
-                        opt.setAttribute('data-variante', p.esVariante);
-                        opt.textContent = `${p.nombre} (Stock: ${p.sistema})${p.esVariante ? ' [Variante]' : ''}`; 
-                        selectP.appendChild(opt);
-                    });
-                    
-                    selectP.addEventListener('change', function() {
-                        let selected = this.options[this.selectedIndex];
-                        let stock = selected.getAttribute('data-stock') || 0;
-                        document.getElementById('stockDisponible').textContent = stock;
-                    });
-                }
-            }
+            await cargarColaboradores();
+            await cargarTodosLosProductos();
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
-            document.getElementById("stockDisponible").textContent = "0";
+            
+            // Limpiar campos de búsqueda
+            document.getElementById("buscarColaborador").value = "";
+            document.getElementById("buscarProductoAsignar").value = "";
+            document.getElementById("selectUsuario").value = "";
+            document.getElementById("selectProducto").value = "";
             
         } catch (error) { 
             console.error("❌ Error al cargar selectores:", error); 
@@ -2243,11 +2305,10 @@
         let usuario = document.getElementById("selectUsuario").value;
         let producto = document.getElementById("selectProducto").value;
         let cantidad = parseInt(document.getElementById("cantidadAsignar").value);
-        let marcarVariante = document.getElementById("marcarVariante").checked;
         let permitirMultiples = document.getElementById("permitirMultiples").checked;
         
         if (!fecha || !usuario || !producto) { 
-            mostrarToast('Error', 'Complete todos los campos', 'error'); 
+            mostrarToast('Error', 'Complete todos los campos (seleccione colaborador y producto)', 'error'); 
             return; 
         }
         
@@ -2259,7 +2320,7 @@
         mostrarLoading(true);
         
         try {
-            // Verificar stock disponible
+            // Obtener datos del producto
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) { 
                 mostrarToast('Error', 'Producto no encontrado', 'error'); 
@@ -2267,17 +2328,6 @@
             }
             
             let prodData = prodSnap.val();
-            
-            if (cantidad > prodData.sistema) {
-                mostrarToast('Error', `Stock insuficiente. Disponible: ${prodData.sistema}`, 'error');
-                return;
-            }
-            
-            // Si se marcó "marcar como variante" y el producto no lo es, actualizarlo
-            if (marcarVariante && !prodData.esVariante) {
-                await db.ref("productos/" + producto + "/esVariante").set(true);
-                console.log("Producto marcado como variante");
-            }
             
             // Verificar si ya existe asignación
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
@@ -2301,7 +2351,7 @@
                 await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                     asignado: true,
                     nombreProducto: prodData.nombre,
-                    stockSistema: prodData.sistema,
+                    presentacion: prodData.presentacion || '',
                     cantidadAsignada: cantidad,
                     permitirMultiples,
                     fechaAsignacion: obtenerFechaEcuador().toISOString(),
@@ -2312,16 +2362,15 @@
             }
             
             // Limpiar formulario
+            document.getElementById("buscarColaborador").value = "";
+            document.getElementById("buscarProductoAsignar").value = "";
             document.getElementById("selectUsuario").value = "";
             document.getElementById("selectProducto").value = "";
             document.getElementById("cantidadAsignar").value = "";
-            document.getElementById("marcarVariante").checked = false;
             document.getElementById("permitirMultiples").checked = false;
-            document.getElementById("stockDisponible").textContent = "0";
             
             await cargarAsignacionesHoy();
             await cargarDashboard();
-            await cargarTodosLosProductos(); // Para reflejar cambio de variante si se marcó
             
         } catch (error) { 
             console.error("Error al asignar producto:", error); 
@@ -2599,7 +2648,7 @@
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - sin cambios
+    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - MODIFICADO
     // ============================================
     function configurarFechas() {
         let hoy = obtenerFechaEcuador();
@@ -2740,6 +2789,7 @@
                 let estadoTexto = diferencia === 0 ? '✓ CUADRA' : 
                                  diferencia > 0 ? `⚠ SOBRANTE +${diferencia}` : 
                                  `❌ FALTANTE ${diferencia}`;
+                let aprobado = r.aprobado || false;
                 
                 html += `<tr>
                     <td>${fecha}</td>
@@ -2750,19 +2800,23 @@
                     <td>${r.muestras || 0}</td>
                     <td>${r.caducados || 0}</td>
                     <td><span class="badge ${estadoClass}">${total}</span></td>
-                    <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
+                    <td>
+                        <span class="badge ${estadoClass}">${estadoTexto}</span>
+                        ${aprobado ? '<br><span class="badge badge-success">Aprobado</span>' : ''}
+                    </td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-primary btn-sm" onclick='abrirModalEdicion(${JSON.stringify(r).replace(/'/g, "&apos;")}, "${r.mes}", "${r.key}")'>
                                 <i class="fas fa-edit"></i>
                             </button>
-                            ${diferencia !== 0 ? 
-                                `<button class="btn btn-warning btn-sm" onclick="devolverInventario('${r.key}', '${r.mes}', '${r.nombre}', '${r.producto}')">
-                                    <i class="fas fa-undo"></i> Devolver
-                                </button>` : 
-                                `<button class="btn btn-success btn-sm" onclick="aprobarInventario('${r.key}', '${r.mes}')">
+                            <button class="btn btn-warning btn-sm" onclick="devolverInventario('${r.key}', '${r.mes}', '${r.nombre}', '${r.producto}')">
+                                <i class="fas fa-undo"></i> Devolver
+                            </button>
+                            ${!aprobado ? 
+                                `<button class="btn btn-success btn-sm" onclick="aprobarInventario('${r.key}', '${r.mes}', '${r.nombre}', '${r.producto}')">
                                     <i class="fas fa-check"></i> Aprobar
-                                </button>`
+                                </button>` : 
+                                ''
                             }
                             <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${r.key}', '${r.mes}')">
                                 <i class="fas fa-trash"></i>
@@ -2832,18 +2886,37 @@
         }
     }
 
-    async function aprobarInventario(key, mes) {
-        if (!confirm('¿Aprobar este inventario? Se marcará como correcto.')) return;
+    async function aprobarInventario(key, mes, colaborador, producto) {
+        if (!confirm('¿Aprobar este inventario? Se marcará como correcto y se notificará al colaborador.')) return;
         
         mostrarLoading(true);
         
         try {
-            await db.ref(`inventario/${mes}/${key}/aprobado`).set(true);
-            await db.ref(`inventario/${mes}/${key}/aprobadoPor`).set(usuario);
-            await db.ref(`inventario/${mes}/${key}/fechaAprobacion`).set(obtenerFechaEcuador().toISOString());
+            await db.ref(`inventario/${mes}/${key}`).update({
+                aprobado: true,
+                aprobadoPor: usuario,
+                fechaAprobacion: obtenerFechaEcuador().toISOString()
+            });
             
-            mostrarToast('Éxito', 'Inventario aprobado', 'success');
+            // Enviar notificación al colaborador
+            await db.ref("notificaciones").push({
+                tipo: "inventario_aprobado",
+                usuario: colaborador,
+                fecha: obtenerFechaEcuador().toISOString(),
+                leida: false,
+                detalles: {
+                    colaborador,
+                    producto,
+                    key,
+                    mes,
+                    aprobadoPor: usuario
+                },
+                mensaje: `✅ ¡Felicidades! Tu reporte de inventario para ${producto} ha sido aprobado. ¡Excelente trabajo!`
+            });
+            
+            mostrarToast('Éxito', 'Inventario aprobado y notificación enviada', 'success');
             await cargarInventario();
+            await cargarDashboard();
             
         } catch (error) {
             console.error("Error al aprobar inventario:", error);
@@ -3298,10 +3371,22 @@
 
     // Cerrar sugerencias al hacer clic fuera
     document.addEventListener('click', function(e) {
-        let sugerencias = document.getElementById('sugerenciasProductos');
-        let input = document.getElementById('nombreProducto');
-        if (sugerencias && input && !input.contains(e.target) && !sugerencias.contains(e.target)) {
-            sugerencias.style.display = 'none';
+        let sugerenciasProdCrear = document.getElementById('sugerenciasProductos');
+        let inputProdCrear = document.getElementById('nombreProducto');
+        if (sugerenciasProdCrear && inputProdCrear && !inputProdCrear.contains(e.target) && !sugerenciasProdCrear.contains(e.target)) {
+            sugerenciasProdCrear.style.display = 'none';
+        }
+        
+        let sugerenciasColab = document.getElementById('sugerenciasColaboradores');
+        let inputColab = document.getElementById('buscarColaborador');
+        if (sugerenciasColab && inputColab && !inputColab.contains(e.target) && !sugerenciasColab.contains(e.target)) {
+            sugerenciasColab.style.display = 'none';
+        }
+        
+        let sugerenciasProdAsignar = document.getElementById('sugerenciasProductosAsignar');
+        let inputProdAsignar = document.getElementById('buscarProductoAsignar');
+        if (sugerenciasProdAsignar && inputProdAsignar && !inputProdAsignar.contains(e.target) && !sugerenciasProdAsignar.contains(e.target)) {
+            sugerenciasProdAsignar.style.display = 'none';
         }
     });
 
@@ -3316,6 +3401,7 @@
         
         setTimeout(() => {
             cargarTodosLosProductos();
+            cargarColaboradores();
             cargarNotificaciones();
             console.log("⏰ Carga inicial de notificaciones y productos");
         }, 1000);
