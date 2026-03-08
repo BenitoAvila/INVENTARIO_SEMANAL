@@ -649,7 +649,7 @@
 
         /* ===== NOTIFICACIONES DROPDOWN ===== */
         .notification-dropdown {
-            position: fixed;
+            position: fixed; /* Cambiado a fixed para que esté sobre todo */
             top: 90px;
             right: 20px;
             background: var(--bg-card);
@@ -661,7 +661,7 @@
             width: 400px;
             max-height: 550px;
             overflow-y: auto;
-            z-index: 10000;
+            z-index: 999999; /* Altísimo */
             box-shadow: var(--shadow);
             display: none;
             scrollbar-width: thin;
@@ -787,7 +787,7 @@
             .stats-grid { grid-template-columns: 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
             .user-menu { flex-wrap: wrap; justify-content: center; }
-            .notification-dropdown { width: 90%; right: 5%; }
+            .notification-dropdown { width: 90%; right: 5%; top: 70px; }
         }
     </style>
 </head>
@@ -820,12 +820,10 @@
                 <span class="logo-badge">NEO ADMIN</span>
             </div>
             <div class="user-menu">
-                <div style="position: relative;">
-                    <div class="notification-icon" onclick="toggleNotificaciones()">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notificationCount">0</span>
-                    </div>
-                    <div id="notification-dropdown" class="notification-dropdown"></div>
+                <!-- Campana sin contenedor padre relativo -->
+                <div class="notification-icon" onclick="toggleNotificaciones()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationCount">0</span>
                 </div>
                 <div class="user-profile">
                     <div class="user-avatar">
@@ -838,6 +836,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Dropdown de notificaciones (independiente, fuera del header) -->
+        <div id="notification-dropdown" class="notification-dropdown"></div>
 
         <!-- Menú de navegación horizontal -->
         <div class="nav-menu">
@@ -899,7 +900,7 @@
                 </div>
             </div>
 
-            <!-- Acciones Pendientes (CORREGIDO) -->
+            <!-- Acciones Pendientes -->
             <div class="section-card" data-aos="fade-up">
                 <div class="card-header">
                     <h3><i class="fas fa-clock"></i> Acciones Pendientes</h3>
@@ -1009,7 +1010,7 @@
                 <div id="listaProductos" class="table-container"></div>
             </div>
 
-            <!-- TAB 2: ASIGNAR PRODUCTO (CORREGIDO) -->
+            <!-- TAB 2: ASIGNAR PRODUCTO -->
             <div id="tab-content-asignar-producto" class="tab-content">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                     <div class="form-group">
@@ -1355,7 +1356,11 @@
             let dropdown = document.getElementById('notification-dropdown');
             if (!dropdown) return;
             dropdown.classList.toggle('active');
-            if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
+            if (dropdown.classList.contains('active')) {
+                mostrarListadoNotificaciones();
+            } else {
+                dropdown.innerHTML = ''; // opcional: limpiar
+            }
         }
 
         async function mostrarListadoNotificaciones() {
@@ -1407,7 +1412,7 @@
         }
 
         // ============================================
-        // DASHBOARD (CORREGIDO: acciones pendientes)
+        // DASHBOARD
         // ============================================
         async function cargarDashboard() {
             try {
@@ -1493,7 +1498,6 @@
                     });
                 }
                 document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-                document.getElementById("totalRespuestas")?.remove(); // No existe en el HTML, pero no importa
 
                 // Maquilas pendientes (solo para el contador)
                 let maquilasPendientes = 0;
@@ -1807,7 +1811,7 @@
         }
 
         // ============================================
-        // USUARIOS (sin cambios)
+        // USUARIOS
         // ============================================
         async function crearUsuario() {
             let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1901,7 +1905,7 @@
         }
 
         // ============================================
-        // PRODUCTOS (sin cambios, pero corregimos cargarProductos)
+        // PRODUCTOS
         // ============================================
         async function cargarTodosLosProductos() {
             try {
@@ -2091,7 +2095,7 @@
         }
 
         // ============================================
-        // ASIGNACIONES (CORREGIDO)
+        // ASIGNACIONES
         // ============================================
         async function cargarColaboradores() {
             try {
@@ -2360,7 +2364,7 @@
         }
 
         // ============================================
-        // PRODUCTOS DE MAQUILA (sin cambios)
+        // PRODUCTOS DE MAQUILA
         // ============================================
         async function crearProductoMaquila() {
             let nombre = document.getElementById("nombreProductoMaquila").value.trim();
@@ -2468,7 +2472,7 @@
         }
 
         // ============================================
-        // INVENTARIO (sin cambios)
+        // INVENTARIO
         // ============================================
         function configurarFechas() {
             let hoy = obtenerFechaEcuador();
@@ -2749,7 +2753,7 @@
         }
 
         // ============================================
-        // MAQUILAS (sin cambios)
+        // MAQUILAS
         // ============================================
         function configurarFechasMaquila() {
             let hoy = obtenerFechaEcuador();
@@ -3023,6 +3027,13 @@
                     sugerencias.style.display = 'none';
                 }
             });
+
+            // Cerrar dropdown de notificaciones si se hace clic fuera
+            let dropdown = document.getElementById('notification-dropdown');
+            let campana = document.querySelector('.notification-icon');
+            if (dropdown && campana && !campana.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
         });
     </script>
 </body>
