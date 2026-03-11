@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eurofert Pro - Panel Colaborador</title>
+    <title>Eurofert B.A. - Panel Colaborador (Mejorado)</title>
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -23,29 +23,24 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     
     <style>
-        /* ===== VARIABLES ===== */
+        /* ===== VARIABLES ===== (igual que antes, pero lo resumo) */
         :root {
             --primary: #00c853;
             --primary-dark: #00a844;
             --primary-light: #5efc8d;
             --primary-gradient: linear-gradient(135deg, #00c853, #00a844);
-            
             --secondary: #0d47a1;
             --secondary-dark: #0a3a7a;
             --secondary-light: #5472d3;
             --secondary-gradient: linear-gradient(135deg, #0d47a1, #0a3a7a);
-            
             --danger: #dc3545;
-            --danger-dark: #bd2130;
             --warning: #ffc107;
             --success: #28a745;
             --info: #17a2b8;
-            
             --dark: #1e1e2f;
             --darker: #151523;
             --light: #f8f9fa;
             --white: #ffffff;
-            
             --gray-100: #f8f9fa;
             --gray-200: #e9ecef;
             --gray-300: #dee2e6;
@@ -55,19 +50,16 @@
             --gray-700: #495057;
             --gray-800: #343a40;
             --gray-900: #212529;
-            
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
             --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
             --shadow-xl: 0 20px 40px rgba(0,0,0,0.25);
-            
             --border-radius-sm: 8px;
             --border-radius: 12px;
             --border-radius-lg: 16px;
             --border-radius-xl: 24px;
             --border-radius-pill: 9999px;
-            
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -248,7 +240,7 @@
             display: block;
         }
 
-        /* ===== BOTONES ===== */
+        /* ===== BOTONES ===== (igual) */
         .btn {
             padding: 12px 24px;
             border-radius: var(--border-radius-pill);
@@ -778,7 +770,66 @@
             border: 1px solid rgba(23, 162, 184, 0.4);
         }
 
-        /* ===== MAQUILA FORMS ===== */
+        /* ===== MAQUILA FORMS MEJORADOS ===== */
+        .maquila-tipo-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .tipo-btn {
+            padding: 10px 25px;
+            border-radius: var(--border-radius-pill);
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            border: 1px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .tipo-btn.active {
+            background: var(--primary-gradient);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .presentacion-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .presentacion-grupo {
+            background: rgba(0,0,0,0.2);
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+
+        .presentacion-grupo label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
+            font-weight: 600;
+        }
+
+        .presentacion-select {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: var(--white);
+            font-size: 14px;
+        }
+
+        .presentacion-select option {
+            background: var(--dark);
+        }
+
         .maquila-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -813,8 +864,7 @@
             color: rgba(255,255,255,0.7);
         }
 
-        .input-group input,
-        .input-group select {
+        .input-group input {
             width: 100%;
             padding: 10px 14px;
             border-radius: var(--border-radius);
@@ -1009,6 +1059,43 @@
             font-size: 13px;
         }
 
+        /* ===== PAGINACIÓN ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border-radius: var(--border-radius-pill);
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: var(--white);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             body {
@@ -1095,7 +1182,7 @@
         </div>
         <div class="user-info">
             <div style="position: relative;">
-                <div class="notification-bell" onclick="toggleNotificaciones()">
+                <div class="notification-bell" id="notificationBell">
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge" id="notificationCount">0</span>
                 </div>
@@ -1105,7 +1192,7 @@
                 <div class="user-name" id="userName">Cargando...</div>
                 <div class="user-date" id="currentDate"></div>
             </div>
-            <button class="btn btn-danger btn-sm btn-header" onclick="cerrarSesion()">
+            <button class="btn btn-danger btn-sm btn-header" id="logoutBtn">
                 <i class="fas fa-sign-out-alt"></i> Salir
             </button>
         </div>
@@ -1113,22 +1200,11 @@
 
     <!-- Navegación principal -->
     <div class="nav-menu" data-aos="fade-up">
-        <div class="nav-item active" onclick="cambiarVista('resumen')">
-            <i class="fas fa-chart-pie"></i> Resumen
-        </div>
-        <div class="nav-item" onclick="cambiarVista('inventario')">
-            <i class="fas fa-clipboard-list"></i> Inventario
-        </div>
-        <div class="nav-item" onclick="cambiarVista('maquilas')">
-            <i class="fas fa-industry"></i> Maquilas
-        </div>
-        <!-- Vista de Devueltas -->
-        <div class="nav-item" onclick="cambiarVista('devueltas')">
-            <i class="fas fa-undo"></i> Devueltas
-        </div>
-        <div class="nav-item" onclick="cambiarVista('historial')">
-            <i class="fas fa-history"></i> Historial
-        </div>
+        <div class="nav-item active" data-view="resumen"><i class="fas fa-chart-pie"></i> Resumen</div>
+        <div class="nav-item" data-view="inventario"><i class="fas fa-clipboard-list"></i> Inventario</div>
+        <div class="nav-item" data-view="maquilas"><i class="fas fa-industry"></i> Maquilas</div>
+        <div class="nav-item" data-view="devueltas"><i class="fas fa-undo"></i> Devueltas</div>
+        <div class="nav-item" data-view="historial"><i class="fas fa-history"></i> Historial</div>
     </div>
 
     <!-- VISTA RESUMEN -->
@@ -1196,10 +1272,10 @@
             <div class="product-selector">
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
+                    <input type="text" class="product-search" id="buscadorProducto" placeholder="Buscar producto...">
                 </div>
 
-                <select class="product-select-custom" id="productoSelect" onchange="cambiarProducto()" size="4">
+                <select class="product-select-custom" id="productoSelect" size="4">
                     <option value="">Cargando productos...</option>
                 </select>
 
@@ -1227,15 +1303,15 @@
             <div class="conteo-grid">
                 <div class="conteo-card">
                     <label>Físico</label>
-                    <input type="number" id="fisico" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                    <input type="number" id="fisico" placeholder="0" min="0" value="0">
                 </div>
                 <div class="conteo-card">
                     <label>Muestras</label>
-                    <input type="number" id="muestras" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                    <input type="number" id="muestras" placeholder="0" min="0" value="0">
                 </div>
                 <div class="conteo-card">
                     <label>Caducados</label>
-                    <input type="number" id="caducados" placeholder="0" min="0" value="0" onchange="calcularTotal()" onkeyup="calcularTotal()">
+                    <input type="number" id="caducados" placeholder="0" min="0" value="0">
                 </div>
             </div>
 
@@ -1245,7 +1321,7 @@
                 <div id="comparacionStock">vs Cantidad asignada: 0</div>
             </div>
 
-            <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
+            <button class="btn btn-primary btn-block" id="btnEnviarInventario">
                 <i class="fas fa-paper-plane"></i> Enviar Inventario
             </button>
         </div>
@@ -1261,7 +1337,7 @@
         </div>
     </div>
 
-    <!-- VISTA MAQUILAS -->
+    <!-- VISTA MAQUILAS MEJORADA -->
     <div id="viewMaquilas" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1280,7 +1356,7 @@
                         <label>Descripción (opcional)</label>
                         <input type="text" id="descripcionProductoMaquila" class="form-control" placeholder="ej: 20L">
                     </div>
-                    <button class="btn btn-primary btn-block" onclick="crearProductoMaquila()" id="btnCrearProductoMaquila">
+                    <button class="btn btn-primary btn-block" id="btnCrearProductoMaquila">
                         <i class="fas fa-save"></i> Guardar Producto de Maquila
                     </button>
                 </div>
@@ -1290,10 +1366,10 @@
             <div class="product-selector">
                 <div class="search-container">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" class="product-search" id="buscadorProductoMaquila" placeholder="Buscar producto para maquila..." onkeyup="filtrarProductosMaquila()">
+                    <input type="text" class="product-search" id="buscadorProductoMaquila" placeholder="Buscar producto para maquila...">
                 </div>
 
-                <select class="product-select-custom" id="productoMaquilaSelect" onchange="cambiarProductoMaquila()" size="4">
+                <select class="product-select-custom" id="productoMaquilaSelect" size="4">
                     <option value="">Seleccione un producto...</option>
                 </select>
 
@@ -1303,21 +1379,34 @@
 
                 <div class="info-message">
                     <i class="fas fa-info-circle"></i>
-                    <span>Las presentaciones se ingresan manualmente</span>
+                    <span>Selecciona el tipo de producto (Sólido/Líquido) y las presentaciones. El sistema calculará automáticamente la cantidad de producto terminado.</span>
                 </div>
             </div>
 
             <div id="maquilaForm" style="display: none;">
+                <!-- Selector de tipo (Sólido / Líquido) -->
+                <div class="maquila-tipo-selector">
+                    <button type="button" class="tipo-btn active" data-tipo="solido" id="tipoSolidoBtn">Sólido (kg/g)</button>
+                    <button type="button" class="tipo-btn" data-tipo="liquido" id="tipoLiquidoBtn">Líquido (L/mL/cc)</button>
+                </div>
+
+                <!-- Presentaciones dinámicas -->
+                <div class="presentacion-selector" id="presentacionSelector">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+
                 <div class="maquila-grid">
                     <div class="maquila-section">
                         <h4><i class="fas fa-cube"></i> Materia Prima</h4>
                         <div class="input-group">
                             <label>Cantidad</label>
-                            <input type="number" id="mpCantidad" min="0" value="0" onchange="calcularTotalesMaquila()">
+                            <input type="number" id="mpCantidad" min="0" value="0">
                         </div>
-                        <div class="input-group">
+                        <div class="input-group" id="mpPresentacionGroup">
                             <label>Presentación</label>
-                            <input type="text" id="mpPresentacion" placeholder="Ej: Kg, Caja, Bolsa" value="Kg">
+                            <select id="mpPresentacionSelect" class="presentacion-select">
+                                <!-- Opciones dinámicas -->
+                            </select>
                         </div>
                     </div>
 
@@ -1325,11 +1414,13 @@
                         <h4><i class="fas fa-box"></i> Producto Terminado</h4>
                         <div class="input-group">
                             <label>Cantidad</label>
-                            <input type="number" id="ptCantidad" min="0" value="0" onchange="calcularTotalesMaquila()">
+                            <input type="number" id="ptCantidad" min="0" value="0">
                         </div>
-                        <div class="input-group">
+                        <div class="input-group" id="ptPresentacionGroup">
                             <label>Presentación</label>
-                            <input type="text" id="ptPresentacion" placeholder="Ej: Unidad, Caja" value="Unidad">
+                            <select id="ptPresentacionSelect" class="presentacion-select">
+                                <!-- Opciones dinámicas -->
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -1337,9 +1428,10 @@
                 <div class="sobrantes-card">
                     <h4><i class="fas fa-boxes"></i> Sobrantes</h4>
                     <div class="input-group">
-                        <label>Cantidad de Sobrantes</label>
-                        <input type="number" id="sobrantes" min="0" value="0" onchange="calcularTotalesMaquila()">
+                        <label>Cantidad de Sobrantes (en la misma unidad que la materia prima)</label>
+                        <input type="number" id="sobrantes" min="0" value="0">
                     </div>
+                    <small style="color: rgba(255,255,255,0.7);">Los sobrantes se ingresan manualmente según la inspección.</small>
                 </div>
 
                 <div class="transformacion-card">
@@ -1355,18 +1447,21 @@
                 </div>
 
                 <div class="total-card">
-                    <div>Total Procesado</div>
-                    <div class="total-value" id="totalMaquilaCalculado">0</div>
-                </div>
+    <div>Total Producto Terminado + Sobrantes</div>
+    <div class="total-value" id="totalMaquilaCalculado">0</div>
+</div>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="enviarMaquila()" style="flex: 2;" id="btnEnviarMaquila">
-                        <i class="fas fa-paper-plane"></i> Enviar Maquila
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+                    <button class="btn btn-secondary" id="recalcularPTSugeridoBtn" style="flex: 1;">
+                        <i class="fas fa-sync-alt"></i> Recalcular PT
                     </button>
-                    <button class="btn btn-secondary" onclick="limpiarFormMaquila()" style="flex: 1;">
+                    <button class="btn btn-secondary" id="limpiarFormMaquilaBtn" style="flex: 1;">
                         <i class="fas fa-eraser"></i> Limpiar
                     </button>
                 </div>
+                <button class="btn btn-primary btn-block" id="btnEnviarMaquila">
+                    <i class="fas fa-paper-plane"></i> Enviar Maquila
+                </button>
             </div>
         </div>
 
@@ -1374,7 +1469,7 @@
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-industry"></i> Mis Maquilas</h3>
-                <button class="btn btn-primary btn-sm" onclick="cargarTodasMaquilas()">
+                <button class="btn btn-primary btn-sm" id="actualizarMaquilasBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
@@ -1390,7 +1485,7 @@
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-undo"></i> Inventarios Devueltos</h3>
-                <button class="btn btn-primary btn-sm" onclick="cargarInventariosDevueltos()">
+                <button class="btn btn-primary btn-sm" id="actualizarDevueltasBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
@@ -1405,7 +1500,7 @@
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-history"></i> Historial de Inventario</h3>
-                <button class="btn btn-primary btn-sm" onclick="cargarHistorial()">
+                <button class="btn btn-primary btn-sm" id="actualizarHistorialBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
@@ -1416,24 +1511,24 @@
                     <div class="filtro-grupo">
                         <i class="fas fa-search filtro-icon"></i>
                         <label>Buscar por producto</label>
-                        <input type="text" class="filtro-input" id="filtroInventarioProducto" placeholder="Nombre del producto..." style="padding-left: 40px;" onkeyup="filtrarHistorialInventario()">
+                        <input type="text" class="filtro-input" id="filtroInventarioProducto" placeholder="Nombre del producto..." style="padding-left: 40px;">
                     </div>
                     <div class="filtro-grupo">
                         <i class="fas fa-calendar filtro-icon"></i>
                         <label>Fecha desde</label>
-                        <input type="date" class="filtro-input" id="filtroInventarioFechaInicio" style="padding-left: 40px;" onchange="filtrarHistorialInventario()">
+                        <input type="date" class="filtro-input" id="filtroInventarioFechaInicio" style="padding-left: 40px;">
                     </div>
                     <div class="filtro-grupo">
                         <i class="fas fa-calendar filtro-icon"></i>
                         <label>Fecha hasta</label>
-                        <input type="date" class="filtro-input" id="filtroInventarioFechaFin" style="padding-left: 40px;" onchange="filtrarHistorialInventario()">
+                        <input type="date" class="filtro-input" id="filtroInventarioFechaFin" style="padding-left: 40px;">
                     </div>
                 </div>
                 <div class="filtros-acciones">
-                    <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosInventario()">
+                    <button class="btn btn-secondary btn-sm" id="limpiarFiltrosInventarioBtn">
                         <i class="fas fa-eraser"></i> Limpiar filtros
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="exportarInventarioCSV()">
+                    <button class="btn btn-primary btn-sm" id="exportarInventarioCSVBtn">
                         <i class="fas fa-file-excel"></i> Exportar CSV
                     </button>
                 </div>
@@ -1442,12 +1537,15 @@
             <div id="historialContainer" class="table-container">
                 <p class="text-center">Cargando historial...</p>
             </div>
+            
+            <!-- Paginación para inventario -->
+            <div id="paginationInventario" class="pagination"></div>
         </div>
 
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-industry"></i> Historial de Maquilas</h3>
-                <button class="btn btn-primary btn-sm" onclick="cargarTodasMaquilas()">
+                <button class="btn btn-primary btn-sm" id="actualizarHistorialMaquilasBtn">
                     <i class="fas fa-sync-alt"></i> Actualizar
                 </button>
             </div>
@@ -1458,24 +1556,24 @@
                     <div class="filtro-grupo">
                         <i class="fas fa-search filtro-icon"></i>
                         <label>Buscar por producto</label>
-                        <input type="text" class="filtro-input" id="filtroHistorialMaquilaProducto" placeholder="Nombre del producto..." style="padding-left: 40px;" onkeyup="filtrarHistorialMaquilas()">
+                        <input type="text" class="filtro-input" id="filtroHistorialMaquilaProducto" placeholder="Nombre del producto..." style="padding-left: 40px;">
                     </div>
                     <div class="filtro-grupo">
                         <i class="fas fa-calendar filtro-icon"></i>
                         <label>Fecha desde</label>
-                        <input type="date" class="filtro-input" id="filtroHistorialMaquilaFechaInicio" style="padding-left: 40px;" onchange="filtrarHistorialMaquilas()">
+                        <input type="date" class="filtro-input" id="filtroHistorialMaquilaFechaInicio" style="padding-left: 40px;">
                     </div>
                     <div class="filtro-grupo">
                         <i class="fas fa-calendar filtro-icon"></i>
                         <label>Fecha hasta</label>
-                        <input type="date" class="filtro-input" id="filtroHistorialMaquilaFechaFin" style="padding-left: 40px;" onchange="filtrarHistorialMaquilas()">
+                        <input type="date" class="filtro-input" id="filtroHistorialMaquilaFechaFin" style="padding-left: 40px;">
                     </div>
                 </div>
                 <div class="filtros-acciones">
-                    <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosHistorialMaquilas()">
+                    <button class="btn btn-secondary btn-sm" id="limpiarFiltrosHistorialMaquilasBtn">
                         <i class="fas fa-eraser"></i> Limpiar filtros
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="exportarMaquilasCSV()">
+                    <button class="btn btn-primary btn-sm" id="exportarMaquilasCSVBtn">
                         <i class="fas fa-file-excel"></i> Exportar CSV
                     </button>
                 </div>
@@ -1484,14 +1582,18 @@
             <div id="historialMaquilasContainer" class="table-container">
                 <p class="text-center">Cargando historial...</p>
             </div>
+            
+            <!-- Paginación para maquilas -->
+            <div id="paginationMaquilas" class="pagination"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Inicializar AOS
-    AOS.init({ duration: 800, once: true, offset: 50 });
-
+// ============================================
+// MÓDULO: Utilidades y configuración global
+// ============================================
+(function() {
     // Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
@@ -1512,1288 +1614,1288 @@
         console.error("Error Firebase:", error);
     }
 
-    // ===== FUNCIÓN PARA OBTENER FECHA EN ECUADOR =====
-    function obtenerFechaEcuador() {
-        const ahora = new Date();
-        // Ajustar a zona horaria de Ecuador (UTC-5)
-        const offsetEcuador = -5 * 60; // -5 horas en minutos
-        const offsetLocal = ahora.getTimezoneOffset(); // offset local en minutos
-        const diffMs = (offsetLocal + offsetEcuador) * 60 * 1000;
-        const fechaEcuador = new Date(ahora.getTime() + diffMs);
-        return fechaEcuador;
-    }
-
-    function obtenerFechaHoyEcuador() {
-        return obtenerFechaEcuador().toISOString().split('T')[0];
-    }
-
-    function obtenerMesActualEcuador() {
-        return obtenerFechaEcuador().toISOString().substring(0, 7);
-    }
-
-    // Variables globales
-    let usuario = localStorage.getItem("usuario");
-    let rol = localStorage.getItem("rol");
-    let fechaHoy = obtenerFechaHoyEcuador();
-    let mesActual = obtenerMesActualEcuador();
-    let productoSeleccionado = null;
-    let productoMaquilaSeleccionado = null;
-    let productosPendientes = [];
-    let productosEnviadosHoy = new Set();
-    let grafico = null;
-    let todosLosEnvios = [];
-    let todasLasMaquilas = [];
-    let notificaciones = [];
-
-    console.log("Fecha Ecuador hoy:", fechaHoy, "Mes actual:", mesActual);
+    // Variables de sesión (usaremos localStorage pero con validación)
+    const usuario = localStorage.getItem("usuario");
+    const rol = localStorage.getItem("rol");
 
     // Verificar sesión
     if (!usuario || rol === "admin") {
         window.location.href = "index.html";
+        return;
     }
 
-    // Actualizar elementos del header
-    document.getElementById('userName').textContent = usuario;
-    
-    function formatearFechaEcuador() {
-        const fecha = obtenerFechaEcuador();
-        return fecha.toLocaleDateString('es-ES', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-    }
+    // Constantes globales
+    const ITEMS_POR_PAGINA = 20;
+    const presentacionesSolido = [
+        { nombre: '1000 kg', factor: 1000000 },
+        { nombre: '100 kg', factor: 100000 },
+        { nombre: '50 kg', factor: 50000 },
+        { nombre: '25 kg', factor: 25000 },
+        { nombre: '10 kg', factor: 10000 },
+        { nombre: '5 kg', factor: 5000 },
+        { nombre: '2 kg', factor: 2000 },
+        { nombre: '1 kg', factor: 1000 },
+        { nombre: '500 g', factor: 500 },
+        { nombre: '250 g', factor: 250 },
+        { nombre: '100 g', factor: 100 },
+        { nombre: '50 g', factor: 50 },
+        { nombre: '10 g', factor: 10 },
+        { nombre: '5 g', factor: 5 },
+        { nombre: 'g', factor: 1 }
+    ];
+    const presentacionesLiquido = [
+        { nombre: '1000 L', factor: 1000 },
+        { nombre: '200 L', factor: 200 },
+        { nombre: '100 L', factor: 100 },
+        { nombre: '50 L', factor: 50 },
+        { nombre: '20 L', factor: 20 },
+        { nombre: '10 L', factor: 10 },
+        { nombre: '5 L', factor: 5 },
+        { nombre: '4 L', factor: 4 },
+        { nombre: '2 L', factor: 2 },
+        { nombre: '1 L', factor: 1 },
+        { nombre: 'mL', factor: 1 },
+        { nombre: 'cc', factor: 1 }
+    ];
 
-    document.getElementById('currentDate').textContent = formatearFechaEcuador();
-    document.getElementById('fechaActual').textContent = formatearFechaEcuador();
-    document.getElementById('fechaActualInv').textContent = formatearFechaEcuador();
-    document.getElementById('fechaMaquila').textContent = formatearFechaEcuador();
-
-    // Configurar fechas por defecto para filtros
-    function configurarFechasFiltros() {
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        
-        const fechaInicio = hace30Dias.toISOString().split('T')[0];
-        const fechaFin = hoy.toISOString().split('T')[0];
-        
-        // Inventario
-        document.getElementById('filtroInventarioFechaInicio').value = fechaInicio;
-        document.getElementById('filtroInventarioFechaFin').value = fechaFin;
-        
-        // Maquilas
-        document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
-        document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
-    }
-
-    // ===== FUNCIONES DE UTILIDAD =====
-    function mostrarLoading(mostrar) {
-        document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
-    }
-
-    function mostrarToast(titulo, mensaje, tipo = 'success') {
-        let container = document.getElementById('toastContainer');
-        let toastId = 'toast_' + Date.now();
-        let toast = document.createElement('div');
-        toast.className = `toast ${tipo}`;
-        toast.id = toastId;
-        let icono = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-        toast.innerHTML = `
-            <div class="toast-icon"><i class="fas ${icono}"></i></div>
-            <div class="toast-content">
-                <div class="toast-title">${titulo}</div>
-                <div class="toast-message">${mensaje}</div>
-            </div>
-            <div class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></div>
-        `;
-        container.appendChild(toast);
-        setTimeout(() => {
-            let el = document.getElementById(toastId);
-            if (el) el.remove();
-        }, 4000);
-    }
-
-    async function registrarNotificacion(tipo, detalles) {
-        if (!db) return;
-        try {
-            await db.ref("notificaciones").push({ 
-                tipo, 
-                usuario, 
-                fecha: obtenerFechaEcuador().toISOString(), 
-                leida: false, 
-                detalles 
+    // ===== Módulo de fecha Ecuador =====
+    const FechaEcuador = {
+        obtenerFecha: function() {
+            const formatter = new Intl.DateTimeFormat('es-EC', {
+                timeZone: 'America/Guayaquil',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
             });
-            console.log("Notificación registrada:", tipo, detalles);
-        } catch (error) {
-            console.error("Error notificación:", error);
+            const parts = formatter.formatToParts(new Date());
+            const fechaParts = {};
+            parts.forEach(part => { fechaParts[part.type] = part.value; });
+            const fechaStr = `${fechaParts.year}-${fechaParts.month}-${fechaParts.day}T${fechaParts.hour}:${fechaParts.minute}:${fechaParts.second}`;
+            return new Date(fechaStr);
+        },
+        obtenerFechaHoy: function() {
+            return this.obtenerFecha().toISOString().split('T')[0];
+        },
+        obtenerMesActual: function() {
+            return this.obtenerFecha().toISOString().substring(0, 7);
+        },
+        formatearParaHeader: function() {
+            const fecha = this.obtenerFecha();
+            return fecha.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
         }
-    }
+    };
 
-    function cambiarVista(vista) {
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        
-        if (vista === 'resumen') {
-            document.querySelectorAll('.nav-item')[0].classList.add('active');
-            document.getElementById('viewResumen').classList.add('active');
-            cargarDashboard();
-        } else if (vista === 'inventario') {
-            document.querySelectorAll('.nav-item')[1].classList.add('active');
-            document.getElementById('viewInventario').classList.add('active');
-            cargarProductosAsignados();
-            cargarPendientes();
-        } else if (vista === 'maquilas') {
-            document.querySelectorAll('.nav-item')[2].classList.add('active');
-            document.getElementById('viewMaquilas').classList.add('active');
-            cargarProductosMaquila();
-            cargarTodasMaquilas();
-        } else if (vista === 'devueltas') {
-            document.querySelectorAll('.nav-item')[3].classList.add('active');
-            document.getElementById('viewDevueltas').classList.add('active');
-            cargarInventariosDevueltos();
-        } else if (vista === 'historial') {
-            document.querySelectorAll('.nav-item')[4].classList.add('active');
-            document.getElementById('viewHistorial').classList.add('active');
-            configurarFechasFiltros();
-            cargarHistorial();
-            cargarTodasMaquilas();
-        }
-    }
-
-    // ===== NOTIFICACIONES =====
-    function iniciarListenerNotificaciones() {
-        if (!db) return;
-        
-        db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).on("child_added", (snapshot) => {
-            const notificacion = snapshot.val();
-            console.log("📬 Nueva notificación recibida:", notificacion);
-            
-            // Recargar notificaciones y contador
-            cargarNotificaciones();
-            
-            // Recargar vistas activas según el tipo
-            if (notificacion.tipo === 'inventario_devuelto') {
-                if (document.getElementById('viewDevueltas').classList.contains('active')) {
-                    cargarInventariosDevueltos();
-                }
-                // También podría mostrar un toast
-                mostrarToast('Devolución', 'Un inventario ha sido devuelto para corrección', 'warning');
-            }
-            if (notificacion.tipo === 'inventario_aprobado') {
-                if (document.getElementById('viewHistorial').classList.contains('active')) {
-                    cargarHistorial();
-                }
-                mostrarToast('Aprobado', notificacion.mensaje || '¡Tu inventario fue aprobado!', 'success');
-            }
-        });
-        
-        console.log("✅ Listener de notificaciones iniciado");
-    }
-
-    async function cargarNotificaciones() {
-        if (!db) return;
-        
-        try {
-            let snap = await db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).limitToLast(50).once("value");
-            notificaciones = [];
-            
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    notificaciones.push({ id: child.key, ...child.val() });
-                });
-            }
-            
-            notificaciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-            
-            let noLeidas = notificaciones.filter(n => !n.leida).length;
-            let badge = document.getElementById('notificationCount');
-            if (badge) {
-                badge.textContent = noLeidas;
-                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
-            }
-            
-        } catch (error) {
-            console.error("Error cargando notificaciones:", error);
-        }
-    }
-
-    function toggleNotificaciones() {
-        let dropdown = document.getElementById('notification-dropdown');
-        if (!dropdown) return;
-        dropdown.classList.toggle('active');
-        if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
-    }
-
-    async function mostrarListadoNotificaciones() {
-        let container = document.getElementById("notification-dropdown");
-        if (!container) return;
-        
-        await cargarNotificaciones();
-        
-        if (notificaciones.length === 0) {
-            container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
-            return;
-        }
-        
-        let html = `<div style="max-height:600px; overflow-y:auto;">`;
-        notificaciones.slice(0, 20).forEach(n => {
-            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
-                       n.tipo === "inventario_devuelto" ? "fa-undo" :
-                       n.tipo === "inventario_aprobado" ? "fa-check-circle" :
-                       n.tipo === "maquila" ? "fa-industry" : 
-                       n.tipo === "maquila_devuelta" ? "fa-undo" :
-                       n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
-            let color = n.tipo === "inventario" ? "badge-primary" : 
-                       n.tipo === "inventario_devuelto" ? "badge-warning" :
-                       n.tipo === "inventario_aprobado" ? "badge-success" :
-                       n.tipo === "maquila" ? "badge-warning" : 
-                       n.tipo === "maquila_devuelta" ? "badge-warning" :
-                       n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
-            let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
-            
-            let mensaje = n.mensaje || '';
-            if (!mensaje) {
-                if (n.tipo === 'inventario') {
-                    mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
-                } else if (n.tipo === 'inventario_devuelto') {
-                    mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
-                } else if (n.tipo === 'inventario_aprobado') {
-                    mensaje = n.mensaje || `✅ ¡Felicidades! Tu reporte de inventario ha sido aprobado.`;
-                } else if (n.tipo === 'maquila') {
-                    mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
-                } else if (n.tipo === 'maquila_devuelta') {
-                    mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
-                } else if (n.tipo === 'producto_maquila') {
-                    mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
-                } else {
-                    mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
-                }
-            }
-            
-            html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
-                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
-                    <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
-                    <small style="color:var(--light);">${fecha}</small>
+    // ===== Módulo de UI (toast, loading, notificaciones) =====
+    const UI = {
+        mostrarLoading: function(mostrar) {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
+        },
+        mostrarToast: function(titulo, mensaje, tipo = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            const toastId = 'toast_' + Date.now();
+            const toast = document.createElement('div');
+            toast.className = `toast ${tipo}`;
+            toast.id = toastId;
+            const icono = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="fas ${icono}"></i></div>
+                <div class="toast-content">
+                    <div class="toast-title">${titulo}</div>
+                    <div class="toast-message">${mensaje}</div>
                 </div>
-                <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
-                ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
-            </div>`;
-        });
-        
-        if (notificaciones.length > 20) {
-            html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${notificaciones.length} notificaciones</p>`;
+                <div class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></div>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                const el = document.getElementById(toastId);
+                if (el) el.remove();
+            }, 4000);
+        },
+        actualizarFechaHeader: function() {
+            const fechaStr = FechaEcuador.formatearParaHeader();
+            document.getElementById('currentDate').textContent = fechaStr;
+            document.getElementById('fechaActual').textContent = fechaStr;
+            document.getElementById('fechaActualInv').textContent = fechaStr;
+            document.getElementById('fechaMaquila').textContent = fechaStr;
+        },
+        mostrarError: function(contexto, error) {
+            console.error(`Error en ${contexto}:`, error);
+            this.mostrarToast('Error', 'Ocurrió un error. Intente de nuevo.', 'error');
         }
-        
-        html += `</div>`;
-        container.innerHTML = html;
-    }
+    };
 
-    async function marcarComoLeida(id) {
-        if (!db) return;
-        
-        try {
-            await db.ref(`notificaciones/${id}/leida`).set(true);
-            mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
-            await mostrarListadoNotificaciones();
-            await cargarNotificaciones();
-        } catch (error) {
-            console.error("Error al marcar notificación:", error);
-            mostrarToast('Error', 'No se pudo marcar la notificación', 'error');
-        }
-    }
-
-    // ===== FUNCIONES DE INVENTARIO =====
-    function calcularTotal() {
-        let fisico = parseInt(document.getElementById("fisico").value) || 0;
-        let muestras = parseInt(document.getElementById("muestras").value) || 0;
-        let caducados = parseInt(document.getElementById("caducados").value) || 0;
-        let total = fisico + muestras + caducados;
-        document.getElementById("totalCalculado").textContent = total;
-        
-        if (productoSeleccionado) {
-            let diferencia = total - productoSeleccionado.cantidadAsignada;
-            let comparacion = document.getElementById("comparacionStock");
-            
-            if (diferencia === 0) {
-                comparacion.innerHTML = '✓ Cuadra exactamente';
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, #00c853, #00a844)';
-            } else if (diferencia > 0) {
-                comparacion.innerHTML = `⚠ Sobrante: +${diferencia}`;
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, #ffc107, #e0a800)';
-            } else {
-                comparacion.innerHTML = `❌ Faltante: ${diferencia}`;
-                document.getElementById('totalCard').style.background = 'linear-gradient(135deg, #dc3545, #bd2130)';
-            }
-        }
-        return total;
-    }
-
-    function cambiarProducto() {
-        let select = document.getElementById("productoSelect");
-        if (!select) return;
-        let selectedOption = select.options[select.selectedIndex];
-        if (selectedOption && selectedOption.value) {
-            let nombre = selectedOption.getAttribute("data-nombre");
-            let cantidad = selectedOption.getAttribute("data-cantidad");
-            document.getElementById("productoNombre").textContent = nombre;
-            document.getElementById("productoCantidad").textContent = cantidad;
-            document.getElementById("productoInfo").style.display = "flex";
-            productoSeleccionado = { 
-                id: selectedOption.value, 
-                nombre, 
-                cantidadAsignada: parseInt(cantidad) 
-            };
-            document.getElementById("fisico").value = "0";
-            document.getElementById("muestras").value = "0";
-            document.getElementById("caducados").value = "0";
-            calcularTotal();
-        } else {
-            document.getElementById("productoInfo").style.display = "none";
-            productoSeleccionado = null;
-        }
-    }
-
-    function filtrarProductos() {
-        let filtro = document.getElementById("buscadorProducto").value.toLowerCase();
-        let select = document.getElementById("productoSelect");
-        let noResultados = document.getElementById("noResultados");
-        if (!select) return;
-        let visibles = 0;
-        for (let i = 1; i < select.options.length; i++) {
-            let option = select.options[i];
-            if (option.text.toLowerCase().includes(filtro)) {
-                option.style.display = "";
-                visibles++;
-            } else {
-                option.style.display = "none";
-            }
-        }
-        if (noResultados) noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
-        if (visibles === 1 && filtro !== "") {
-            for (let i = 1; i < select.options.length; i++) {
-                if (select.options[i].style.display !== "none") {
-                    select.selectedIndex = i;
-                    cambiarProducto();
-                    break;
-                }
-            }
-        }
-    }
-
-    async function cargarProductosAsignados() {
-        if (!db || !usuario) return;
-        mostrarLoading(true);
-        try {
-            fechaHoy = obtenerFechaHoyEcuador();
-            mesActual = obtenerMesActualEcuador();
-            
-            let asignacionesSnap = await db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value");
-            let select = document.getElementById("productoSelect");
-            let sinPendientes = document.getElementById("sinPendientes");
-            let buscador = document.getElementById("buscadorProducto");
-            let noResultados = document.getElementById("noResultados");
-            
-            if (!select) return;
-            select.innerHTML = "<option value=''>Seleccione un producto...</option>";
-            productosPendientes = [];
-            
-            if (!asignacionesSnap.exists()) {
-                if (sinPendientes) sinPendientes.style.display = "block";
-                if (select) select.style.display = "none";
-                if (buscador) buscador.style.display = "none";
-                if (noResultados) noResultados.style.display = "none";
-                return;
-            }
-            
-            let enviosSnap = await db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value");
-            productosEnviadosHoy.clear();
-            
-            if (enviosSnap.exists()) {
-                enviosSnap.forEach(child => {
-                    let envio = child.val();
-                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
-                        productosEnviadosHoy.add(envio.productoId);
-                    }
+    // ===== Módulo de Notificaciones =====
+    const Notificaciones = {
+        notificaciones: [],
+        listenerIniciado: false,
+        async registrar(tipo, detalles) {
+            if (!db) return;
+            try {
+                await db.ref("notificaciones").push({ 
+                    tipo, 
+                    usuario, 
+                    fecha: FechaEcuador.obtenerFecha().toISOString(), 
+                    leida: false, 
+                    detalles 
                 });
+            } catch (error) {
+                console.error("Error notificación:", error);
             }
-            
-            let asignaciones = asignacionesSnap.val();
-            for (let productoId in asignaciones) {
-                let data = asignaciones[productoId];
-                let cantidadAsignada = data.cantidadAsignada || 0;
-                
-                if (!productosEnviadosHoy.has(productoId)) {
-                    let option = document.createElement("option");
-                    option.value = productoId;
-                    option.textContent = `${data.nombreProducto} (Cant: ${cantidadAsignada})`;
-                    option.setAttribute("data-nombre", data.nombreProducto);
-                    option.setAttribute("data-cantidad", cantidadAsignada);
-                    select.appendChild(option);
-                    productosPendientes.push({ 
-                        id: productoId, 
-                        nombre: data.nombreProducto, 
-                        cantidadAsignada 
-                    });
-                }
-            }
-            
-            if (productosPendientes.length === 0) {
-                if (sinPendientes) sinPendientes.style.display = "block";
-                if (select) select.style.display = "none";
-                if (buscador) buscador.style.display = "none";
-                if (noResultados) noResultados.style.display = "none";
-            } else {
-                if (sinPendientes) sinPendientes.style.display = "none";
-                if (select) select.style.display = "block";
-                if (buscador) buscador.style.display = "block";
-                if (select.options.length > 1) {
-                    select.selectedIndex = 1;
-                    cambiarProducto();
-                }
-            }
-        } catch (error) {
-            console.error("Error cargando productos:", error);
-            mostrarToast('Error', 'Error al cargar productos', 'error');
-        } finally {
-            mostrarLoading(false);
-        }
-    }
-
-    async function enviarInventario() {
-        if (!db || !usuario || !productoSeleccionado) {
-            mostrarToast('Error', 'Seleccione un producto', 'error');
-            return;
-        }
-        
-        let fisico = parseInt(document.getElementById("fisico").value) || 0;
-        let muestras = parseInt(document.getElementById("muestras").value) || 0;
-        let caducados = parseInt(document.getElementById("caducados").value) || 0;
-        let total = fisico + muestras + caducados;
-        
-        // Ya no hay permitirMultiples; siempre se envía una vez por producto.
-        // Si el total no coincide, preguntamos igual.
-        if (total !== productoSeleccionado.cantidadAsignada) {
-            let diferencia = total - productoSeleccionado.cantidadAsignada;
-            if (!confirm(`⚠ El total (${total}) no coincide con la cantidad asignada (${productoSeleccionado.cantidadAsignada}).\n${diferencia > 0 ? 'Sobrante: +' + diferencia : 'Faltante: ' + diferencia}\n¿Continuar?`)) return;
-        }
-        
-        mostrarLoading(true);
-        let btn = document.getElementById("btnEnviar");
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...'; }
-        
-        try {
-            const fechaEcuador = obtenerFechaEcuador();
-            
-            await db.ref("inventario/" + mesActual).push({
-                nombre: usuario, 
-                producto: productoSeleccionado.nombre, 
-                productoId: productoSeleccionado.id,
-                sistema: productoSeleccionado.cantidadAsignada, // Guardamos la cantidad asignada como referencia
-                fisico, 
-                muestras, 
-                caducados, 
-                fecha: fechaEcuador.toISOString()
-            });
-            
-            await registrarNotificacion("inventario", { 
-                colaborador: usuario, 
-                producto: productoSeleccionado.nombre, 
-                fisico, 
-                muestras, 
-                caducados, 
-                total,
-                fecha: fechaEcuador.toISOString()
-            });
-            
-            mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
-            
-            productosEnviadosHoy.add(productoSeleccionado.id);
-            await cargarProductosAsignados();
-            await cargarDashboard();
-            await cargarPendientes();
-            await cargarHistorial();
-            
-            document.getElementById("fisico").value = "0";
-            document.getElementById("muestras").value = "0";
-            document.getElementById("caducados").value = "0";
-            document.getElementById("buscadorProducto").value = "";
-            calcularTotal();
-            filtrarProductos();
-            
-        } catch (error) {
-            console.error("Error al enviar inventario:", error);
-            mostrarToast('Error', 'Error al enviar inventario', 'error');
-        } finally {
-            mostrarLoading(false);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario'; }
-        }
-    }
-
-    // ===== FUNCIÓN: INVENTARIOS DEVUELTOS =====
-    async function cargarInventariosDevueltos() {
-        if (!db || !usuario) return;
-        
-        let container = document.getElementById("inventariosDevueltosContainer");
-        if (!container) return;
-        
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
-        try {
-            let meses = [];
-            for (let i = 0; i < 3; i++) {
-                let fecha = obtenerFechaEcuador();
-                fecha.setMonth(fecha.getMonth() - i);
-                meses.push(fecha.toISOString().substring(0, 7));
-            }
-            
-            let devueltos = [];
-            
-            for (let mes of meses) {
-                let snap = await db.ref("inventario_devuelto/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+        },
+        async cargar() {
+            if (!db) return;
+            try {
+                const snap = await db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).limitToLast(50).once("value");
+                this.notificaciones = [];
                 if (snap.exists()) {
                     snap.forEach(child => {
-                        let d = child.val();
-                        devueltos.push({
-                            fecha: new Date(d.fecha).toLocaleDateString('es-ES'),
-                            producto: d.producto,
-                            sistema: d.sistema || 0,
-                            fisico: d.fisico || 0,
-                            muestras: d.muestras || 0,
-                            caducados: d.caducados || 0,
-                            total: (d.fisico || 0) + (d.muestras || 0) + (d.caducados || 0),
-                            motivo: d.motivo || 'Sin motivo',
-                            fechaDevolucion: d.fechaDevolucion ? new Date(d.fechaDevolucion).toLocaleDateString() : 'Desconocida'
-                        });
+                        this.notificaciones.push({ id: child.key, ...child.val() });
                     });
                 }
-            }
-            
-            if (devueltos.length === 0) {
-                container.innerHTML = "<p class='text-center'>✅ No hay inventarios devueltos</p>";
-                return;
-            }
-            
-            let html = `<table>
-                <thead>
-                    <tr>
-                        <th>Fecha Envío</th>
-                        <th>Producto</th>
-                        <th>Stock</th>
-                        <th>Físico</th>
-                        <th>Muestras</th>
-                        <th>Caducados</th>
-                        <th>Total</th>
-                        <th>Motivo</th>
-                    </tr>
-                </thead>
-                <tbody>`;
-            
-            devueltos.forEach(d => {
-                html += `<tr>
-                    <td>${d.fecha}</td>
-                    <td><strong>${d.producto}</strong></td>
-                    <td>${d.sistema}</td>
-                    <td>${d.fisico}</td>
-                    <td>${d.muestras}</td>
-                    <td>${d.caducados}</td>
-                    <td>${d.total}</td>
-                    <td><small>${d.motivo}</small></td>
-                </tr>`;
-            });
-            
-            html += `</tbody></table>`;
-            container.innerHTML = html;
-            
-        } catch (error) {
-            console.error("Error cargando inventarios devueltos:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar inventarios devueltos</p>";
-        }
-    }
-
-    // ===== FUNCIONES DE MAQUILAS =====
-    async function cargarProductosMaquila() {
-        if (!db) return;
-        let select = document.getElementById("productoMaquilaSelect");
-        if (!select) return;
-        
-        select.innerHTML = "<option value=''>Cargando productos...</option>";
-        
-        try {
-            let snapshot = await db.ref("maquilas_productos").once("value");
-            select.innerHTML = "<option value=''>Seleccione un producto...</option>";
-            
-            if (!snapshot.exists()) {
-                let option = document.createElement("option");
-                option.value = "";
-                option.textContent = "No hay productos disponibles";
-                option.disabled = true;
-                select.appendChild(option);
-                return;
-            }
-            
-            let productos = [];
-            snapshot.forEach(child => {
-                let data = child.val();
-                productos.push({ id: child.key, nombre: data.nombre, descripcion: data.descripcion || '' });
-            });
-            
-            productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
-            productos.forEach(p => {
-                let option = document.createElement("option");
-                option.value = p.id;
-                option.textContent = p.descripcion ? `${p.nombre} - ${p.descripcion}` : p.nombre;
-                option.setAttribute("data-nombre", p.nombre);
-                select.appendChild(option);
-            });
-        } catch (error) {
-            console.error("Error cargando productos maquila:", error);
-            select.innerHTML = "<option value=''>Error al cargar</option>";
-        }
-    }
-
-    async function crearProductoMaquila() {
-        let nombre = document.getElementById("nombreProductoMaquila").value.trim();
-        let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
-        
-        if (!nombre) {
-            mostrarToast('Error', 'Ingrese el nombre del producto', 'error');
-            return;
-        }
-        
-        let btn = document.getElementById("btnCrearProductoMaquila");
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; }
-        mostrarLoading(true);
-        
-        try {
-            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            await db.ref("maquilas_productos/" + id).set({ 
-                nombre, 
-                descripcion, 
-                fechaCreacion: obtenerFechaEcuador().toISOString() 
-            });
-            
-            await registrarNotificacion("producto_maquila", { 
-                colaborador: usuario, 
-                producto: nombre, 
-                descripcion 
-            });
-            
-            mostrarToast('Éxito', 'Producto creado correctamente', 'success');
-            document.getElementById("nombreProductoMaquila").value = "";
-            document.getElementById("descripcionProductoMaquila").value = "";
-            await cargarProductosMaquila();
-            
-        } catch (error) {
-            console.error("Error creando producto maquila:", error);
-            mostrarToast('Error', 'Error al crear producto', 'error');
-        } finally {
-            mostrarLoading(false);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; }
-        }
-    }
-
-    function filtrarProductosMaquila() {
-        let filtro = document.getElementById("buscadorProductoMaquila").value.toLowerCase();
-        let select = document.getElementById("productoMaquilaSelect");
-        let noResultados = document.getElementById("noResultadosMaquila");
-        if (!select) return;
-        let visibles = 0;
-        for (let i = 1; i < select.options.length; i++) {
-            let option = select.options[i];
-            if (option.text.toLowerCase().includes(filtro)) {
-                option.style.display = "";
-                visibles++;
-            } else {
-                option.style.display = "none";
-            }
-        }
-        if (noResultados) noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
-    }
-
-    function cambiarProductoMaquila() {
-        let select = document.getElementById("productoMaquilaSelect");
-        let form = document.getElementById("maquilaForm");
-        if (select && select.selectedIndex > 0) {
-            let selectedOption = select.options[select.selectedIndex];
-            if (selectedOption && selectedOption.value) {
-                form.style.display = "block";
-                productoMaquilaSeleccionado = { 
-                    id: select.value, 
-                    nombre: selectedOption.getAttribute("data-nombre") || selectedOption.text.split(' - ')[0] 
-                };
-                limpiarFormMaquila();
-            } else {
-                form.style.display = "none";
-                productoMaquilaSeleccionado = null;
-            }
-        } else {
-            form.style.display = "none";
-            productoMaquilaSeleccionado = null;
-        }
-    }
-
-    function calcularTotalesMaquila() {
-        let mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
-        let ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
-        let sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
-        document.getElementById("totalMaquilaCalculado").textContent = mpCantidad + ptCantidad + sobrantes;
-    }
-
-    function limpiarFormMaquila() {
-        document.getElementById("mpCantidad").value = "0";
-        document.getElementById("ptCantidad").value = "0";
-        document.getElementById("sobrantes").value = "0";
-        document.getElementById("mpPresentacion").value = "Kg";
-        document.getElementById("ptPresentacion").value = "Unidad";
-        document.getElementById("numTransformacion").value = "Pendiente de asignación";
-        calcularTotalesMaquila();
-    }
-
-    async function enviarMaquila() {
-        if (!db || !usuario || !productoMaquilaSeleccionado) {
-            mostrarToast('Error', 'Seleccione un producto', 'error');
-            return;
-        }
-        
-        let mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
-        let ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
-        let sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
-        
-        if (mpCantidad === 0 && ptCantidad === 0 && sobrantes === 0) {
-            mostrarToast('Error', 'Ingrese al menos una cantidad', 'error');
-            return;
-        }
-        
-        let mpPresentacion = document.getElementById("mpPresentacion").value.trim();
-        let ptPresentacion = document.getElementById("ptPresentacion").value.trim();
-        
-        if (!mpPresentacion || !ptPresentacion) {
-            mostrarToast('Error', 'Complete las presentaciones', 'error');
-            return;
-        }
-        
-        mostrarLoading(true);
-        let btn = document.getElementById("btnEnviarMaquila");
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...'; }
-        
-        try {
-            const fechaEcuador = obtenerFechaEcuador();
-            
-            let maquilaRef = db.ref("maquilas/" + mesActual).push();
-            await maquilaRef.set({
-                nombre: usuario, 
-                producto: productoMaquilaSeleccionado.nombre, 
-                productoId: productoMaquilaSeleccionado.id,
-                mpCantidad, 
-                mpPresentacion, 
-                ptCantidad, 
-                ptPresentacion, 
-                sobrantes, 
-                numTransformacion: "", 
-                fecha: fechaEcuador.toISOString(), 
-                estado: "pendiente"
-            });
-            
-            await registrarNotificacion("maquila", { 
-                colaborador: usuario, 
-                producto: productoMaquilaSeleccionado.nombre, 
-                mpCantidad, 
-                mpPresentacion, 
-                ptCantidad, 
-                ptPresentacion, 
-                sobrantes,
-                fecha: fechaEcuador.toISOString()
-            });
-            
-            mostrarToast('Éxito', 'Maquila enviada correctamente', 'success');
-            
-            limpiarFormMaquila();
-            await cargarDashboard();
-            await cargarTodasMaquilas();
-            
-            document.getElementById("productoMaquilaSelect").selectedIndex = 0;
-            document.getElementById("maquilaForm").style.display = "none";
-            productoMaquilaSeleccionado = null;
-            
-        } catch (error) {
-            console.error("Error enviando maquila:", error);
-            mostrarToast('Error', 'Error al enviar maquila', 'error');
-        } finally {
-            mostrarLoading(false);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Maquila'; }
-        }
-    }
-
-    // ===== FUNCIÓN: Cargar todas las maquilas =====
-    async function cargarTodasMaquilas() {
-        if (!db || !usuario) return;
-        
-        let container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");
-        if (!container) return;
-        
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
-        try {
-            let meses = [];
-            for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
-                fecha.setMonth(fecha.getMonth() - i);
-                meses.push(fecha.toISOString().substring(0, 7));
-            }
-            
-            todasLasMaquilas = [];
-            
-            for (let mes of meses) {
-                let snapshot = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
-                if (snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        let m = child.val();
-                        todasLasMaquilas.push({
-                            fecha: new Date(m.fecha).toLocaleDateString('es-ES'),
-                            fechaRaw: m.fecha,
-                            producto: m.producto,
-                            mpCantidad: m.mpCantidad || 0,
-                            mpPresentacion: m.mpPresentacion || '-',
-                            ptCantidad: m.ptCantidad || 0,
-                            ptPresentacion: m.ptPresentacion || '-',
-                            sobrantes: m.sobrantes || 0,
-                            numTransformacion: m.numTransformacion || "Pendiente",
-                            estado: m.numTransformacion && m.numTransformacion !== "Pendiente" ? "Asignada" : "Pendiente"
-                        });
-                    });
+                this.notificaciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
+                const noLeidas = this.notificaciones.filter(n => !n.leida).length;
+                const badge = document.getElementById('notificationCount');
+                if (badge) {
+                    badge.textContent = noLeidas;
+                    badge.style.display = noLeidas > 0 ? 'flex' : 'none';
                 }
+            } catch (error) {
+                UI.mostrarError('cargar notificaciones', error);
             }
-            
-            todasLasMaquilas.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-            filtrarHistorialMaquilas();
-            
-        } catch (error) {
-            console.error("Error cargando maquilas:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar maquilas</p>";
-        }
-    }
-
-    function filtrarHistorialMaquilas() {
-        const container = document.getElementById("historialMaquilasContainer");
-        if (!container) return;
-        
-        const filtroProducto = document.getElementById("filtroHistorialMaquilaProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroHistorialMaquilaFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroHistorialMaquilaFechaFin")?.value || "";
-        
-        let filtradas = todasLasMaquilas.filter(m => {
-            if (filtroProducto && !m.producto.toLowerCase().includes(filtroProducto)) return false;
-            if (fechaInicio || fechaFin) {
-                const fechaMaquila = new Date(m.fechaRaw).toISOString().split('T')[0];
-                if (fechaInicio && fechaMaquila < fechaInicio) return false;
-                if (fechaFin && fechaMaquila > fechaFin) return false;
+        },
+        iniciarListener() {
+            if (this.listenerIniciado || !db) return;
+            this.listenerIniciado = true;
+            db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).on("child_added", (snapshot) => {
+                const notificacion = snapshot.val();
+                console.log("📬 Nueva notificación:", notificacion);
+                this.cargar(); // recargar contador
+                // Mostrar toast según tipo
+                if (notificacion.tipo === 'inventario_devuelto') {
+                    UI.mostrarToast('Devolución', 'Un inventario ha sido devuelto', 'warning');
+                } else if (notificacion.tipo === 'inventario_aprobado') {
+                    UI.mostrarToast('Aprobado', notificacion.mensaje || '¡Tu inventario fue aprobado!', 'success');
+                }
+            });
+        },
+        toggleDropdown() {
+            const dropdown = document.getElementById('notification-dropdown');
+            if (!dropdown) return;
+            dropdown.classList.toggle('active');
+            if (dropdown.classList.contains('active')) this.mostrarListado();
+        },
+        async mostrarListado() {
+            const container = document.getElementById("notification-dropdown");
+            if (!container) return;
+            await this.cargar();
+            if (this.notificaciones.length === 0) {
+                container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
+                return;
             }
-            return true;
-        });
-        
-        if (filtradas.length === 0) {
-            container.innerHTML = "<p class='text-center'>📭 No hay maquilas que coincidan con los filtros</p>";
-            return;
-        }
-        
-        let html = `<table>
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Producto</th>
-                    <th>MP Cant</th>
-                    <th>MP Pres</th>
-                    <th>PT Cant</th>
-                    <th>PT Pres</th>
-                    <th>Sobr</th>
-                    <th>N° Transf</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        
-        filtradas.slice(0, 50).forEach(m => {
-            html += `<tr>
-                <td>${m.fecha}</td>
-                <td><strong>${m.producto}</strong></td>
-                <td>${m.mpCantidad}</td>
-                <td>${m.mpPresentacion}</td>
-                <td>${m.ptCantidad}</td>
-                <td>${m.ptPresentacion}</td>
-                <td>${m.sobrantes}</td>
-                <td><span class="badge ${m.numTransformacion !== 'Pendiente' ? 'badge-success' : 'badge-warning'}">${m.numTransformacion}</span></td>
-                <td><span class="badge ${m.estado === 'Asignada' ? 'badge-success' : 'badge-warning'}">${m.estado}</span></td>
-            </tr>`;
-        });
-        
-        html += `</tbody></table>`;
-        if (filtradas.length > 50) {
-            html += `<p class='text-center' style='padding: 10px; color: rgba(255,255,255,0.7);'>Mostrando 50 de ${filtradas.length} registros</p>`;
-        }
-        
-        container.innerHTML = html;
-    }
-
-    function limpiarFiltrosHistorialMaquilas() {
-        document.getElementById("filtroHistorialMaquilaProducto").value = "";
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        document.getElementById("filtroHistorialMaquilaFechaInicio").value = hace30Dias.toISOString().split('T')[0];
-        document.getElementById("filtroHistorialMaquilaFechaFin").value = hoy.toISOString().split('T')[0];
-        filtrarHistorialMaquilas();
-    }
-
-    // ===== FUNCIONES DE DASHBOARD =====
-    async function cargarDashboard() {
-        if (!db || !usuario) return;
-        try {
-            fechaHoy = obtenerFechaHoyEcuador();
-            mesActual = obtenerMesActualEcuador();
-            
-            let [asignacionesSnap, enviosSnap, maquilasSnap] = await Promise.all([
-                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
-                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value"),
-                db.ref("maquilas/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]);
-            
-            let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
-            let completadosHoy = 0, precisos = 0, totalEnvios = 0;
-            
-            if (enviosSnap.exists()) {
-                enviosSnap.forEach(child => {
-                    let envio = child.val();
-                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) completadosHoy++;
-                    let total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
-                    if (total === (envio.sistema || 0)) precisos++;
-                    totalEnvios++;
-                });
-            }
-            
-            let totalMaquilasHoy = 0;
-            if (maquilasSnap.exists()) {
-                maquilasSnap.forEach(child => {
-                    let maquila = child.val();
-                    if (maquila.fecha && maquila.fecha.split("T")[0] === fechaHoy) totalMaquilasHoy++;
-                });
-            }
-            
-            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-            document.getElementById("totalCompletados").textContent = completadosHoy;
-            document.getElementById("totalMaquilas").textContent = totalMaquilasHoy;
-            
-            let precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
-            document.getElementById("precision").textContent = precision + '%';
-            document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
-            document.getElementById("progresoBarra").style.width = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 + '%' : '0%';
-            document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
-
-            if (grafico) grafico.destroy();
-            
-            let diasSemana = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-            let datosSemana = [0, 0, 0, 0, 0, 0, completadosHoy];
-            
-            let ctx = document.getElementById('graficoSemanal').getContext('2d');
-            grafico = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: diasSemana,
-                    datasets: [{
-                        label: 'Inventarios enviados',
-                        data: datosSemana,
-                        borderColor: '#00c853',
-                        backgroundColor: 'rgba(0,200,83,0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { 
-                            labels: { color: '#fff' } 
-                        } 
-                    },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: 'rgba(255,255,255,0.1)' }, 
-                            ticks: { color: '#fff' } 
-                        },
-                        x: { 
-                            grid: { color: 'rgba(255,255,255,0.1)' }, 
-                            ticks: { color: '#fff' } 
-                        } 
+            let html = `<div style="max-height:600px; overflow-y:auto;">`;
+            this.notificaciones.slice(0, 20).forEach(n => {
+                const icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
+                             n.tipo === "inventario_devuelto" ? "fa-undo" :
+                             n.tipo === "inventario_aprobado" ? "fa-check-circle" :
+                             n.tipo === "maquila" ? "fa-industry" : 
+                             n.tipo === "maquila_devuelta" ? "fa-undo" :
+                             n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
+                const color = n.tipo === "inventario" ? "badge-primary" : 
+                             n.tipo === "inventario_devuelto" ? "badge-warning" :
+                             n.tipo === "inventario_aprobado" ? "badge-success" :
+                             n.tipo === "maquila" ? "badge-warning" : 
+                             n.tipo === "maquila_devuelta" ? "badge-warning" :
+                             n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
+                const fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
+                let mensaje = n.mensaje || '';
+                if (!mensaje) {
+                    if (n.tipo === 'inventario') {
+                        mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'}`;
+                    } else if (n.tipo === 'inventario_devuelto') {
+                        mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+                    } else if (n.tipo === 'inventario_aprobado') {
+                        mensaje = n.mensaje || `✅ ¡Felicidades! Tu reporte de inventario ha sido aprobado.`;
+                    } else if (n.tipo === 'maquila') {
+                        mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'}`;
+                    } else if (n.tipo === 'maquila_devuelta') {
+                        mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'}<br><small>Motivo: ${n.detalles?.motivo || 'Sin motivo'}</small>`;
+                    } else if (n.tipo === 'producto_maquila') {
+                        mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
+                    } else {
+                        mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
                     }
                 }
+                html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
+                        <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
+                        <small style="color:var(--light);">${fecha}</small>
+                    </div>
+                    <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
+                    ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="App.marcarNotificacionLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
+                </div>`;
             });
-        } catch (error) {
-            console.error("Error cargando dashboard:", error);
-        }
-    }
-
-    async function cargarPendientes() {
-        if (!db || !usuario) return;
-        let container = document.getElementById("pendientesContainer");
-        if (!container) return;
-        
-        try {
-            fechaHoy = obtenerFechaHoyEcuador();
-            mesActual = obtenerMesActualEcuador();
-            
-            let [asignacionesSnap, enviosSnap] = await Promise.all([
-                db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
-                db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
-            ]);
-            
-            if (!asignacionesSnap.exists()) {
-                container.innerHTML = "<p class='text-center'>No hay asignaciones para hoy</p>";
-                return;
+            if (this.notificaciones.length > 20) {
+                html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${this.notificaciones.length} notificaciones</p>`;
             }
-            
-            let enviadosHoy = new Set();
-            if (enviosSnap.exists()) {
-                enviosSnap.forEach(child => {
-                    let envio = child.val();
-                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) enviadosHoy.add(envio.productoId);
-                });
-            }
-            
-            let pendientes = [];
-            let asignaciones = asignacionesSnap.val();
-            
-            for (let productoId in asignaciones) {
-                if (!enviadosHoy.has(productoId)) {
-                    pendientes.push({ 
-                        nombre: asignaciones[productoId].nombreProducto, 
-                        cantidad: asignaciones[productoId].cantidadAsignada || 0 
-                    });
-                }
-            }
-            
-            if (pendientes.length === 0) {
-                container.innerHTML = "<p class='text-center'><i class='fas fa-check-circle' style='color: var(--success);'></i> ¡Todos los productos completados!</p>";
-                return;
-            }
-            
-            let html = `<table><thead><tr><th>Producto</th><th>Cantidad a verificar</th></tr></thead><tbody>`;
-            pendientes.forEach(p => html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.cantidad}</span></td></tr>`);
-            html += `</tbody></table>`;
+            html += `</div>`;
             container.innerHTML = html;
-            
-        } catch (error) {
-            console.error("Error cargando pendientes:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar pendientes</p>";
-        }
-    }
-
-    // ===== FUNCIONES DE HISTORIAL =====
-    async function cargarHistorial() {
-        if (!db || !usuario) return;
-        let container = document.getElementById("historialContainer");
-        if (!container) return;
-        
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
-        try {
-            let meses = [];
-            for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
-                fecha.setMonth(fecha.getMonth() - i);
-                meses.push(fecha.toISOString().substring(0, 7));
+        },
+        async marcarLeida(id) {
+            if (!db) return;
+            try {
+                await db.ref(`notificaciones/${id}/leida`).set(true);
+                UI.mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
+                await this.mostrarListado();
+                await this.cargar();
+            } catch (error) {
+                UI.mostrarError('marcar notificación', error);
+                UI.mostrarToast('Error', 'No se pudo marcar la notificación', 'error');
             }
-            
-            todosLosEnvios = [];
-            
-            for (let mes of meses) {
-                let snapshot = await db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
-                if (snapshot.exists()) {
-                    snapshot.forEach(child => {
-                        let envio = child.val();
-                        todosLosEnvios.push({
-                            fecha: new Date(envio.fecha).toLocaleDateString('es-ES'),
-                            fechaRaw: envio.fecha,
-                            producto: envio.producto,
-                            sistema: envio.sistema || 0,
-                            fisico: envio.fisico || 0,
-                            muestras: envio.muestras || 0,
-                            caducados: envio.caducados || 0,
-                            total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0),
-                            aprobado: envio.aprobado || false
-                        });
+        }
+    };
+
+    // ===== Módulo de Inventario =====
+    const Inventario = {
+        productosPendientes: [],
+        productosEnviadosHoy: new Set(),
+        productoSeleccionado: null,
+        // Elementos DOM (se inicializan después)
+        initDOM() {
+            this.buscador = document.getElementById('buscadorProducto');
+            this.select = document.getElementById('productoSelect');
+            this.noResultados = document.getElementById('noResultados');
+            this.sinPendientes = document.getElementById('sinPendientes');
+            this.productoInfo = document.getElementById('productoInfo');
+            this.productoNombre = document.getElementById('productoNombre');
+            this.productoCantidad = document.getElementById('productoCantidad');
+            this.fisico = document.getElementById('fisico');
+            this.muestras = document.getElementById('muestras');
+            this.caducados = document.getElementById('caducados');
+            this.totalCalculado = document.getElementById('totalCalculado');
+            this.comparacionStock = document.getElementById('comparacionStock');
+            this.totalCard = document.getElementById('totalCard');
+            this.btnEnviar = document.getElementById('btnEnviarInventario');
+            this.pendientesContainer = document.getElementById('pendientesContainer');
+            this.pendientesCount = document.getElementById('pendientesCount');
+        },
+        async cargarProductosAsignados() {
+            if (!db || !usuario) return;
+            UI.mostrarLoading(true);
+            try {
+                const fechaHoy = FechaEcuador.obtenerFechaHoy();
+                const mesActual = FechaEcuador.obtenerMesActual();
+                const asignacionesSnap = await db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value");
+                
+                this.select.innerHTML = "<option value=''>Seleccione un producto...</option>";
+                this.productosPendientes = [];
+
+                if (!asignacionesSnap.exists()) {
+                    this.sinPendientes.style.display = "block";
+                    this.select.style.display = "none";
+                    this.buscador.style.display = "none";
+                    this.noResultados.style.display = "none";
+                    return;
+                }
+
+                // Obtener envíos de hoy
+                const enviosSnap = await db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value");
+                this.productosEnviadosHoy.clear();
+                if (enviosSnap.exists()) {
+                    enviosSnap.forEach(child => {
+                        const envio = child.val();
+                        if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
+                            this.productosEnviadosHoy.add(envio.productoId);
+                        }
                     });
                 }
+
+                const asignaciones = asignacionesSnap.val();
+                for (let productoId in asignaciones) {
+                    const data = asignaciones[productoId];
+                    const cantidadAsignada = data.cantidadAsignada || 0;
+                    if (!this.productosEnviadosHoy.has(productoId)) {
+                        const option = document.createElement("option");
+                        option.value = productoId;
+                        option.textContent = `${data.nombreProducto} (Cant: ${cantidadAsignada})`;
+                        option.setAttribute("data-nombre", data.nombreProducto);
+                        option.setAttribute("data-cantidad", cantidadAsignada);
+                        this.select.appendChild(option);
+                        this.productosPendientes.push({ 
+                            id: productoId, 
+                            nombre: data.nombreProducto, 
+                            cantidadAsignada 
+                        });
+                    }
+                }
+
+                if (this.productosPendientes.length === 0) {
+                    this.sinPendientes.style.display = "block";
+                    this.select.style.display = "none";
+                    this.buscador.style.display = "none";
+                    this.noResultados.style.display = "none";
+                } else {
+                    this.sinPendientes.style.display = "none";
+                    this.select.style.display = "block";
+                    this.buscador.style.display = "block";
+                    if (this.select.options.length > 1) {
+                        this.select.selectedIndex = 1;
+                        this.cambiarProducto();
+                    }
+                }
+            } catch (error) {
+                UI.mostrarError('cargar productos asignados', error);
+            } finally {
+                UI.mostrarLoading(false);
             }
-            
-            todosLosEnvios.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-            
-            // Aplicar filtros
-            filtrarHistorialInventario();
-            
-        } catch (error) {
-            console.error("Error cargando historial:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar historial</p>";
-        }
-    }
-
-    function filtrarHistorialInventario() {
-        const container = document.getElementById("historialContainer");
-        if (!container) return;
-        
-        const filtroProducto = document.getElementById("filtroInventarioProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroInventarioFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
-        
-        let filtrados = todosLosEnvios.filter(e => {
-            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
-            if (fechaInicio || fechaFin) {
-                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
-                if (fechaInicio && fechaEnvio < fechaInicio) return false;
-                if (fechaFin && fechaEnvio > fechaFin) return false;
+        },
+        cambiarProducto() {
+            const select = this.select;
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const nombre = selectedOption.getAttribute("data-nombre");
+                const cantidad = selectedOption.getAttribute("data-cantidad");
+                this.productoNombre.textContent = nombre;
+                this.productoCantidad.textContent = cantidad;
+                this.productoInfo.style.display = "flex";
+                this.productoSeleccionado = { 
+                    id: selectedOption.value, 
+                    nombre, 
+                    cantidadAsignada: parseInt(cantidad) 
+                };
+                this.fisico.value = "0";
+                this.muestras.value = "0";
+                this.caducados.value = "0";
+                this.calcularTotal();
+            } else {
+                this.productoInfo.style.display = "none";
+                this.productoSeleccionado = null;
             }
-            return true;
-        });
-        
-        if (filtrados.length === 0) {
-            container.innerHTML = "<p class='text-center'>📭 No hay registros que coincidan con los filtros</p>";
-            return;
+        },
+        filtrarProductos() {
+            const filtro = this.buscador.value.toLowerCase();
+            let visibles = 0;
+            for (let i = 1; i < this.select.options.length; i++) {
+                const option = this.select.options[i];
+                if (option.text.toLowerCase().includes(filtro)) {
+                    option.style.display = "";
+                    visibles++;
+                } else {
+                    option.style.display = "none";
+                }
+            }
+            this.noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
+            if (visibles === 1 && filtro !== "") {
+                for (let i = 1; i < this.select.options.length; i++) {
+                    if (this.select.options[i].style.display !== "none") {
+                        this.select.selectedIndex = i;
+                        this.cambiarProducto();
+                        break;
+                    }
+                }
+            }
+        },
+        calcularTotal() {
+            const fisico = parseInt(this.fisico.value) || 0;
+            const muestras = parseInt(this.muestras.value) || 0;
+            const caducados = parseInt(this.caducados.value) || 0;
+            const total = fisico + muestras + caducados;
+            this.totalCalculado.textContent = total;
+            if (this.productoSeleccionado) {
+                const diferencia = total - this.productoSeleccionado.cantidadAsignada;
+                if (diferencia === 0) {
+                    this.comparacionStock.innerHTML = '✓ Cuadra exactamente';
+                    this.totalCard.style.background = 'linear-gradient(135deg, #00c853, #00a844)';
+                } else if (diferencia > 0) {
+                    this.comparacionStock.innerHTML = `⚠ Sobrante: +${diferencia}`;
+                    this.totalCard.style.background = 'linear-gradient(135deg, #ffc107, #e0a800)';
+                } else {
+                    this.comparacionStock.innerHTML = `❌ Faltante: ${diferencia}`;
+                    this.totalCard.style.background = 'linear-gradient(135deg, #dc3545, #bd2130)';
+                }
+            }
+            return total;
+        },
+        async enviar() {
+            if (!db || !usuario || !this.productoSeleccionado) {
+                UI.mostrarToast('Error', 'Seleccione un producto', 'error');
+                return;
+            }
+            const fisico = parseInt(this.fisico.value) || 0;
+            const muestras = parseInt(this.muestras.value) || 0;
+            const caducados = parseInt(this.caducados.value) || 0;
+            const total = fisico + muestras + caducados;
+            if (fisico === 0 && muestras === 0 && caducados === 0) {
+                UI.mostrarToast('Error', 'Ingrese al menos un valor', 'error');
+                return;
+            }
+            if (total !== this.productoSeleccionado.cantidadAsignada) {
+                const diferencia = total - this.productoSeleccionado.cantidadAsignada;
+                if (!confirm(`⚠ El total (${total}) no coincide con la cantidad asignada (${this.productoSeleccionado.cantidadAsignada}).\n${diferencia > 0 ? 'Sobrante: +' + diferencia : 'Faltante: ' + diferencia}\n¿Continuar?`)) return;
+            }
+            UI.mostrarLoading(true);
+            this.btnEnviar.disabled = true;
+            this.btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            try {
+                const fechaEcuador = FechaEcuador.obtenerFecha();
+                const mesActual = FechaEcuador.obtenerMesActual();
+                await db.ref("inventario/" + mesActual).push({
+                    nombre: usuario,
+                    producto: this.productoSeleccionado.nombre,
+                    productoId: this.productoSeleccionado.id,
+                    sistema: this.productoSeleccionado.cantidadAsignada,
+                    fisico,
+                    muestras,
+                    caducados,
+                    fecha: fechaEcuador.toISOString()
+                });
+                await Notificaciones.registrar("inventario", { 
+                    colaborador: usuario, 
+                    producto: this.productoSeleccionado.nombre, 
+                    fisico, muestras, caducados, total,
+                    fecha: fechaEcuador.toISOString()
+                });
+                UI.mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
+                this.productosEnviadosHoy.add(this.productoSeleccionado.id);
+                await this.cargarProductosAsignados();
+                await Dashboard.cargar();
+                await this.cargarPendientes();
+                await Historial.cargar();
+                this.fisico.value = "0";
+                this.muestras.value = "0";
+                this.caducados.value = "0";
+                this.buscador.value = "";
+                this.calcularTotal();
+                this.filtrarProductos();
+            } catch (error) {
+                UI.mostrarError('enviar inventario', error);
+                UI.mostrarToast('Error', 'Error al enviar inventario', 'error');
+            } finally {
+                UI.mostrarLoading(false);
+                this.btnEnviar.disabled = false;
+                this.btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
+            }
+        },
+        async cargarPendientes() {
+            if (!db || !usuario) return;
+            try {
+                const fechaHoy = FechaEcuador.obtenerFechaHoy();
+                const mesActual = FechaEcuador.obtenerMesActual();
+                const [asignacionesSnap, enviosSnap] = await Promise.all([
+                    db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                    db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+                ]);
+                if (!asignacionesSnap.exists()) {
+                    this.pendientesContainer.innerHTML = "<p class='text-center'>No hay asignaciones para hoy</p>";
+                    return;
+                }
+                const enviadosHoy = new Set();
+                if (enviosSnap.exists()) {
+                    enviosSnap.forEach(child => {
+                        const envio = child.val();
+                        if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) enviadosHoy.add(envio.productoId);
+                    });
+                }
+                const pendientes = [];
+                const asignaciones = asignacionesSnap.val();
+                for (let productoId in asignaciones) {
+                    if (!enviadosHoy.has(productoId)) {
+                        pendientes.push({ 
+                            nombre: asignaciones[productoId].nombreProducto, 
+                            cantidad: asignaciones[productoId].cantidadAsignada || 0 
+                        });
+                    }
+                }
+                if (pendientes.length === 0) {
+                    this.pendientesContainer.innerHTML = "<p class='text-center'><i class='fas fa-check-circle' style='color: var(--success);'></i> ¡Todos los productos completados!</p>";
+                } else {
+                    let html = `<table><thead><tr><th>Producto</th><th>Cantidad a verificar</th></tr></thead><tbody>`;
+                    pendientes.forEach(p => html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.cantidad}</span></td></tr>`);
+                    html += `</tbody></table>`;
+                    this.pendientesContainer.innerHTML = html;
+                }
+                this.pendientesCount.textContent = pendientes.length;
+            } catch (error) {
+                UI.mostrarError('cargar pendientes', error);
+                this.pendientesContainer.innerHTML = "<p class='text-center'>Error al cargar pendientes</p>";
+            }
         }
-        
-        // Tabla con nueva columna "Aprobado"
-        let html = `<table><thead><tr>
-            <th>Fecha</th>
-            <th>Producto</th>
-            <th>Stock</th>
-            <th>Físico</th>
-            <th>Muestras</th>
-            <th>Caducados</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Aprobado</th>
-        </tr></thead><tbody>`;
-        
-        filtrados.slice(0, 50).forEach(e => {
-            let estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
-            let aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
-            
-            html += `<tr>
-                <td>${e.fecha}</td>
-                <td><strong>${e.producto}</strong></td>
-                <td>${e.sistema}</td>
-                <td>${e.fisico}</td>
-                <td>${e.muestras}</td>
-                <td>${e.caducados}</td>
-                <td><strong>${e.total}</strong></td>
-                <td>${estado}</td>
-                <td>${aprobadoHtml}</td>
-            </tr>`;
-        });
-        
-        html += `</tbody></table>`;
-        if (filtrados.length > 50) {
-            html += `<p class='text-center' style='padding: 10px; color: rgba(255,255,255,0.7);'>Mostrando 50 de ${filtrados.length} registros</p>`;
+    };
+
+    // ===== Módulo de Maquilas =====
+    const Maquilas = {
+        productoSeleccionado: null,
+        tipoMaquila: 'solido',
+        ptModificadoManualmente: false,
+        todasLasMaquilas: [],
+        // Elementos DOM
+        initDOM() {
+            this.buscador = document.getElementById('buscadorProductoMaquila');
+            this.select = document.getElementById('productoMaquilaSelect');
+            this.noResultados = document.getElementById('noResultadosMaquila');
+            this.form = document.getElementById('maquilaForm');
+            this.tipoSolidoBtn = document.getElementById('tipoSolidoBtn');
+            this.tipoLiquidoBtn = document.getElementById('tipoLiquidoBtn');
+            this.mpCantidad = document.getElementById('mpCantidad');
+            this.mpPresentacionSelect = document.getElementById('mpPresentacionSelect');
+            this.ptCantidad = document.getElementById('ptCantidad');
+            this.ptPresentacionSelect = document.getElementById('ptPresentacionSelect');
+            this.sobrantes = document.getElementById('sobrantes');
+            this.numTransformacion = document.getElementById('numTransformacion');
+            this.totalMaquilaCalculado = document.getElementById('totalMaquilaCalculado');
+            this.btnEnviar = document.getElementById('btnEnviarMaquila');
+            this.btnRecalcular = document.getElementById('recalcularPTSugeridoBtn');
+            this.btnLimpiar = document.getElementById('limpiarFormMaquilaBtn');
+            this.todasContainer = document.getElementById('todasMaquilasContainer');
+            this.btnActualizar = document.getElementById('actualizarMaquilasBtn');
+            this.btnCrearProducto = document.getElementById('btnCrearProductoMaquila');
+            this.nombreProductoMaquila = document.getElementById('nombreProductoMaquila');
+            this.descripcionProductoMaquila = document.getElementById('descripcionProductoMaquila');
+        },
+        setTipoMaquila(tipo) {
+            this.tipoMaquila = tipo;
+            this.tipoSolidoBtn.classList.toggle('active', tipo === 'solido');
+            this.tipoLiquidoBtn.classList.toggle('active', tipo === 'liquido');
+            this.actualizarPresentaciones();
+            this.ptModificadoManualmente = false;
+            this.actualizarPTSugerido();
+        },
+        actualizarPresentaciones() {
+            const presentaciones = this.tipoMaquila === 'solido' ? presentacionesSolido : presentacionesLiquido;
+            this.mpPresentacionSelect.innerHTML = '';
+            this.ptPresentacionSelect.innerHTML = '';
+            presentaciones.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.factor;
+                option.textContent = p.nombre;
+                this.mpPresentacionSelect.appendChild(option.cloneNode(true));
+                this.ptPresentacionSelect.appendChild(option);
+            });
+            this.mpPresentacionSelect.selectedIndex = 0;
+            this.ptPresentacionSelect.selectedIndex = 0;
+        },
+        calcularPTSugerido() {
+            const mpCantidad = parseFloat(this.mpCantidad.value) || 0;
+            const mpFactor = parseFloat(this.mpPresentacionSelect.value) || 1;
+            const ptFactor = parseFloat(this.ptPresentacionSelect.value) || 1;
+            const totalBase = mpCantidad * mpFactor;
+            const ptSugerido = totalBase / ptFactor;
+            return Math.floor(ptSugerido);
+        },
+        actualizarPTSugerido() {
+            if (!this.ptModificadoManualmente) {
+                this.ptCantidad.value = this.calcularPTSugerido();
+            }
+            this.calcularTotales();
+        },
+        marcarPTManual() {
+            this.ptModificadoManualmente = true;
+            this.calcularTotales();
+        },
+        recalcularPTSugerido() {
+            this.ptModificadoManualmente = false;
+            this.actualizarPTSugerido();
+        },
+        calcularTotales() {
+            const mp = parseInt(this.mpCantidad.value) || 0;
+            const pt = parseInt(this.ptCantidad.value) || 0;
+            const sob = parseInt(this.sobrantes.value) || 0;
+            this.totalMaquilaCalculado.textContent = mp + pt + sob;
+        },
+        limpiarForm() {
+            this.mpCantidad.value = "0";
+            this.ptCantidad.value = "0";
+            this.sobrantes.value = "0";
+            this.numTransformacion.value = "Pendiente de asignación";
+            this.ptModificadoManualmente = false;
+            this.actualizarPTSugerido();
+        },
+        async cargarProductos() {
+            if (!db) return;
+            this.select.innerHTML = "<option value=''>Cargando productos...</option>";
+            try {
+                const snapshot = await db.ref("maquilas_productos").once("value");
+                this.select.innerHTML = "<option value=''>Seleccione un producto...</option>";
+                if (!snapshot.exists()) {
+                    const option = document.createElement("option");
+                    option.value = "";
+                    option.textContent = "No hay productos disponibles";
+                    option.disabled = true;
+                    this.select.appendChild(option);
+                    return;
+                }
+                const productos = [];
+                snapshot.forEach(child => {
+                    const data = child.val();
+                    productos.push({ id: child.key, nombre: data.nombre, descripcion: data.descripcion || '' });
+                });
+                productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                productos.forEach(p => {
+                    const option = document.createElement("option");
+                    option.value = p.id;
+                    option.textContent = p.descripcion ? `${p.nombre} - ${p.descripcion}` : p.nombre;
+                    option.setAttribute("data-nombre", p.nombre);
+                    this.select.appendChild(option);
+                });
+            } catch (error) {
+                UI.mostrarError('cargar productos maquila', error);
+                this.select.innerHTML = "<option value=''>Error al cargar</option>";
+            }
+        },
+        filtrarProductos() {
+            const filtro = this.buscador.value.toLowerCase();
+            let visibles = 0;
+            for (let i = 1; i < this.select.options.length; i++) {
+                const option = this.select.options[i];
+                if (option.text.toLowerCase().includes(filtro)) {
+                    option.style.display = "";
+                    visibles++;
+                } else {
+                    option.style.display = "none";
+                }
+            }
+            this.noResultados.style.display = (visibles === 0 && filtro !== "") ? "block" : "none";
+        },
+        cambiarProducto() {
+            const selectedOption = this.select.options[this.select.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                this.form.style.display = "block";
+                this.productoSeleccionado = { 
+                    id: this.select.value, 
+                    nombre: selectedOption.getAttribute("data-nombre") || selectedOption.text.split(' - ')[0] 
+                };
+                this.limpiarForm();
+                this.setTipoMaquila('solido');
+            } else {
+                this.form.style.display = "none";
+                this.productoSeleccionado = null;
+            }
+        },
+        async crearProducto() {
+            const nombre = this.nombreProductoMaquila.value.trim();
+            const descripcion = this.descripcionProductoMaquila.value.trim();
+            if (!nombre) {
+                UI.mostrarToast('Error', 'Ingrese el nombre del producto', 'error');
+                return;
+            }
+            this.btnCrearProducto.disabled = true;
+            this.btnCrearProducto.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            UI.mostrarLoading(true);
+            try {
+                // Usar push para generar ID único
+                const newRef = db.ref("maquilas_productos").push();
+                await newRef.set({ 
+                    nombre, 
+                    descripcion, 
+                    fechaCreacion: FechaEcuador.obtenerFecha().toISOString() 
+                });
+                await Notificaciones.registrar("producto_maquila", { 
+                    colaborador: usuario, 
+                    producto: nombre, 
+                    descripcion 
+                });
+                UI.mostrarToast('Éxito', 'Producto creado correctamente', 'success');
+                this.nombreProductoMaquila.value = "";
+                this.descripcionProductoMaquila.value = "";
+                await this.cargarProductos();
+            } catch (error) {
+                UI.mostrarError('crear producto maquila', error);
+                UI.mostrarToast('Error', 'Error al crear producto', 'error');
+            } finally {
+                UI.mostrarLoading(false);
+                this.btnCrearProducto.disabled = false;
+                this.btnCrearProducto.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila';
+            }
+        },
+        async enviar() {
+            if (!db || !usuario || !this.productoSeleccionado) {
+                UI.mostrarToast('Error', 'Seleccione un producto', 'error');
+                return;
+            }
+            const mpCantidad = parseInt(this.mpCantidad.value) || 0;
+            const ptCantidad = parseInt(this.ptCantidad.value) || 0;
+            const sobrantes = parseInt(this.sobrantes.value) || 0;
+            if (mpCantidad === 0 && ptCantidad === 0 && sobrantes === 0) {
+                UI.mostrarToast('Error', 'Ingrese al menos una cantidad', 'error');
+                return;
+            }
+            const mpPresentacion = this.mpPresentacionSelect.options[this.mpPresentacionSelect.selectedIndex]?.text || '';
+            const ptPresentacion = this.ptPresentacionSelect.options[this.ptPresentacionSelect.selectedIndex]?.text || '';
+            UI.mostrarLoading(true);
+            this.btnEnviar.disabled = true;
+            this.btnEnviar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            try {
+                const fechaEcuador = FechaEcuador.obtenerFecha();
+                const mesActual = FechaEcuador.obtenerMesActual();
+                const maquilaRef = db.ref("maquilas/" + mesActual).push();
+                await maquilaRef.set({
+                    nombre: usuario,
+                    producto: this.productoSeleccionado.nombre,
+                    productoId: this.productoSeleccionado.id,
+                    mpCantidad,
+                    mpPresentacion,
+                    ptCantidad,
+                    ptPresentacion,
+                    sobrantes,
+                    numTransformacion: "",
+                    fecha: fechaEcuador.toISOString(),
+                    estado: "pendiente",
+                    tipo: this.tipoMaquila
+                });
+                await Notificaciones.registrar("maquila", { 
+                    colaborador: usuario, 
+                    producto: this.productoSeleccionado.nombre, 
+                    mpCantidad, mpPresentacion, ptCantidad, ptPresentacion, sobrantes,
+                    fecha: fechaEcuador.toISOString()
+                });
+                UI.mostrarToast('Éxito', 'Maquila enviada correctamente', 'success');
+                this.limpiarForm();
+                await Dashboard.cargar();
+                await this.cargarTodas();
+                this.select.selectedIndex = 0;
+                this.form.style.display = "none";
+                this.productoSeleccionado = null;
+            } catch (error) {
+                UI.mostrarError('enviar maquila', error);
+                UI.mostrarToast('Error', 'Error al enviar maquila', 'error');
+            } finally {
+                UI.mostrarLoading(false);
+                this.btnEnviar.disabled = false;
+                this.btnEnviar.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Maquila';
+            }
+        },
+        async cargarTodas() {
+            if (!db || !usuario) return;
+            this.todasContainer.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+            try {
+                const meses = [];
+                for (let i = 0; i < 6; i++) {
+                    const fecha = FechaEcuador.obtenerFecha();
+                    fecha.setMonth(fecha.getMonth() - i);
+                    meses.push(fecha.toISOString().substring(0, 7));
+                }
+                this.todasLasMaquilas = [];
+                for (let mes of meses) {
+                    const snapshot = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                    if (snapshot.exists()) {
+                        snapshot.forEach(child => {
+                            const m = child.val();
+                            this.todasLasMaquilas.push({
+                                fecha: new Date(m.fecha).toLocaleDateString('es-ES'),
+                                fechaRaw: m.fecha,
+                                producto: m.producto,
+                                mpCantidad: m.mpCantidad || 0,
+                                mpPresentacion: m.mpPresentacion || '-',
+                                ptCantidad: m.ptCantidad || 0,
+                                ptPresentacion: m.ptPresentacion || '-',
+                                sobrantes: m.sobrantes || 0,
+                                numTransformacion: m.numTransformacion || "Pendiente",
+                                estado: m.numTransformacion && m.numTransformacion !== "Pendiente" ? "Asignada" : "Pendiente"
+                            });
+                        });
+                    }
+                }
+                this.todasLasMaquilas.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
+                // Mostrar en la tabla (simplificado, sin filtros por ahora)
+                this.mostrarTabla();
+            } catch (error) {
+                UI.mostrarError('cargar todas maquilas', error);
+                this.todasContainer.innerHTML = "<p class='text-center'>Error al cargar maquilas</p>";
+            }
+        },
+        mostrarTabla() {
+            if (this.todasLasMaquilas.length === 0) {
+                this.todasContainer.innerHTML = "<p class='text-center'>No hay maquilas registradas</p>";
+                return;
+            }
+            let html = `<table><thead><tr>
+                <th>Fecha</th><th>Producto</th><th>MP Cant</th><th>MP Pres</th><th>PT Cant</th><th>PT Pres</th><th>Sobr</th><th>N° Transf</th><th>Estado</th>
+            </tr></thead><tbody>`;
+            this.todasLasMaquilas.slice(0, 20).forEach(m => {
+                html += `<tr>
+                    <td>${m.fecha}</td>
+                    <td><strong>${m.producto}</strong></td>
+                    <td>${m.mpCantidad}</td>
+                    <td>${m.mpPresentacion}</td>
+                    <td>${m.ptCantidad}</td>
+                    <td>${m.ptPresentacion}</td>
+                    <td>${m.sobrantes}</td>
+                    <td><span class="badge ${m.numTransformacion !== 'Pendiente' ? 'badge-success' : 'badge-warning'}">${m.numTransformacion}</span></td>
+                    <td><span class="badge ${m.estado === 'Asignada' ? 'badge-success' : 'badge-warning'}">${m.estado}</span></td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            this.todasContainer.innerHTML = html;
         }
-        
-        container.innerHTML = html;
-    }
+    };
 
-    function limpiarFiltrosInventario() {
-        document.getElementById("filtroInventarioProducto").value = "";
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        document.getElementById("filtroInventarioFechaInicio").value = hace30Dias.toISOString().split('T')[0];
-        document.getElementById("filtroInventarioFechaFin").value = hoy.toISOString().split('T')[0];
-        filtrarHistorialInventario();
-    }
+    // ===== Módulo de Dashboard =====
+    const Dashboard = {
+        grafico: null,
+        async cargar() {
+            if (!db || !usuario) return;
+            try {
+                const fechaHoy = FechaEcuador.obtenerFechaHoy();
+                const mesActual = FechaEcuador.obtenerMesActual();
+                const [asignacionesSnap, enviosSnap, maquilasSnap] = await Promise.all([
+                    db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
+                    db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value"),
+                    db.ref("maquilas/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+                ]);
 
-    // ===== FUNCIONES DE EXPORTACIÓN =====
-    function exportarInventarioCSV() {
-        if (todosLosEnvios.length === 0) {
-            mostrarToast('Info', 'No hay datos para exportar', 'info');
-            return;
+                let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
+                let completadosHoy = 0, precisos = 0, totalEnvios = 0;
+                if (enviosSnap.exists()) {
+                    enviosSnap.forEach(child => {
+                        const envio = child.val();
+                        if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) completadosHoy++;
+                        const total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
+                        if (total === (envio.sistema || 0)) precisos++;
+                        totalEnvios++;
+                    });
+                }
+                let totalMaquilasHoy = 0;
+                if (maquilasSnap.exists()) {
+                    maquilasSnap.forEach(child => {
+                        const maquila = child.val();
+                        if (maquila.fecha && maquila.fecha.split("T")[0] === fechaHoy) totalMaquilasHoy++;
+                    });
+                }
+                document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
+                document.getElementById("totalCompletados").textContent = completadosHoy;
+                document.getElementById("totalMaquilas").textContent = totalMaquilasHoy;
+                const precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
+                document.getElementById("precision").textContent = precision + '%';
+                document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
+                document.getElementById("progresoBarra").style.width = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 + '%' : '0%';
+
+                // Gráfico semanal
+                const fechas = [];
+                const datos = [];
+                for (let i = 6; i >= 0; i--) {
+                    const fecha = FechaEcuador.obtenerFecha();
+                    fecha.setDate(fecha.getDate() - i);
+                    const fechaStr = fecha.toISOString().split('T')[0];
+                    const fechaMes = fechaStr.substring(0, 7);
+                    const diaSemana = fecha.toLocaleDateString('es-ES', { weekday: 'short' });
+                    fechas.push(diaSemana);
+                    const snapDia = await db.ref("inventario/" + fechaMes).orderByChild("nombre").equalTo(usuario).once("value");
+                    let count = 0;
+                    if (snapDia.exists()) {
+                        snapDia.forEach(child => {
+                            const envio = child.val();
+                            if (envio.fecha && envio.fecha.split('T')[0] === fechaStr) count++;
+                        });
+                    }
+                    datos.push(count);
+                }
+                if (this.grafico) this.grafico.destroy();
+                const ctx = document.getElementById('graficoSemanal').getContext('2d');
+                this.grafico = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: fechas,
+                        datasets: [{
+                            label: 'Inventarios enviados',
+                            data: datos,
+                            borderColor: '#00c853',
+                            backgroundColor: 'rgba(0,200,83,0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: '#fff' } } },
+                        scales: { 
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } },
+                            x: { grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#fff' } }
+                        }
+                    }
+                });
+            } catch (error) {
+                UI.mostrarError('dashboard', error);
+            }
         }
-        
-        let csv = [];
-        csv.push('Fecha,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Estado,Aprobado');
-        
-        todosLosEnvios.forEach(e => {
-            let estado = e.total === e.sistema ? 'Correcto' : 'Diferencia';
-            let aprobado = e.aprobado ? 'Sí' : 'No';
-            csv.push(`"${e.fecha}","${e.producto}",${e.sistema},${e.fisico},${e.muestras},${e.caducados},${e.total},"${estado}","${aprobado}"`);
-        });
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "inventario_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
-    }
+    };
 
-    function exportarMaquilasCSV() {
-        if (todasLasMaquilas.length === 0) {
-            mostrarToast('Info', 'No hay datos para exportar', 'info');
-            return;
+    // ===== Módulo de Historial =====
+    const Historial = {
+        todosLosEnvios: [],
+        inventarioPagina: 1,
+        maquilasPagina: 1,
+        // Elementos DOM
+        initDOM() {
+            this.historialContainer = document.getElementById('historialContainer');
+            this.paginationInventario = document.getElementById('paginationInventario');
+            this.historialMaquilasContainer = document.getElementById('historialMaquilasContainer');
+            this.paginationMaquilas = document.getElementById('paginationMaquilas');
+            this.filtroProducto = document.getElementById('filtroInventarioProducto');
+            this.filtroFechaInicio = document.getElementById('filtroInventarioFechaInicio');
+            this.filtroFechaFin = document.getElementById('filtroInventarioFechaFin');
+            this.filtroMaquilaProducto = document.getElementById('filtroHistorialMaquilaProducto');
+            this.filtroMaquilaFechaInicio = document.getElementById('filtroHistorialMaquilaFechaInicio');
+            this.filtroMaquilaFechaFin = document.getElementById('filtroHistorialMaquilaFechaFin');
+        },
+        async cargar() {
+            if (!db || !usuario) return;
+            this.historialContainer.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+            try {
+                const meses = [];
+                for (let i = 0; i < 6; i++) {
+                    const fecha = FechaEcuador.obtenerFecha();
+                    fecha.setMonth(fecha.getMonth() - i);
+                    meses.push(fecha.toISOString().substring(0, 7));
+                }
+                this.todosLosEnvios = [];
+                for (let mes of meses) {
+                    const snapshot = await db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                    if (snapshot.exists()) {
+                        snapshot.forEach(child => {
+                            const envio = child.val();
+                            this.todosLosEnvios.push({
+                                fecha: new Date(envio.fecha).toLocaleDateString('es-ES'),
+                                fechaRaw: envio.fecha,
+                                producto: envio.producto,
+                                sistema: envio.sistema || 0,
+                                fisico: envio.fisico || 0,
+                                muestras: envio.muestras || 0,
+                                caducados: envio.caducados || 0,
+                                total: (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0),
+                                aprobado: envio.aprobado || false
+                            });
+                        });
+                    }
+                }
+                this.todosLosEnvios.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
+                this.inventarioPagina = 1;
+                this.filtrarInventario();
+            } catch (error) {
+                UI.mostrarError('cargar historial', error);
+                this.historialContainer.innerHTML = "<p class='text-center'>Error al cargar historial</p>";
+            }
+        },
+        filtrarInventario() {
+            const filtroProducto = this.filtroProducto.value.toLowerCase();
+            const fechaInicio = this.filtroFechaInicio.value;
+            const fechaFin = this.filtroFechaFin.value;
+            let filtrados = this.todosLosEnvios.filter(e => {
+                if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
+                if (fechaInicio || fechaFin) {
+                    const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
+                    if (fechaInicio && fechaEnvio < fechaInicio) return false;
+                    if (fechaFin && fechaEnvio > fechaFin) return false;
+                }
+                return true;
+            });
+            const totalPaginas = Math.ceil(filtrados.length / ITEMS_POR_PAGINA);
+            const inicio = (this.inventarioPagina - 1) * ITEMS_POR_PAGINA;
+            const fin = inicio + ITEMS_POR_PAGINA;
+            const paginadas = filtrados.slice(inicio, fin);
+            if (paginadas.length === 0) {
+                this.historialContainer.innerHTML = "<p class='text-center'>📭 No hay registros que coincidan con los filtros</p>";
+                this.paginationInventario.innerHTML = '';
+                return;
+            }
+            let html = `<table><thead><tr>
+                <th>Fecha</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th><th>Total</th><th>Estado</th><th>Aprobado</th>
+            </tr></thead><tbody>`;
+            paginadas.forEach(e => {
+                const estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
+                const aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
+                html += `<tr>
+                    <td>${e.fecha}</td>
+                    <td><strong>${e.producto}</strong></td>
+                    <td>${e.sistema}</td>
+                    <td>${e.fisico}</td>
+                    <td>${e.muestras}</td>
+                    <td>${e.caducados}</td>
+                    <td><strong>${e.total}</strong></td>
+                    <td>${estado}</td>
+                    <td>${aprobadoHtml}</td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            this.historialContainer.innerHTML = html;
+            let paginacionHtml = '';
+            if (totalPaginas > 1) {
+                paginacionHtml += `<button onclick="App.cambiarPaginaInventario(1)" ${this.inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-double-left"></i></button>`;
+                paginacionHtml += `<button onclick="App.cambiarPaginaInventario(${this.inventarioPagina - 1})" ${this.inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-left"></i></button>`;
+                for (let i = Math.max(1, this.inventarioPagina - 2); i <= Math.min(totalPaginas, this.inventarioPagina + 2); i++) {
+                    paginacionHtml += `<button onclick="App.cambiarPaginaInventario(${i})" class="${this.inventarioPagina === i ? 'active' : ''}">${i}</button>`;
+                }
+                paginacionHtml += `<button onclick="App.cambiarPaginaInventario(${this.inventarioPagina + 1})" ${this.inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-right"></i></button>`;
+                paginacionHtml += `<button onclick="App.cambiarPaginaInventario(${totalPaginas})" ${this.inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-double-right"></i></button>`;
+            }
+            this.paginationInventario.innerHTML = paginacionHtml;
+        },
+        cambiarPaginaInventario(pagina) {
+            this.inventarioPagina = pagina;
+            this.filtrarInventario();
+        },
+        limpiarFiltrosInventario() {
+            this.filtroProducto.value = "";
+            const hoy = FechaEcuador.obtenerFecha();
+            const hace30Dias = new Date(hoy);
+            hace30Dias.setDate(hace30Dias.getDate() - 30);
+            this.filtroFechaInicio.value = hace30Dias.toISOString().split('T')[0];
+            this.filtroFechaFin.value = hoy.toISOString().split('T')[0];
+            this.inventarioPagina = 1;
+            this.filtrarInventario();
+        },
+        exportarInventarioCSV() {
+            if (this.todosLosEnvios.length === 0) {
+                UI.mostrarToast('Info', 'No hay datos para exportar', 'info');
+                return;
+            }
+            let csv = ['Fecha,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Estado,Aprobado'];
+            this.todosLosEnvios.forEach(e => {
+                const estado = e.total === e.sistema ? 'Correcto' : 'Diferencia';
+                const aprobado = e.aprobado ? 'Sí' : 'No';
+                csv.push(`"${e.fecha}","${e.producto}",${e.sistema},${e.fisico},${e.muestras},${e.caducados},${e.total},"${estado}","${aprobado}"`);
+            });
+            const blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "inventario_" + FechaEcuador.obtenerFechaHoy() + ".csv";
+            link.click();
         }
-        
-        let csv = [];
-        csv.push('Fecha,Producto,MP Cantidad,MP Presentación,PT Cantidad,PT Presentación,Sobrantes,N° Transformación,Estado');
-        
-        todasLasMaquilas.forEach(m => {
-            csv.push(`"${m.fecha}","${m.producto}",${m.mpCantidad},"${m.mpPresentacion}",${m.ptCantidad},"${m.ptPresentacion}",${m.sobrantes},"${m.numTransformacion}","${m.estado}"`);
-        });
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "maquilas_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
-    }
+    };
 
-    function cerrarSesion() {
-        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
-        setTimeout(() => { 
-            localStorage.clear(); 
-            window.location.href = "index.html"; 
-        }, 1500);
-    }
+    // ===== Módulo de Devueltas =====
+    const Devueltas = {
+        async cargar() {
+            if (!db || !usuario) return;
+            const container = document.getElementById("inventariosDevueltosContainer");
+            container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+            try {
+                const meses = [];
+                for (let i = 0; i < 3; i++) {
+                    const fecha = FechaEcuador.obtenerFecha();
+                    fecha.setMonth(fecha.getMonth() - i);
+                    meses.push(fecha.toISOString().substring(0, 7));
+                }
+                const devueltos = [];
+                for (let mes of meses) {
+                    const snap = await db.ref("inventario_devuelto/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                    if (snap.exists()) {
+                        snap.forEach(child => {
+                            const d = child.val();
+                            devueltos.push({
+                                fecha: new Date(d.fecha).toLocaleDateString('es-ES'),
+                                producto: d.producto,
+                                sistema: d.sistema || 0,
+                                fisico: d.fisico || 0,
+                                muestras: d.muestras || 0,
+                                caducados: d.caducados || 0,
+                                total: (d.fisico || 0) + (d.muestras || 0) + (d.caducados || 0),
+                                motivo: d.motivo || 'Sin motivo',
+                                fechaDevolucion: d.fechaDevolucion ? new Date(d.fechaDevolucion).toLocaleDateString() : 'Desconocida'
+                            });
+                        });
+                    }
+                }
+                if (devueltos.length === 0) {
+                    container.innerHTML = "<p class='text-center'>✅ No hay inventarios devueltos</p>";
+                    return;
+                }
+                let html = `<table><thead><tr><th>Fecha Envío</th><th>Producto</th><th>Stock</th><th>Físico</th><th>Muestras</th><th>Caducados</th><th>Total</th><th>Motivo</th></tr></thead><tbody>`;
+                devueltos.forEach(d => {
+                    html += `<tr>
+                        <td>${d.fecha}</td>
+                        <td><strong>${d.producto}</strong></td>
+                        <td>${d.sistema}</td>
+                        <td>${d.fisico}</td>
+                        <td>${d.muestras}</td>
+                        <td>${d.caducados}</td>
+                        <td>${d.total}</td>
+                        <td><small>${d.motivo}</small></td>
+                    </tr>`;
+                });
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } catch (error) {
+                UI.mostrarError('cargar devueltas', error);
+                container.innerHTML = "<p class='text-center'>Error al cargar inventarios devueltos</p>";
+            }
+        }
+    };
 
-    // ===== INICIALIZACIÓN =====
-    async function inicializar() {
-        mostrarLoading(true);
-        console.log("Inicializando con fecha Ecuador:", fechaHoy, "mes:", mesActual);
-        
-        configurarFechasFiltros();
-        iniciarListenerNotificaciones();
-        
-        await Promise.all([
-            cargarDashboard(), 
-            cargarProductosAsignados(), 
-            cargarPendientes(), 
-            cargarHistorial(), 
-            cargarProductosMaquila(), 
-            cargarTodasMaquilas(),
-            cargarNotificaciones()
-        ]);
-        
-        mostrarLoading(false);
-    }
+    // ===== Controlador principal de la aplicación =====
+    const App = {
+        init() {
+            // Inicializar AOS
+            AOS.init({ duration: 800, once: true, offset: 50 });
 
+            // Mostrar nombre de usuario
+            document.getElementById('userName').textContent = usuario;
+
+            // Actualizar fechas en header
+            UI.actualizarFechaHeader();
+
+            // Configurar fechas por defecto para filtros
+            this.configurarFechasFiltros();
+
+            // Inicializar módulos DOM
+            Inventario.initDOM();
+            Maquilas.initDOM();
+            Historial.initDOM();
+
+            // Cargar datos iniciales
+            this.cargarTodo();
+
+            // Iniciar listener de notificaciones
+            Notificaciones.iniciarListener();
+
+            // Configurar eventos
+            this.configurarEventos();
+
+            // Actualizar fecha cada minuto
+            setInterval(() => {
+                UI.actualizarFechaHeader();
+            }, 60000);
+        },
+        configurarFechasFiltros() {
+            const hoy = FechaEcuador.obtenerFecha();
+            const hace30Dias = new Date(hoy);
+            hace30Dias.setDate(hace30Dias.getDate() - 30);
+            const fechaInicio = hace30Dias.toISOString().split('T')[0];
+            const fechaFin = hoy.toISOString().split('T')[0];
+            document.getElementById('filtroInventarioFechaInicio').value = fechaInicio;
+            document.getElementById('filtroInventarioFechaFin').value = fechaFin;
+            document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
+            document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
+        },
+        async cargarTodo() {
+            UI.mostrarLoading(true);
+            try {
+                await Promise.all([
+                    Dashboard.cargar(),
+                    Inventario.cargarProductosAsignados(),
+                    Inventario.cargarPendientes(),
+                    Historial.cargar(),
+                    Maquilas.cargarProductos(),
+                    Maquilas.cargarTodas(),
+                    Notificaciones.cargar()
+                ]);
+            } catch (error) {
+                UI.mostrarError('carga inicial', error);
+            } finally {
+                UI.mostrarLoading(false);
+            }
+        },
+        configurarEventos() {
+            // Navegación
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const view = e.currentTarget.dataset.view;
+                    this.cambiarVista(view);
+                });
+            });
+
+            // Botones de header
+            document.getElementById('notificationBell').addEventListener('click', () => Notificaciones.toggleDropdown());
+            document.getElementById('logoutBtn').addEventListener('click', this.cerrarSesion);
+
+            // Inventario
+            Inventario.buscador.addEventListener('keyup', () => Inventario.filtrarProductos());
+            Inventario.select.addEventListener('change', () => Inventario.cambiarProducto());
+            Inventario.fisico.addEventListener('input', () => Inventario.calcularTotal());
+            Inventario.muestras.addEventListener('input', () => Inventario.calcularTotal());
+            Inventario.caducados.addEventListener('input', () => Inventario.calcularTotal());
+            Inventario.btnEnviar.addEventListener('click', () => Inventario.enviar());
+
+            // Maquilas
+            Maquilas.buscador.addEventListener('keyup', () => Maquilas.filtrarProductos());
+            Maquilas.select.addEventListener('change', () => Maquilas.cambiarProducto());
+            Maquilas.tipoSolidoBtn.addEventListener('click', () => Maquilas.setTipoMaquila('solido'));
+            Maquilas.tipoLiquidoBtn.addEventListener('click', () => Maquilas.setTipoMaquila('liquido'));
+            Maquilas.mpCantidad.addEventListener('input', () => Maquilas.actualizarPTSugerido());
+            Maquilas.mpPresentacionSelect.addEventListener('change', () => Maquilas.actualizarPTSugerido());
+            Maquilas.ptPresentacionSelect.addEventListener('change', () => Maquilas.actualizarPTSugerido());
+            Maquilas.ptCantidad.addEventListener('input', () => Maquilas.marcarPTManual());
+            Maquilas.sobrantes.addEventListener('input', () => Maquilas.calcularTotales());
+            Maquilas.btnRecalcular.addEventListener('click', () => Maquilas.recalcularPTSugerido());
+            Maquilas.btnLimpiar.addEventListener('click', () => Maquilas.limpiarForm());
+            Maquilas.btnEnviar.addEventListener('click', () => Maquilas.enviar());
+            Maquilas.btnActualizar.addEventListener('click', () => Maquilas.cargarTodas());
+            Maquilas.btnCrearProducto.addEventListener('click', () => Maquilas.crearProducto());
+
+            // Devueltas
+            document.getElementById('actualizarDevueltasBtn').addEventListener('click', () => Devueltas.cargar());
+
+            // Historial
+            document.getElementById('actualizarHistorialBtn').addEventListener('click', () => Historial.cargar());
+            document.getElementById('actualizarHistorialMaquilasBtn').addEventListener('click', () => Maquilas.cargarTodas());
+            Historial.filtroProducto.addEventListener('keyup', () => Historial.filtrarInventario());
+            Historial.filtroFechaInicio.addEventListener('change', () => Historial.filtrarInventario());
+            Historial.filtroFechaFin.addEventListener('change', () => Historial.filtrarInventario());
+            document.getElementById('limpiarFiltrosInventarioBtn').addEventListener('click', () => Historial.limpiarFiltrosInventario());
+            document.getElementById('exportarInventarioCSVBtn').addEventListener('click', () => Historial.exportarInventarioCSV());
+            // Filtros maquilas (simplificado)
+            Maquilas.filtroMaquilaProducto = document.getElementById('filtroHistorialMaquilaProducto');
+            Maquilas.filtroMaquilaFechaInicio = document.getElementById('filtroHistorialMaquilaFechaInicio');
+            Maquilas.filtroMaquilaFechaFin = document.getElementById('filtroHistorialMaquilaFechaFin');
+            // Por simplicidad, no implementamos filtrado dinámico en esta versión mejorada, pero se podría añadir.
+        },
+        cambiarVista(vista) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const activeNav = document.querySelector(`.nav-item[data-view="${vista}"]`);
+            if (activeNav) activeNav.classList.add('active');
+            document.getElementById(`view${vista.charAt(0).toUpperCase() + vista.slice(1)}`).classList.add('active');
+            // Recargar datos según vista
+            if (vista === 'resumen') Dashboard.cargar();
+            else if (vista === 'inventario') {
+                Inventario.cargarProductosAsignados();
+                Inventario.cargarPendientes();
+            } else if (vista === 'maquilas') {
+                Maquilas.cargarProductos();
+                Maquilas.cargarTodas();
+            } else if (vista === 'devueltas') Devueltas.cargar();
+            else if (vista === 'historial') {
+                Historial.cargar();
+                Maquilas.cargarTodas();
+            }
+        },
+        cerrarSesion() {
+            UI.mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
+            setTimeout(() => { 
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('rol');
+                window.location.href = "index.html"; 
+            }, 1500);
+        },
+        // Funciones expuestas para paginación (llamadas desde HTML)
+        cambiarPaginaInventario(pagina) {
+            Historial.cambiarPaginaInventario(pagina);
+        },
+        async marcarNotificacionLeida(id) {
+            await Notificaciones.marcarLeida(id);
+        }
+    };
+
+    // Exponer App globalmente para llamadas desde HTML (paginación, notificaciones)
+    window.App = App;
+
+    // Iniciar la aplicación cuando el DOM esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializar);
+        document.addEventListener('DOMContentLoaded', () => App.init());
     } else {
-        inicializar();
+        App.init();
     }
-
-    setInterval(() => {
-        fechaHoy = obtenerFechaHoyEcuador();
-        mesActual = obtenerMesActualEcuador();
-    }, 60000);
+})();
 </script>
 </body>
 </html>
