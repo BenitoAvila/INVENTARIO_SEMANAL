@@ -974,7 +974,7 @@
 
 <script>
     // ============================================
-    // CONFIGURACIÓN FIREBASE
+    // CONFIGURACIÓN FIREBASE (sin cambios)
     // ============================================
     const firebaseConfig = {
         apiKey: "AIzaSyBeg5PzCkaf98mmWiXrr6wpu8v-iWDj0t4",
@@ -996,8 +996,74 @@
     }
 
     // ============================================
-    // FUNCIÓN PARA OBTENER FECHA EN ECUADOR
+    // FUNCIONES DE UTILIDAD (MEJORADAS)
     // ============================================
+
+    // Escape HTML para prevenir XSS
+    function escapeHtml(unsafe) {
+        if (unsafe === undefined || unsafe === null) return '';
+        return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Mostrar/ocultar loading
+    function mostrarLoading(mostrar) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
+    }
+
+    // Mostrar toast (centralizado)
+    function mostrarToast(titulo, mensaje, tipo = 'success') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        
+        const toastId = 'toast_' + Date.now();
+        const toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        toast.id = toastId;
+        
+        const icono = tipo === 'success' ? 'fa-check-circle' : 
+                     tipo === 'error' ? 'fa-exclamation-circle' : 
+                     tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+        
+        toast.innerHTML = `
+            <div class="toast-icon"><i class="fas ${icono}"></i></div>
+            <div class="toast-content">
+                <div class="toast-title">${escapeHtml(titulo)}</div>
+                <div class="toast-message">${escapeHtml(mensaje)}</div>
+            </div>
+            <div class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></div>
+        `;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            const el = document.getElementById(toastId);
+            if (el) el.remove();
+        }, 4000);
+    }
+
+    // Manejador genérico de errores de Firebase
+    async function handleFirebaseOperation(promise, successMessage, errorMessage) {
+        mostrarLoading(true);
+        try {
+            const result = await promise;
+            if (successMessage) mostrarToast('Éxito', successMessage, 'success');
+            return result;
+        } catch (error) {
+            console.error(error);
+            mostrarToast('Error', errorMessage || 'Operación fallida', 'error');
+            throw error;
+        } finally {
+            mostrarLoading(false);
+        }
+    }
+
+    // Obtener fecha en Ecuador
     function obtenerFechaEcuador() {
         try {
             const fechaStr = new Date().toLocaleString('en-US', { timeZone: 'America/Guayaquil' });
@@ -1014,6 +1080,12 @@
         } catch (e) {
             return new Date().toISOString().split('T')[0];
         }
+    }
+
+    // Validar que un valor sea número positivo
+    function esNumeroPositivo(valor) {
+        const num = parseInt(valor);
+        return !isNaN(num) && num >= 0;
     }
 
     // ============================================
@@ -1040,86 +1112,6 @@
     document.getElementById('currentDate').textContent = obtenerFechaEcuador().toLocaleDateString('es-ES', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
-
-    // ============================================
-    // FUNCIONES DE UTILIDAD
-    // ============================================
-    function mostrarLoading(mostrar) {
-        const overlay = document.getElementById('loadingOverlay');
-        if (overlay) overlay.style.display = mostrar ? 'flex' : 'none';
-    }
-
-    function mostrarToast(titulo, mensaje, tipo = 'success') {
-        let container = document.getElementById('toastContainer');
-        if (!container) return;
-        
-        let toastId = 'toast_' + Date.now();
-        let toast = document.createElement('div');
-        toast.className = `toast ${tipo}`;
-        toast.id = toastId;
-        
-        let icono = tipo === 'success' ? 'fa-check-circle' : 
-                   tipo === 'error' ? 'fa-exclamation-circle' : 
-                   tipo === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
-        
-        toast.innerHTML = `
-            <div class="toast-icon"><i class="fas ${icono}"></i></div>
-            <div class="toast-content">
-                <div class="toast-title">${titulo}</div>
-                <div class="toast-message">${mensaje}</div>
-            </div>
-            <div class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></div>
-        `;
-        
-        container.appendChild(toast);
-        
-        setTimeout(() => {
-            let el = document.getElementById(toastId);
-            if (el) el.remove();
-        }, 4000);
-    }
-
-    // Cambiar entre tabs
-    function cambiarTab(tabId) {
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
-        document.getElementById(`tab-${tabId}`).classList.add('active');
-        document.getElementById(`tab-content-${tabId}`).classList.add('active');
-        
-        if (tabId === 'asignar-producto') {
-            cargarSelectoresAsignacion();
-            cargarAsignacionesHoy();
-        } else if (tabId === 'crear-producto') {
-            cargarTodosLosProductos();
-            cargarProductos(document.getElementById('filtroProductos')?.value || '');
-        }
-    }
-
-    function mostrarSeccion(seccion) {
-        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(`seccion-${seccion}`);
-        if (target) target.classList.add('active');
-        
-        if (seccion === 'dashboard') cargarDashboard();
-        if (seccion === 'usuarios') cargarUsuarios();
-        if (seccion === 'gestion-productos') {
-            cambiarTab('crear-producto');
-            cargarTodosLosProductos();
-            cargarProductos(document.getElementById('filtroProductos')?.value || '');
-        }
-        if (seccion === 'inventario') { 
-            configurarFechas(); 
-            cargarFiltrosUsuarios(); 
-            cargarInventario(); 
-        }
-        if (seccion === 'productosMaquila') cargarProductosMaquila(document.getElementById('filtroProductosMaquila')?.value || '');
-        if (seccion === 'maquilas') { 
-            configurarFechasMaquila(); 
-            cargarFiltrosUsuariosMaquila(); 
-            cargarMaquilas(); 
-        }
-    }
 
     // ============================================
     // VERIFICAR CONEXIÓN FIREBASE
@@ -1227,7 +1219,7 @@
                        n.tipo === "maquila_devuelta" ? "badge-warning" :
                        n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
-            let usuario = n.usuario || n.detalles?.colaborador || 'Sistema';
+            let usuarioNotif = n.usuario || n.detalles?.colaborador || 'Sistema';
             
             let mensaje = n.mensaje || '';
             if (!mensaje) {
@@ -1251,10 +1243,10 @@
             html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
                     <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
-                    <small style="color:var(--light);">${fecha}</small>
+                    <small style="color:var(--light);">${escapeHtml(fecha)}</small>
                 </div>
-                <strong style="color: var(--primary);">${usuario}</strong>
-                <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
+                <strong style="color: var(--primary);">${escapeHtml(usuarioNotif)}</strong>
+                <p style="margin:8px 0; font-size:13px; color: var(--white);">${escapeHtml(mensaje)}</p>
                 ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
             </div>`;
         });
@@ -1296,7 +1288,7 @@
     }
 
     // ============================================
-    // DASHBOARD (resumen - sin cambios mayores)
+    // DASHBOARD (refactorizado en funciones más pequeñas)
     // ============================================
     async function cargarDashboard() {
         try {
@@ -1304,16 +1296,15 @@
             
             const fechaEcuador = obtenerFechaEcuador();
             const fechaHoy = fechaEcuador.toISOString().split('T')[0];
-            const mesActual = fechaEcuador.toISOString().substring(0,7);
+            const mesActual = fechaHoy.substring(0,7);
 
             console.log("Cargando dashboard para fecha:", fechaHoy);
 
-            const [usuariosSnap, productosSnap, maquilasProductosSnap, asignacionesHoySnap, inventarioHoySnap] = await Promise.all([
+            const [usuariosSnap, productosSnap, maquilasProductosSnap, asignacionesHoySnap] = await Promise.all([
                 db.ref("usuarios").once("value").catch(e => ({ exists: () => false })),
                 db.ref("productos").once("value").catch(e => ({ exists: () => false })),
                 db.ref("maquilas_productos").once("value").catch(e => ({ exists: () => false })),
-                db.ref("asignaciones/" + fechaHoy).once("value").catch(e => ({ exists: () => false })),
-                db.ref("inventario/" + mesActual).once("value").catch(e => ({ exists: () => false }))
+                db.ref("asignaciones/" + fechaHoy).once("value").catch(e => ({ exists: () => false }))
             ]);
 
             let totalUsuarios = 0, admins = 0, colaboradores = 0;
@@ -1336,110 +1327,16 @@
             if (maquilasProductosSnap && maquilasProductosSnap.exists()) maquilasProductosSnap.forEach(() => totalProductos++);
             document.getElementById("totalProductos").textContent = totalProductos;
 
-            let totalAsignaciones = 0;
-            let asignacionesPendientes = 0;
-            let asignacionesRespondidas = 0;
-            let accionesPorColaborador = {};
-            
-            if (asignacionesHoySnap && asignacionesHoySnap.exists()) {
-                asignacionesHoySnap.forEach(userSnap => {
-                    let usuario = userSnap.key;
-                    userSnap.forEach(prodSnap => {
-                        totalAsignaciones++;
-                        
-                        let respondida = false;
-                        if (inventarioHoySnap && inventarioHoySnap.exists()) {
-                            inventarioHoySnap.forEach(child => {
-                                let inv = child.val();
-                                if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy && 
-                                    inv.nombre === usuario && inv.productoId === prodSnap.key) {
-                                    respondida = true;
-                                }
-                            });
-                        }
-                        
-                        if (respondida) {
-                            asignacionesRespondidas++;
-                            
-                            if (!accionesPorColaborador[usuario]) {
-                                accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
-                            }
-                            accionesPorColaborador[usuario].respondidas.push({
-                                producto: prodSnap.val().nombreProducto || 'Producto'
-                            });
-                        } else {
-                            asignacionesPendientes++;
-                            
-                            if (!accionesPorColaborador[usuario]) {
-                                accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
-                            }
-                            accionesPorColaborador[usuario].pendientes.push({
-                                producto: prodSnap.val().nombreProducto || 'Producto',
-                                cantidad: prodSnap.val().cantidadAsignada || 0
-                            });
-                        }
-                    });
-                });
-            }
+            // Procesar asignaciones y respuestas de hoy
+            const { totalAsignaciones, asignacionesPendientes, asignacionesRespondidas, accionesPorColaborador } = 
+                await procesarAsignacionesHoy(fechaHoy, asignacionesHoySnap);
             
             document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
+            document.getElementById("totalRespuestas").textContent = asignacionesRespondidas;
 
-            let respuestasHoy = 0;
-            if (inventarioHoySnap && inventarioHoySnap.exists()) {
-                inventarioHoySnap.forEach(child => {
-                    let inv = child.val();
-                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) {
-                        respuestasHoy++;
-                    }
-                });
-            }
-            document.getElementById("totalRespuestas").textContent = respuestasHoy;
-
-            let maquilasPendientes = 0, maquilasAsignadas = 0;
-            let maquilasPorColaborador = {};
-            
-            const meses = [];
-            const fechaInicio = new Date(fechaEcuador);
-            fechaInicio.setMonth(fechaInicio.getMonth() - 5);
-            fechaInicio.setDate(1);
-            
-            for (let i = 0; i < 6; i++) {
-                const fecha = new Date(fechaInicio);
-                fecha.setMonth(fechaInicio.getMonth() + i);
-                const anio = fecha.getFullYear();
-                const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-                meses.push(`${anio}-${mes}`);
-            }
-
-            for (const mes of meses) {
-                try {
-                    const snap = await db.ref("maquilas/" + mes).once("value");
-                    if (snap.exists()) {
-                        snap.forEach(child => {
-                            const m = child.val();
-                            const tieneNumero = m.numTransformacion && 
-                                              m.numTransformacion.toString().trim() !== '' && 
-                                              m.numTransformacion !== 'null' && 
-                                              m.numTransformacion !== 'undefined';
-                            
-                            if (tieneNumero) {
-                                maquilasAsignadas++;
-                            } else {
-                                maquilasPendientes++;
-                                
-                                if (m.nombre) {
-                                    if (!maquilasPorColaborador[m.nombre]) {
-                                        maquilasPorColaborador[m.nombre] = 0;
-                                    }
-                                    maquilasPorColaborador[m.nombre]++;
-                                }
-                            }
-                        });
-                    }
-                } catch (e) {
-                    console.warn(`Error cargando maquilas del mes ${mes}:`, e);
-                }
-            }
+            // Procesar maquilas pendientes
+            const { maquilasPendientes, maquilasAsignadas, maquilasPorColaborador } = 
+                await procesarMaquilasPendientes(fechaEcuador);
             
             document.getElementById("totalMaquilasPendientes").textContent = maquilasPendientes;
 
@@ -1455,6 +1352,101 @@
         }
     }
 
+    async function procesarAsignacionesHoy(fechaHoy, asignacionesHoySnap) {
+        let totalAsignaciones = 0;
+        let asignacionesPendientes = 0;
+        let asignacionesRespondidas = 0;
+        const accionesPorColaborador = {};
+        const mesActual = fechaHoy.substring(0,7);
+        
+        // Obtener respuestas de hoy del inventario
+        let inventariosHoy = new Set();
+        try {
+            const invSnap = await db.ref("inventario/" + mesActual).once("value");
+            if (invSnap.exists()) {
+                invSnap.forEach(child => {
+                    const inv = child.val();
+                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) {
+                        inventariosHoy.add(`${inv.nombre}_${inv.productoId}`);
+                    }
+                });
+            }
+        } catch (e) { console.warn("Error cargando inventario del mes:", e); }
+
+        if (asignacionesHoySnap && asignacionesHoySnap.exists()) {
+            asignacionesHoySnap.forEach(userSnap => {
+                let usuario = userSnap.key;
+                userSnap.forEach(prodSnap => {
+                    totalAsignaciones++;
+                    let keyResp = `${usuario}_${prodSnap.key}`;
+                    let respondida = inventariosHoy.has(keyResp);
+                    
+                    if (respondida) {
+                        asignacionesRespondidas++;
+                        
+                        if (!accionesPorColaborador[usuario]) {
+                            accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
+                        }
+                        accionesPorColaborador[usuario].respondidas.push({
+                            producto: prodSnap.val().nombreProducto || 'Producto'
+                        });
+                    } else {
+                        asignacionesPendientes++;
+                        
+                        if (!accionesPorColaborador[usuario]) {
+                            accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
+                        }
+                        accionesPorColaborador[usuario].pendientes.push({
+                            producto: prodSnap.val().nombreProducto || 'Producto',
+                            cantidad: prodSnap.val().cantidadAsignada || 0
+                        });
+                    }
+                });
+            });
+        }
+        return { totalAsignaciones, asignacionesPendientes, asignacionesRespondidas, accionesPorColaborador };
+    }
+
+    async function procesarMaquilasPendientes(fechaEcuador) {
+        let maquilasPendientes = 0, maquilasAsignadas = 0;
+        const maquilasPorColaborador = {};
+        
+        // Últimos 6 meses
+        const meses = [];
+        const fechaInicio = new Date(fechaEcuador);
+        fechaInicio.setMonth(fechaInicio.getMonth() - 5);
+        fechaInicio.setDate(1);
+        for (let i = 0; i < 6; i++) {
+            const fecha = new Date(fechaInicio);
+            fecha.setMonth(fechaInicio.getMonth() + i);
+            meses.push(`${fecha.getFullYear()}-${(fecha.getMonth()+1).toString().padStart(2,'0')}`);
+        }
+
+        for (const mes of meses) {
+            try {
+                const snap = await db.ref("maquilas/" + mes).once("value");
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const m = child.val();
+                        const tieneNumero = m.numTransformacion && 
+                                          m.numTransformacion.toString().trim() !== '' && 
+                                          m.numTransformacion !== 'null' && 
+                                          m.numTransformacion !== 'undefined';
+                        if (tieneNumero) {
+                            maquilasAsignadas++;
+                        } else {
+                            maquilasPendientes++;
+                            if (m.nombre) {
+                                maquilasPorColaborador[m.nombre] = (maquilasPorColaborador[m.nombre] || 0) + 1;
+                            }
+                        }
+                    });
+                }
+            } catch (e) { console.warn(`Error cargando maquilas del mes ${mes}:`, e); }
+        }
+        return { maquilasPendientes, maquilasAsignadas, maquilasPorColaborador };
+    }
+
     function actualizarDashboard() {
         cargarDashboard();
         cargarNotificaciones();
@@ -1466,7 +1458,8 @@
         if (!container) return;
         
         let totalPendientesGlobal = 0;
-        const colaboradoresUnicos = new Set([...todosColaboradores]);
+        // Unir todos los colaboradores que aparecen en cualquier lista
+        const colaboradoresUnicos = new Set([...todosColaboradores, ...Object.keys(accionesInventario), ...Object.keys(maquilasPendientes)]);
         
         if (colaboradoresUnicos.size === 0) {
             container.innerHTML = '<p class="text-center">No hay colaboradores registrados</p>';
@@ -1496,7 +1489,7 @@
             let detalleInventario = '';
             if (invPendientes > 0 && accionesInventario[colab]?.pendientes) {
                 detalleInventario = accionesInventario[colab].pendientes.slice(0, 3).map(p => 
-                    `${p.producto} (${p.cantidad})`
+                    `${escapeHtml(p.producto)} (${p.cantidad})`
                 ).join('<br>');
                 if (accionesInventario[colab].pendientes.length > 3) {
                     detalleInventario += `<br><small>... y ${accionesInventario[colab].pendientes.length - 3} más</small>`;
@@ -1504,7 +1497,7 @@
             }
             
             html += `<tr>
-                <td><strong>${colab}</strong></td>
+                <td><strong>${escapeHtml(colab)}</strong></td>
                 <td>
                     <span class="badge ${invPendientes > 0 ? 'badge-warning' : 'badge-success'}">${invPendientes}</span>
                     ${detalleInventario ? `<br><small style="color: rgba(255,255,255,0.7);">${detalleInventario}</small>` : ''}
@@ -1533,13 +1526,13 @@
             const mesActual = fechaHoy.substring(0, 7);
             
             const [asignacionesSnap, inventarioSnap, maquilasSnap] = await Promise.all([
-                db.ref(`asignaciones/${fechaHoy}/${colaborador}`).once("value").catch(e => ({ exists: () => false })),
-                db.ref(`inventario/${mesActual}`).orderByChild("nombre").equalTo(colaborador).once("value").catch(e => ({ exists: () => false })),
-                db.ref(`maquilas/${mesActual}`).orderByChild("nombre").equalTo(colaborador).once("value").catch(e => ({ exists: () => false }))
+                db.ref(`asignaciones/${fechaHoy}/${colaborador}`).once("value"),
+                db.ref(`inventario/${mesActual}`).orderByChild("nombre").equalTo(colaborador).once("value"),
+                db.ref(`maquilas/${mesActual}`).orderByChild("nombre").equalTo(colaborador).once("value")
             ]);
             
             const enviadosHoy = new Set();
-            if (inventarioSnap && inventarioSnap.exists()) {
+            if (inventarioSnap.exists()) {
                 inventarioSnap.forEach(child => {
                     const envio = child.val();
                     if (envio.fecha && envio.fecha.split('T')[0] === fechaHoy) {
@@ -1550,7 +1543,7 @@
             
             let html = `
                 <div style="max-height: 70vh; overflow-y: auto;">
-                    <h4 style="color: var(--primary); margin-bottom: 15px;">${colaborador}</h4>
+                    <h4 style="color: var(--primary); margin-bottom: 15px;">${escapeHtml(colaborador)}</h4>
                     
                     <h5 style="color: var(--white); margin: 15px 0 10px;">📋 Asignaciones Pendientes</h5>
                     <table style="width: 100%; margin-bottom: 20px;">
@@ -1563,12 +1556,13 @@
                         <tbody>`;
             
             let tienePendientes = false;
-            if (asignacionesSnap && asignacionesSnap.exists()) {
-                asignacionesSnap.forEach((prodSnap, productoId) => {
+            if (asignacionesSnap.exists()) {
+                asignacionesSnap.forEach(prodSnap => {
+                    const productoId = prodSnap.key;
                     if (!enviadosHoy.has(productoId)) {
                         tienePendientes = true;
                         html += `<tr>
-                            <td>${prodSnap.val().nombreProducto || 'Producto'}</td>
+                            <td>${escapeHtml(prodSnap.val().nombreProducto || 'Producto')}</td>
                             <td><span class="badge badge-primary">${prodSnap.val().cantidadAsignada || 0}</span></td>
                         </tr>`;
                     }
@@ -1595,15 +1589,15 @@
                         <tbody>`;
             
             let tieneMaquilasPendientes = false;
-            if (maquilasSnap && maquilasSnap.exists()) {
+            if (maquilasSnap.exists()) {
                 maquilasSnap.forEach(child => {
                     const m = child.val();
                     if (m.fecha && m.fecha.split('T')[0] === fechaHoy && !m.numTransformacion) {
                         tieneMaquilasPendientes = true;
                         html += `<tr>
-                            <td>${m.producto || 'Producto'}</td>
-                            <td>${m.mpCantidad || 0} ${m.mpPresentacion || ''}</td>
-                            <td>${m.ptCantidad || 0} ${m.ptPresentacion || ''}</td>
+                            <td>${escapeHtml(m.producto || 'Producto')}</td>
+                            <td>${m.mpCantidad || 0} ${escapeHtml(m.mpPresentacion || '')}</td>
+                            <td>${m.ptCantidad || 0} ${escapeHtml(m.ptPresentacion || '')}</td>
                             <td>${m.sobrantes || 0}</td>
                             <td><span class="badge badge-warning">Sin número</span></td>
                         </tr>`;
@@ -1621,11 +1615,8 @@
                     </div>
                 </div>`;
             
-            const modalContenido = document.getElementById('modalContenido');
-            if (modalContenido) modalContenido.innerHTML = html;
-            
-            const modal = document.getElementById('modalEdicion');
-            if (modal) modal.classList.add('active');
+            document.getElementById('modalContenido').innerHTML = html;
+            document.getElementById('modalEdicion').classList.add('active');
             
         } catch (error) {
             console.error("Error al ver detalle:", error);
@@ -1793,7 +1784,7 @@
     }
 
     // ============================================
-    // USUARIOS (sin cambios)
+    // USUARIOS (con mejoras)
     // ============================================
     async function crearUsuario() {
         let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1859,8 +1850,8 @@
             snap.forEach(child => {
                 let u = child.val();
                 html += `<tr>
-                    <td><strong>${child.key}</strong></td>
-                    <td><span class="badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}">${u.rol}</span></td>
+                    <td><strong>${escapeHtml(child.key)}</strong></td>
+                    <td><span class="badge ${u.rol === 'admin' ? 'badge-warning' : 'badge-success'}">${escapeHtml(u.rol)}</span></td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="editarUsuario('${child.key}')">
                             <i class="fas fa-key"></i> Cambiar Pass
@@ -1955,13 +1946,13 @@
         
         let html = "";
         resultados.slice(0, 10).forEach(p => {
-            html += `<div onclick="seleccionarProductoExistente('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')" 
+            html += `<div onclick="seleccionarProductoExistente('${p.id}', '${escapeHtml(p.nombre).replace(/'/g, "\\'")}')" 
                         style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
                         onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                         onmouseout="this.style.background='transparent'">
                         <i class="fas fa-box" style="margin-right: 10px; color: var(--primary);"></i>
-                        <strong>${p.nombre}</strong>
-                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${p.presentacion || ''}</small>
+                        <strong>${escapeHtml(p.nombre)}</strong>
+                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${escapeHtml(p.presentacion || '')}</small>
                     </div>`;
         });
         
@@ -2006,7 +1997,6 @@
             
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
             
-            // Guardar solo nombre y presentación (sin stock)
             await db.ref("productos/" + id).set({ 
                 nombre, 
                 presentacion,
@@ -2018,7 +2008,6 @@
             document.getElementById("presentacionProducto").value = "";
             document.getElementById("filtroProductos").value = "";
             
-            console.log("🔄 Recargando listas...");
             await cargarTodosLosProductos();
             await cargarProductos();
             await cargarDashboard();
@@ -2078,10 +2067,10 @@
             
             prods.forEach(p => {
                 html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>${p.presentacion || '-'}</td>
+                    <td><strong>${escapeHtml(p.nombre)}</strong></td>
+                    <td>${escapeHtml(p.presentacion || '-')}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}', '${p.nombre}', '${p.presentacion || ''}')">
+                        <button class="btn btn-warning btn-sm" onclick="editarProducto('${p.id}', '${escapeHtml(p.nombre)}', '${escapeHtml(p.presentacion || '')}')">
                             <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProducto('${p.id}')">
@@ -2120,7 +2109,6 @@
         if (nuevaPresentacion === null) return;
         nuevaPresentacion = nuevaPresentacion.trim();
 
-        // Verificar si ya existe otro producto con ese nombre (excepto él mismo)
         let existe = todosLosProductos.find(p => p.nombre.toLowerCase() === nuevoNombre.toLowerCase() && p.id !== id);
         if (existe) {
             mostrarToast('Error', 'Ya existe otro producto con ese nombre', 'error');
@@ -2211,7 +2199,7 @@
                         onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                         onmouseout="this.style.background='transparent'">
                         <i class="fas fa-user" style="margin-right: 10px; color: var(--primary);"></i>
-                        <strong>${c.nombre}</strong>
+                        <strong>${escapeHtml(c.nombre)}</strong>
                     </div>`;
         });
         
@@ -2255,13 +2243,13 @@
         
         let html = "";
         resultados.slice(0, 10).forEach(p => {
-            html += `<div onclick="seleccionarProductoAsignar('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')" 
+            html += `<div onclick="seleccionarProductoAsignar('${p.id}', '${escapeHtml(p.nombre).replace(/'/g, "\\'")}')" 
                         style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1);"
                         onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                         onmouseout="this.style.background='transparent'">
                         <i class="fas fa-box" style="margin-right: 10px; color: var(--primary);"></i>
-                        <strong>${p.nombre}</strong>
-                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${p.presentacion || ''}</small>
+                        <strong>${escapeHtml(p.nombre)}</strong>
+                        <small style="color: rgba(255,255,255,0.5); margin-left: 10px;">${escapeHtml(p.presentacion || '')}</small>
                     </div>`;
         });
         
@@ -2285,7 +2273,6 @@
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
             
-            // Limpiar campos de búsqueda
             document.getElementById("buscarColaborador").value = "";
             document.getElementById("buscarProductoAsignar").value = "";
             document.getElementById("selectUsuario").value = "";
@@ -2315,7 +2302,6 @@
         mostrarLoading(true);
         
         try {
-            // Obtener datos del producto (solo para nombre)
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) { 
                 mostrarToast('Error', 'Producto no encontrado', 'error'); 
@@ -2324,11 +2310,9 @@
             
             let prodData = prodSnap.val();
             
-            // Verificar si ya existe asignación para este usuario y producto en la fecha
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
             
             if (existente.exists()) {
-                // Acumular: sumar la nueva cantidad a la existente
                 let dataActual = existente.val();
                 let nuevaCantidad = (dataActual.cantidadAsignada || 0) + cantidad;
                 
@@ -2339,7 +2323,6 @@
                 
                 mostrarToast('Éxito', `Se agregaron ${cantidad} unidades. Total: ${nuevaCantidad}`, 'success');
             } else {
-                // Crear nueva asignación
                 await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                     asignado: true,
                     nombreProducto: prodData.nombre,
@@ -2352,7 +2335,6 @@
                 mostrarToast('Éxito', `${cantidad} unidades asignadas`, 'success');
             }
             
-            // Limpiar formulario
             document.getElementById("buscarColaborador").value = "";
             document.getElementById("buscarProductoAsignar").value = "";
             document.getElementById("selectUsuario").value = "";
@@ -2435,8 +2417,8 @@
                 let estadoTexto = a.respondida ? '✓ RESPONDIDA' : '⏳ PENDIENTE';
                 
                 html += `<tr>
-                    <td><strong>${a.usuario}</strong></td>
-                    <td>${a.producto}</td>
+                    <td><strong>${escapeHtml(a.usuario)}</strong></td>
+                    <td>${escapeHtml(a.producto)}</td>
                     <td><span class="badge badge-primary">${a.cantidadAsignada}</span></td>
                     <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
                     <td>
@@ -2498,7 +2480,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE MAQUILA (sin cambios)
+    // PRODUCTOS DE MAQUILA
     // ============================================
     async function crearProductoMaquila() {
         let nombre = document.getElementById("nombreProductoMaquila").value.trim();
@@ -2599,8 +2581,8 @@
             
             prods.forEach(p => {
                 html += `<tr>
-                    <td><strong>${p.nombre}</strong></td>
-                    <td>${p.descripcion || '-'}</td>
+                    <td><strong>${escapeHtml(p.nombre)}</strong></td>
+                    <td>${escapeHtml(p.descripcion || '-')}</td>
                     <td>
                         <button class="btn btn-danger btn-sm" onclick="eliminarProductoMaquila('${p.id}')">
                             <i class="fas fa-trash"></i> Eliminar
@@ -2638,7 +2620,7 @@
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - sin cambios mayores
+    // INVENTARIO (CONSULTA Y EXPORTACIÓN)
     // ============================================
     function configurarFechas() {
         let hoy = obtenerFechaEcuador();
@@ -2782,9 +2764,9 @@
                 let aprobado = r.aprobado || false;
                 
                 html += `<tr>
-                    <td>${fecha}</td>
-                    <td><strong>${r.nombre}</strong></td>
-                    <td>${r.producto}</td>
+                    <td>${escapeHtml(fecha)}</td>
+                    <td><strong>${escapeHtml(r.nombre)}</strong></td>
+                    <td>${escapeHtml(r.producto)}</td>
                     <td>${r.sistema || 0}</td>
                     <td>${r.fisico || 0}</td>
                     <td>${r.muestras || 0}</td>
@@ -2888,7 +2870,6 @@
                 fechaAprobacion: obtenerFechaEcuador().toISOString()
             });
             
-            // Enviar notificación al colaborador
             await db.ref("notificaciones").push({
                 tipo: "inventario_aprobado",
                 usuario: colaborador,
@@ -2949,11 +2930,11 @@
             <form onsubmit="guardarEdicion(event)">
                 <div class="form-group">
                     <label>Usuario</label>
-                    <input class="form-control" value="${registro.nombre||''}" readonly>
+                    <input class="form-control" value="${escapeHtml(registro.nombre||'')}" readonly>
                 </div>
                 <div class="form-group">
                     <label>Producto</label>
-                    <input class="form-control" value="${registro.producto||''}" readonly>
+                    <input class="form-control" value="${escapeHtml(registro.producto||'')}" readonly>
                 </div>
                 <div class="form-group">
                     <label>Stock Sistema</label>
@@ -2982,11 +2963,8 @@
             </form>
         `;
         
-        let modalContenido = document.getElementById('modalContenido');
-        if (modalContenido) modalContenido.innerHTML = html;
-        
-        let modal = document.getElementById('modalEdicion');
-        if (modal) modal.classList.add('active');
+        document.getElementById('modalContenido').innerHTML = html;
+        document.getElementById('modalEdicion').classList.add('active');
     }
 
     function cerrarModal() {
@@ -3039,7 +3017,7 @@
     }
 
     // ============================================
-    // MAQUILAS (sin cambios)
+    // MAQUILAS
     // ============================================
     function configurarFechasMaquila() {
         let hoy = obtenerFechaEcuador();
@@ -3165,21 +3143,21 @@
                 let numeroTexto = tieneNumero ? m.numTransformacion : 'Pendiente';
                 
                 html += `<tr>
-                    <td>${fecha}</td>
-                    <td><strong>${m.nombre}</strong></td>
-                    <td>${m.producto}</td>
+                    <td>${escapeHtml(fecha)}</td>
+                    <td><strong>${escapeHtml(m.nombre)}</strong></td>
+                    <td>${escapeHtml(m.producto)}</td>
                     <td>${m.mpCantidad || 0}</td>
-                    <td>${m.mpPresentacion || ''}</td>
+                    <td>${escapeHtml(m.mpPresentacion || '')}</td>
                     <td>${m.ptCantidad || 0}</td>
-                    <td>${m.ptPresentacion || ''}</td>
+                    <td>${escapeHtml(m.ptPresentacion || '')}</td>
                     <td>${m.sobrantes || 0}</td>
-                    <td><span class="badge ${estadoClass}">${numeroTexto}</span></td>
+                    <td><span class="badge ${estadoClass}">${escapeHtml(numeroTexto)}</span></td>
                     <td>
                         ${!tieneNumero ? 
                             `<button class="btn btn-primary btn-sm" onclick="asignarNumero('${m.key}','${m.mes}')">
                                 <i class="fas fa-hashtag"></i> Asignar N°
                             </button>` : 
-                            `<button class="btn btn-warning btn-sm" onclick="editarNumero('${m.key}','${m.mes}','${m.numTransformacion}')">
+                            `<button class="btn btn-warning btn-sm" onclick="editarNumero('${m.key}','${m.mes}','${escapeHtml(m.numTransformacion)}')">
                                 <i class="fas fa-edit"></i> Editar
                             </button>`
                         }
@@ -3346,6 +3324,50 @@
             mostrarToast('Error', 'Error al devolver maquila', 'error');
         } finally {
             mostrarLoading(false);
+        }
+    }
+
+    // ============================================
+    // CAMBIAR SECCIÓN Y TABS
+    // ============================================
+    function cambiarTab(tabId) {
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.getElementById(`tab-content-${tabId}`).classList.add('active');
+        
+        if (tabId === 'asignar-producto') {
+            cargarSelectoresAsignacion();
+            cargarAsignacionesHoy();
+        } else if (tabId === 'crear-producto') {
+            cargarTodosLosProductos();
+            cargarProductos(document.getElementById('filtroProductos')?.value || '');
+        }
+    }
+
+    function mostrarSeccion(seccion) {
+        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(`seccion-${seccion}`);
+        if (target) target.classList.add('active');
+        
+        if (seccion === 'dashboard') cargarDashboard();
+        if (seccion === 'usuarios') cargarUsuarios();
+        if (seccion === 'gestion-productos') {
+            cambiarTab('crear-producto');
+            cargarTodosLosProductos();
+            cargarProductos(document.getElementById('filtroProductos')?.value || '');
+        }
+        if (seccion === 'inventario') { 
+            configurarFechas(); 
+            cargarFiltrosUsuarios(); 
+            cargarInventario(); 
+        }
+        if (seccion === 'productosMaquila') cargarProductosMaquila(document.getElementById('filtroProductosMaquila')?.value || '');
+        if (seccion === 'maquilas') { 
+            configurarFechasMaquila(); 
+            cargarFiltrosUsuariosMaquila(); 
+            cargarMaquilas(); 
         }
     }
 
