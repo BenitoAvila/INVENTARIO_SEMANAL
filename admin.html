@@ -201,7 +201,6 @@
         .btn-refresh {
             background: var(--secondary);
             color: white;
-            margin-left: 10px;
         }
 
         .btn-refresh:hover {
@@ -736,9 +735,12 @@
             </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 15px;">
             <button class="btn btn-refresh" onclick="actualizarDashboard()">
                 <i class="fas fa-sync-alt"></i> Actualizar Dashboard
+            </button>
+            <button class="btn btn-info" onclick="verificarConteoProductos()">
+                <i class="fas fa-search"></i> Verificar Conteo
             </button>
         </div>
 
@@ -809,7 +811,7 @@
         <div id="listaUsuarios" class="table-container"></div>
     </div>
 
-    <!-- SECCIÓN GESTIÓN DE PRODUCTOS (MODIFICADA) -->
+    <!-- SECCIÓN GESTIÓN DE PRODUCTOS -->
     <div id="seccion-gestion-productos" class="card seccion">
         <div class="card-header">
             <h3><i class="fas fa-boxes"></i> Gestión de Productos</h3>
@@ -825,7 +827,7 @@
             </div>
         </div>
 
-        <!-- TAB 1: CREAR PRODUCTO (solo nombre y presentación) -->
+        <!-- TAB 1: CREAR PRODUCTO -->
         <div id="tab-content-crear-producto" class="tab-content active">
             <div class="form-group">
                 <label>Nombre del Producto</label>
@@ -834,7 +836,7 @@
             </div>
             <div class="form-group">
                 <label>Presentación</label>
-                <input type="text" id="presentacionProducto" class="form-control" placeholder="Ej:Funda de 1kg, caja de 20 und, etc.">
+                <input type="text" id="presentacionProducto" class="form-control" placeholder="Ej: Funda de 1kg, caja de 20 und, etc.">
             </div>
             <button class="btn btn-primary btn-block" onclick="crearProducto()" id="btnCrearProducto">
                 <i class="fas fa-save"></i> Guardar Producto
@@ -849,7 +851,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: ASIGNAR PRODUCTO (siempre acumulativo) -->
+        <!-- TAB 2: ASIGNAR PRODUCTO -->
         <div id="tab-content-asignar-producto" class="tab-content">
             <div class="form-group">
                 <label>Fecha de Asignación</label>
@@ -871,7 +873,6 @@
                 <label>Cantidad a Asignar</label>
                 <input type="number" id="cantidadAsignar" class="form-control" placeholder="0" min="1" step="1">
             </div>
-            <!-- Eliminado el checkbox de permitir múltiples -->
             <button class="btn btn-primary btn-block" onclick="asignarProducto()">
                 <i class="fas fa-check-circle"></i> Asignar Cantidad
             </button>
@@ -1144,7 +1145,7 @@
     }
 
     // ============================================
-    // VERIFICAR CONEXIÓN FIREBASE (MODIFICADA: SIN TOAST, SOLO INDICADOR)
+    // VERIFICAR CONEXIÓN FIREBASE
     // ============================================
     function verificarConexionFirebase() {
         if (!db) {
@@ -1324,7 +1325,7 @@
     }
 
     // ============================================
-    // DASHBOARD (resumen - sin cambios mayores)
+    // DASHBOARD - CORREGIDO
     // ============================================
     async function cargarDashboard() {
         try {
@@ -1337,13 +1338,14 @@
             console.log("Cargando dashboard para fecha:", fechaHoy);
 
             const [usuariosSnap, productosSnap, maquilasProductosSnap, asignacionesHoySnap, inventarioHoySnap] = await Promise.all([
-                db.ref("usuarios").once("value").catch(e => ({ exists: () => false })),
-                db.ref("productos").once("value").catch(e => ({ exists: () => false })),
-                db.ref("maquilas_productos").once("value").catch(e => ({ exists: () => false })),
-                db.ref("asignaciones/" + fechaHoy).once("value").catch(e => ({ exists: () => false })),
-                db.ref("inventario/" + mesActual).once("value").catch(e => ({ exists: () => false }))
+                db.ref("usuarios").once("value").catch(e => ({ exists: () => false, val: () => null })),
+                db.ref("productos").once("value").catch(e => ({ exists: () => false, val: () => null })),
+                db.ref("maquilas_productos").once("value").catch(e => ({ exists: () => false, val: () => null })),
+                db.ref("asignaciones/" + fechaHoy).once("value").catch(e => ({ exists: () => false, val: () => null })),
+                db.ref("inventario/" + mesActual).once("value").catch(e => ({ exists: () => false, val: () => null }))
             ]);
 
+            // ===== CONTEO DE USUARIOS =====
             let totalUsuarios = 0, admins = 0, colaboradores = 0;
             let colaboradoresList = [];
             
@@ -1359,11 +1361,35 @@
             }
             document.getElementById("totalUsuarios").textContent = totalUsuarios;
 
+            // ===== CONTEO DE PRODUCTOS CORREGIDO =====
             let totalProductos = 0;
-            if (productosSnap && productosSnap.exists()) productosSnap.forEach(() => totalProductos++);
-            if (maquilasProductosSnap && maquilasProductosSnap.exists()) maquilasProductosSnap.forEach(() => totalProductos++);
+            
+            // Contar productos de inventario
+            if (productosSnap && productosSnap.exists()) {
+                productosSnap.forEach(() => {
+                    totalProductos++;
+                });
+                console.log("📦 Productos de inventario encontrados:", totalProductos);
+            } else {
+                console.log("📦 No hay productos de inventario");
+            }
+            
+            // Contar productos de maquila
+            if (maquilasProductosSnap && maquilasProductosSnap.exists()) {
+                let countMaquila = 0;
+                maquilasProductosSnap.forEach(() => {
+                    countMaquila++;
+                });
+                totalProductos += countMaquila;
+                console.log("🏭 Productos de maquila encontrados:", countMaquila);
+            } else {
+                console.log("🏭 No hay productos de maquila");
+            }
+            
             document.getElementById("totalProductos").textContent = totalProductos;
+            console.log("✅ TOTAL PRODUCTOS:", totalProductos);
 
+            // ===== ASIGNACIONES =====
             let totalAsignaciones = 0;
             let asignacionesPendientes = 0;
             let asignacionesRespondidas = 0;
@@ -1423,6 +1449,7 @@
             }
             document.getElementById("totalRespuestas").textContent = respuestasHoy;
 
+            // ===== MAQUILAS =====
             let maquilasPendientes = 0, maquilasAsignadas = 0;
             let maquilasPorColaborador = {};
             
@@ -1480,6 +1507,38 @@
             mostrarToast('Error', 'No se pudo cargar el dashboard', 'error');
         } finally {
             mostrarLoading(false);
+        }
+    }
+
+    // ============================================
+    // FUNCIÓN DE PRUEBA PARA VERIFICAR CONTEO
+    // ============================================
+    async function verificarConteoProductos() {
+        console.log("🔍 VERIFICANDO CONTEO DE PRODUCTOS MANUALMENTE...");
+        
+        try {
+            // Verificar productos de inventario
+            const prodSnap = await db.ref("productos").once("value");
+            let prodInventario = 0;
+            if (prodSnap.exists()) {
+                prodSnap.forEach(() => prodInventario++);
+            }
+            console.log("📦 Productos de inventario en Firebase:", prodInventario);
+            
+            // Verificar productos de maquila
+            const maqSnap = await db.ref("maquilas_productos").once("value");
+            let prodMaquila = 0;
+            if (maqSnap.exists()) {
+                maqSnap.forEach(() => prodMaquila++);
+            }
+            console.log("🏭 Productos de maquila en Firebase:", prodMaquila);
+            
+            console.log("✅ TOTAL REAL:", prodInventario + prodMaquila);
+            
+            mostrarToast('Verificación', `Inventario: ${prodInventario}, Maquila: ${prodMaquila}, Total: ${prodInventario + prodMaquila}`, 'info');
+            
+        } catch (error) {
+            console.error("Error en verificación:", error);
         }
     }
 
@@ -1821,7 +1880,7 @@
     }
 
     // ============================================
-    // USUARIOS (sin cambios)
+    // USUARIOS
     // ============================================
     async function crearUsuario() {
         let user = document.getElementById("nuevoUsuario").value.trim();
@@ -1937,7 +1996,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE INVENTARIO (SIN STOCK)
+    // PRODUCTOS DE INVENTARIO
     // ============================================
     
     async function cargarTodosLosProductos() {
@@ -2034,7 +2093,6 @@
             
             let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
             
-            // Guardar solo nombre y presentación (sin stock)
             await db.ref("productos/" + id).set({ 
                 nombre, 
                 presentacion,
@@ -2148,7 +2206,6 @@
         if (nuevaPresentacion === null) return;
         nuevaPresentacion = nuevaPresentacion.trim();
 
-        // Verificar si ya existe otro producto con ese nombre (excepto él mismo)
         let existe = todosLosProductos.find(p => p.nombre.toLowerCase() === nuevoNombre.toLowerCase() && p.id !== id);
         if (existe) {
             mostrarToast('Error', 'Ya existe otro producto con ese nombre', 'error');
@@ -2185,7 +2242,7 @@
     }
 
     // ============================================
-    // ASIGNACIONES (SIEMPRE ACUMULATIVAS)
+    // ASIGNACIONES
     // ============================================
     
     async function cargarColaboradores() {
@@ -2313,7 +2370,6 @@
             
             document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador();
             
-            // Limpiar campos de búsqueda
             document.getElementById("buscarColaborador").value = "";
             document.getElementById("buscarProductoAsignar").value = "";
             document.getElementById("selectUsuario").value = "";
@@ -2343,7 +2399,6 @@
         mostrarLoading(true);
         
         try {
-            // Obtener datos del producto (solo para nombre)
             let prodSnap = await db.ref("productos/" + producto).once("value");
             if (!prodSnap.exists()) { 
                 mostrarToast('Error', 'Producto no encontrado', 'error'); 
@@ -2352,11 +2407,9 @@
             
             let prodData = prodSnap.val();
             
-            // Verificar si ya existe asignación para este usuario y producto en la fecha
             let existente = await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).once("value");
             
             if (existente.exists()) {
-                // Acumular: sumar la nueva cantidad a la existente
                 let dataActual = existente.val();
                 let nuevaCantidad = (dataActual.cantidadAsignada || 0) + cantidad;
                 
@@ -2367,7 +2420,6 @@
                 
                 mostrarToast('Éxito', `Se agregaron ${cantidad} unidades. Total: ${nuevaCantidad}`, 'success');
             } else {
-                // Crear nueva asignación
                 await db.ref(`asignaciones/${fecha}/${usuario}/${producto}`).set({
                     asignado: true,
                     nombreProducto: prodData.nombre,
@@ -2380,7 +2432,6 @@
                 mostrarToast('Éxito', `${cantidad} unidades asignadas`, 'success');
             }
             
-            // Limpiar formulario
             document.getElementById("buscarColaborador").value = "";
             document.getElementById("buscarProductoAsignar").value = "";
             document.getElementById("selectUsuario").value = "";
@@ -2526,7 +2577,7 @@
     }
 
     // ============================================
-    // PRODUCTOS DE MAQUILA (sin cambios)
+    // PRODUCTOS DE MAQUILA
     // ============================================
     async function crearProductoMaquila() {
         let nombre = document.getElementById("nombreProductoMaquila").value.trim();
@@ -2666,7 +2717,7 @@
     }
 
     // ============================================
-    // INVENTARIO (CONSULTA Y EXPORTACIÓN) - sin cambios mayores
+    // INVENTARIO
     // ============================================
     function configurarFechas() {
         let hoy = obtenerFechaEcuador();
@@ -2916,7 +2967,6 @@
                 fechaAprobacion: obtenerFechaEcuador().toISOString()
             });
             
-            // Enviar notificación al colaborador
             await db.ref("notificaciones").push({
                 tipo: "inventario_aprobado",
                 usuario: colaborador,
@@ -3067,7 +3117,7 @@
     }
 
     // ============================================
-    // MAQUILAS (sin cambios)
+    // MAQUILAS
     // ============================================
     function configurarFechasMaquila() {
         let hoy = obtenerFechaEcuador();
@@ -3413,7 +3463,7 @@
     // ============================================
     document.addEventListener('DOMContentLoaded', () => {
         AOS.init({ duration: 800, once: true });
-        verificarConexionFirebase();   // Ahora solo actualiza el indicador
+        verificarConexionFirebase();
         iniciarListenerNotificaciones();
         mostrarSeccion('dashboard');
         
