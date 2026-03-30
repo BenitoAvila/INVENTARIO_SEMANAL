@@ -4,48 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eurofert B.A. - Panel Colaborador</title>
-    
+
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    
+
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
+
     <!-- AOS Animations -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
+
+    <!-- SheetJS para Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+
     <style>
-        /* ===== VARIABLES ===== */
+        /* ============================================
+           VARIABLES Y RESET
+        ============================================ */
         :root {
             --primary: #00c853;
             --primary-dark: #00a844;
             --primary-light: #5efc8d;
             --primary-gradient: linear-gradient(135deg, #00c853, #00a844);
-            
+
             --secondary: #0d47a1;
             --secondary-dark: #0a3a7a;
             --secondary-light: #5472d3;
             --secondary-gradient: linear-gradient(135deg, #0d47a1, #0a3a7a);
-            
+
             --danger: #dc3545;
             --danger-dark: #bd2130;
             --warning: #ffc107;
             --success: #28a745;
             --info: #17a2b8;
-            
+
             --dark: #1e1e2f;
             --darker: #151523;
             --light: #f8f9fa;
             --white: #ffffff;
-            
+
             --gray-100: #f8f9fa;
             --gray-200: #e9ecef;
             --gray-300: #dee2e6;
@@ -55,19 +60,19 @@
             --gray-700: #495057;
             --gray-800: #343a40;
             --gray-900: #212529;
-            
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-md: 0 6px 12px rgba(0,0,0,0.15);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
-            --shadow-xl: 0 20px 40px rgba(0,0,0,0.25);
-            
+
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.25);
+
             --border-radius-sm: 8px;
             --border-radius: 12px;
             --border-radius-lg: 16px;
             --border-radius-xl: 24px;
             --border-radius-pill: 9999px;
-            
+
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -93,9 +98,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 30%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 0%, transparent 30%);
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 30%);
             pointer-events: none;
             z-index: 0;
         }
@@ -107,18 +112,41 @@
             z-index: 1;
         }
 
-        /* ===== ANIMACIONES ===== */
+        /* ============================================
+           ANIMACIONES
+        ============================================ */
         @keyframes fadeInUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
-        /* ===== HEADER MÓVIL ===== */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           COMPONENTES PRINCIPALES
+        ============================================ */
+        /* Header */
         .header {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
@@ -161,10 +189,10 @@
         .logo-text {
             font-size: 22px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--white), rgba(255,255,255,0.8));
+            background: linear-gradient(135deg, var(--white), rgba(255, 255, 255, 0.8));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            color: transparent;
             letter-spacing: -0.5px;
         }
 
@@ -218,7 +246,7 @@
 
         .user-date {
             font-size: 12px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .btn-header {
@@ -226,29 +254,106 @@
             font-size: 13px;
         }
 
-        /* Dropdown notificaciones */
-        .notification-dropdown {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: rgba(30, 30, 47, 0.98);
+        /* Navegación */
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: var(--border-radius-pill);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            width: 350px;
-            max-height: 450px;
-            overflow-y: auto;
-            z-index: 10000;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            display: none;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .notification-dropdown.active {
+        .nav-item {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-pill);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            flex: 1 1 auto;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .nav-item i {
+            font-size: 14px;
+        }
+
+        .nav-item.active {
+            background: var(--primary-gradient);
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-item:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+
+        /* Vistas */
+        .view {
+            display: none;
+            animation: slideIn 0.4s ease;
+        }
+
+        .view.active {
             display: block;
         }
 
-        /* ===== BOTONES ===== */
+        /* Tarjetas */
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius-xl);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow-xl);
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--white);
+        }
+
+        .card-header h3 i {
+            color: var(--primary);
+            font-size: 20px;
+        }
+
+        /* Botones */
         .btn {
             padding: 12px 24px;
             border-radius: var(--border-radius-pill);
@@ -272,18 +377,18 @@
 
         .btn-primary:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0,200,83,0.4);
+            box-shadow: 0 10px 25px rgba(0, 200, 83, 0.4);
         }
 
         .btn-secondary {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             color: var(--white);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
         }
 
         .btn-secondary:hover {
-            background: rgba(255,255,255,0.25);
+            background: rgba(255, 255, 255, 0.25);
             transform: translateY(-3px);
         }
 
@@ -294,7 +399,7 @@
 
         .btn-danger:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(220,53,69,0.4);
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.4);
         }
 
         .btn-warning {
@@ -304,7 +409,7 @@
 
         .btn-warning:hover {
             transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255,193,7,0.4);
+            box-shadow: 0 10px 25px rgba(255, 193, 7, 0.4);
         }
 
         .btn-sm {
@@ -316,112 +421,13 @@
             width: 100%;
         }
 
-        /* ===== NAVEGACIÓN ===== */
-        .nav-menu {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            border-radius: var(--border-radius-pill);
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .nav-item {
-            padding: 10px 20px;
-            border-radius: var(--border-radius-pill);
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
-            color: rgba(255,255,255,0.6);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            flex: 1 1 auto;
-            text-align: center;
-            justify-content: center;
-        }
-
-        .nav-item i {
-            font-size: 14px;
-        }
-
-        .nav-item.active {
-            background: var(--primary-gradient);
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .nav-item:hover:not(.active) {
-            background: rgba(255,255,255,0.1);
-            color: var(--white);
-        }
-
-        /* ===== VISTAS ===== */
-        .view {
-            display: none;
-            animation: slideIn 0.4s ease;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        /* ===== TARJETAS ===== */
-        .card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--border-radius-xl);
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: var(--shadow-xl);
-            transition: var(--transition);
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255,255,255,0.3);
-        }
-
-        .card-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(255,255,255,0.1);
-        }
-
-        .card-header h3 {
-            font-size: 18px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--white);
-        }
-
-        .card-header h3 i {
-            color: var(--primary);
-            font-size: 20px;
-        }
-
-        /* ===== FILTROS MEJORADOS ===== */
+        /* Filtros */
         .filtros-container {
             background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .filtros-grid {
@@ -439,7 +445,7 @@
             display: block;
             margin-bottom: 5px;
             font-size: 12px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             font-weight: 500;
         }
 
@@ -447,8 +453,8 @@
             width: 100%;
             padding: 12px 15px 12px 40px;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 14px;
         }
@@ -462,7 +468,7 @@
             position: absolute;
             left: 15px;
             top: 38px;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
         }
 
@@ -473,13 +479,13 @@
             flex-wrap: wrap;
         }
 
-        /* ===== TABLAS CON SCROLL ===== */
+        /* Tablas con scroll */
         .table-container {
             overflow-x: auto;
             border-radius: var(--border-radius);
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             margin-top: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             max-height: 400px;
             overflow-y: auto;
         }
@@ -494,17 +500,17 @@
         .table-container thead {
             position: sticky;
             top: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
             z-index: 10;
         }
 
         th {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 14px 12px;
             text-align: left;
             font-weight: 600;
-            color: rgba(255,255,255,0.9);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 12px;
             text-transform: uppercase;
             white-space: nowrap;
@@ -512,15 +518,15 @@
 
         td {
             padding: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             white-space: nowrap;
         }
 
         tr:hover td {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        /* ===== ESTADÍSTICAS ===== */
+        /* Estadísticas */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -560,7 +566,7 @@
 
         .stat-info h4 {
             font-size: 13px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 5px;
             font-weight: 500;
         }
@@ -572,22 +578,22 @@
             line-height: 1.2;
         }
 
-        /* ===== GRÁFICO ===== */
+        /* Gráfico */
         .chart-container {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
             padding: 15px;
             margin-top: 15px;
             height: 250px;
         }
 
-        /* ===== PRODUCT SELECTOR ===== */
+        /* Product selector */
         .product-selector {
             background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius-lg);
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .search-container {
@@ -600,7 +606,7 @@
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
         }
 
@@ -608,8 +614,8 @@
             width: 100%;
             padding: 12px 15px 12px 45px;
             border-radius: var(--border-radius-pill);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 14px;
         }
@@ -618,15 +624,15 @@
             width: 100%;
             padding: 10px;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 14px;
             min-height: 120px;
         }
 
         .product-info-card {
-            background: linear-gradient(135deg, rgba(0,200,83,0.2), rgba(13,71,161,0.2));
+            background: linear-gradient(135deg, rgba(0, 200, 83, 0.2), rgba(13, 71, 161, 0.2));
             border-radius: var(--border-radius);
             padding: 15px 20px;
             margin-top: 15px;
@@ -635,7 +641,7 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .product-name {
@@ -653,12 +659,12 @@
         }
 
         .product-stock {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 6px 15px;
             border-radius: var(--border-radius-pill);
             font-size: 13px;
             color: var(--white);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .product-stock span {
@@ -668,7 +674,7 @@
             margin-left: 5px;
         }
 
-        /* ===== CONTEO GRID ===== */
+        /* Conteo grid */
         .conteo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -681,14 +687,14 @@
             border-radius: var(--border-radius);
             padding: 15px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .conteo-card label {
             display: block;
             margin-bottom: 10px;
             font-size: 12px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -699,13 +705,13 @@
             text-align: center;
             font-size: 18px;
             font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: var(--border-radius);
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
         }
 
-        /* ===== TOTAL CARD ===== */
+        /* Total card */
         .total-card {
             background: var(--primary-gradient);
             border-radius: var(--border-radius-lg);
@@ -722,7 +728,7 @@
             margin: 8px 0;
         }
 
-        /* ===== PROGRESS BAR ===== */
+        /* Progress bar */
         .progress-container {
             margin: 20px 0;
         }
@@ -732,12 +738,12 @@
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 13px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .progress-bar {
             height: 8px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: var(--border-radius-pill);
             overflow: hidden;
         }
@@ -748,7 +754,7 @@
             transition: width 0.5s ease;
         }
 
-        /* ===== BADGES ===== */
+        /* Badges */
         .badge {
             padding: 4px 10px;
             border-radius: var(--border-radius-pill);
@@ -757,33 +763,37 @@
             display: inline-block;
         }
 
-        .badge-success { 
-            background: rgba(40, 167, 69, 0.2); 
+        .badge-success {
+            background: rgba(40, 167, 69, 0.2);
             color: #a3e9a4;
             border: 1px solid rgba(40, 167, 69, 0.4);
         }
-        .badge-warning { 
-            background: rgba(255, 193, 7, 0.2); 
+
+        .badge-warning {
+            background: rgba(255, 193, 7, 0.2);
             color: #ffe083;
             border: 1px solid rgba(255, 193, 7, 0.4);
         }
-        .badge-danger { 
-            background: rgba(220, 53, 69, 0.2); 
+
+        .badge-danger {
+            background: rgba(220, 53, 69, 0.2);
             color: #f1b0b7;
             border: 1px solid rgba(220, 53, 69, 0.4);
         }
-        .badge-primary { 
-            background: rgba(0, 200, 83, 0.2); 
+
+        .badge-primary {
+            background: rgba(0, 200, 83, 0.2);
             color: #a3e9a4;
             border: 1px solid rgba(0, 200, 83, 0.4);
         }
-        .badge-info { 
-            background: rgba(23, 162, 184, 0.2); 
+
+        .badge-info {
+            background: rgba(23, 162, 184, 0.2);
             color: #9be1f0;
             border: 1px solid rgba(23, 162, 184, 0.4);
         }
 
-        /* ===== MAQUILA FORMS MEJORADOS ===== */
+        /* Maquila forms */
         .maquila-tipo-selector {
             display: flex;
             gap: 15px;
@@ -794,9 +804,9 @@
         .tipo-btn {
             padding: 10px 25px;
             border-radius: var(--border-radius-pill);
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--white);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             cursor: pointer;
             transition: var(--transition);
             font-weight: 600;
@@ -816,7 +826,7 @@
         }
 
         .presentacion-grupo {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
             padding: 15px;
         }
@@ -825,7 +835,7 @@
             display: block;
             margin-bottom: 8px;
             font-size: 12px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 600;
         }
 
@@ -833,8 +843,8 @@
             width: 100%;
             padding: 10px;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 14px;
         }
@@ -851,10 +861,10 @@
         }
 
         .maquila-section {
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
             padding: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .maquila-section h4 {
@@ -874,15 +884,15 @@
             display: block;
             margin-bottom: 4px;
             font-size: 12px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .input-group input {
             width: 100%;
             padding: 10px 14px;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 14px;
         }
@@ -916,14 +926,14 @@
             gap: 10px;
         }
 
-        /* ===== LOADING OVERLAY ===== */
+        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             display: flex;
             justify-content: center;
@@ -934,17 +944,13 @@
         .loading-spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
+            border: 4px solid rgba(255, 255, 255, 0.1);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ===== TOAST ===== */
+        /* Toast */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -966,13 +972,24 @@
             gap: 15px;
             animation: fadeInUp 0.3s ease;
             border-left: 4px solid var(--primary);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .toast.success { border-left-color: var(--success); }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.info { border-left-color: var(--info); }
-        .toast.warning { border-left-color: var(--warning); }
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.info {
+            border-left-color: var(--info);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
 
         .toast-icon i {
             font-size: 20px;
@@ -990,16 +1007,20 @@
 
         .toast-message {
             font-size: 12px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        /* ===== CREATE MAQUILA CONTAINER ===== */
+        .toast-close {
+            cursor: pointer;
+        }
+
+        /* Create maquila container */
         .create-maquila-container {
             margin-bottom: 25px;
             padding: 20px;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .create-maquila-title {
@@ -1017,15 +1038,15 @@
             display: block;
             margin-bottom: 4px;
             font-size: 12px;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .form-control {
             width: 100%;
             padding: 10px 12px;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             font-size: 13px;
         }
@@ -1038,13 +1059,13 @@
         hr {
             margin: 15px 0;
             border: none;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .no-results {
             text-align: center;
             padding: 30px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .mensaje-completado {
@@ -1068,11 +1089,11 @@
         }
 
         .mensaje-completado p {
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             font-size: 13px;
         }
 
-        /* ===== PAGINACIÓN ===== */
+        /* Paginación */
         .pagination {
             display: flex;
             justify-content: center;
@@ -1084,8 +1105,8 @@
         .pagination button {
             padding: 8px 14px;
             border-radius: var(--border-radius-pill);
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             color: var(--white);
             cursor: pointer;
             transition: var(--transition);
@@ -1109,7 +1130,54 @@
             cursor: not-allowed;
         }
 
-        /* ===== RESPONSIVE ===== */
+        /* Modal pendientes */
+        .modal-pendientes {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-pendientes-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Notification dropdown */
+        .notification-dropdown {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: rgba(30, 30, 47, 0.98);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            width: 350px;
+            max-height: 450px;
+            overflow-y: auto;
+            z-index: 10000;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .notification-dropdown.active {
+            display: block;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -1121,44 +1189,44 @@
                 text-align: center;
                 padding: 15px;
             }
-            
+
             .logo {
                 justify-content: center;
             }
-            
+
             .user-info {
                 justify-content: center;
             }
-            
+
             .user-details {
                 text-align: center;
             }
-            
+
             .nav-menu {
                 border-radius: var(--border-radius);
             }
-            
+
             .nav-item {
                 padding: 8px 12px;
                 font-size: 13px;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .maquila-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .filtros-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .btn {
                 width: 100%;
             }
-            
+
             .toast-container {
                 left: 10px;
                 right: 10px;
@@ -1184,7 +1252,7 @@
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- HEADER MÓVIL -->
+    <!-- HEADER -->
     <div class="header" data-aos="fade-down">
         <div class="logo">
             <div class="logo-icon">
@@ -1213,8 +1281,8 @@
 
     <!-- Navegación principal -->
     <div class="nav-menu" data-aos="fade-up">
-        <div class="nav-item active" onclick="cambiarVista('resumen')">
-            <i class="fas fa-chart-pie"></i> Resumen
+        <div class="nav-item active" onclick="cambiarVista('dashboard')">
+            <i class="fas fa-chart-pie"></i> Dashboard
         </div>
         <div class="nav-item" onclick="cambiarVista('inventario')">
             <i class="fas fa-clipboard-list"></i> Inventario
@@ -1230,8 +1298,8 @@
         </div>
     </div>
 
-    <!-- VISTA RESUMEN -->
-    <div id="viewResumen" class="view active">
+    <!-- VISTA DASHBOARD -->
+    <div id="viewDashboard" class="view active">
         <div class="stats-grid">
             <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-icon"><i class="fas fa-tasks"></i></div>
@@ -1347,11 +1415,15 @@
             <button class="btn btn-primary btn-block" onclick="enviarInventario()" id="btnEnviar">
                 <i class="fas fa-paper-plane"></i> Enviar Inventario
             </button>
+
+            <button class="btn btn-info btn-block" onclick="abrirAsignacionesPendientes()" id="btnVerPendientes" style="margin-top: 10px;">
+                <i class="fas fa-tasks"></i> Ver Mis Asignaciones Pendientes
+            </button>
         </div>
 
         <div class="card" data-aos="fade-up">
             <div class="card-header">
-                <h3><i class="fas fa-clock"></i> Pendientes</h3>
+                <h3><i class="fas fa-clock"></i> Respuestas Pendientes del Día</h3>
                 <div class="badge badge-warning" id="pendientesCount">0</div>
             </div>
             <div id="pendientesContainer" class="table-container">
@@ -1360,7 +1432,7 @@
         </div>
     </div>
 
-    <!-- VISTA MAQUILAS MEJORADA -->
+    <!-- VISTA MAQUILAS -->
     <div id="viewMaquilas" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1407,16 +1479,14 @@
             </div>
 
             <div id="maquilaForm" style="display: none;">
-                <!-- Selector de tipo (Sólido / Líquido) -->
+                <!-- Selector de tipo -->
                 <div class="maquila-tipo-selector">
                     <button type="button" class="tipo-btn active" onclick="setTipoMaquila('solido')" id="tipoSolidoBtn">Sólido (kg/g)</button>
                     <button type="button" class="tipo-btn" onclick="setTipoMaquila('liquido')" id="tipoLiquidoBtn">Líquido (L/mL/cc)</button>
                 </div>
 
                 <!-- Presentaciones dinámicas -->
-                <div class="presentacion-selector" id="presentacionSelector">
-                    <!-- Se llenará con JavaScript -->
-                </div>
+                <div class="presentacion-selector" id="presentacionSelector"></div>
 
                 <div class="maquila-grid">
                     <div class="maquila-section">
@@ -1427,9 +1497,7 @@
                         </div>
                         <div class="input-group" id="mpPresentacionGroup">
                             <label>Presentación</label>
-                            <select id="mpPresentacionSelect" class="presentacion-select" onchange="actualizarPTSugerido()">
-                                <!-- Opciones dinámicas -->
-                            </select>
+                            <select id="mpPresentacionSelect" class="presentacion-select" onchange="actualizarPTSugerido()"></select>
                         </div>
                     </div>
 
@@ -1441,9 +1509,7 @@
                         </div>
                         <div class="input-group" id="ptPresentacionGroup">
                             <label>Presentación</label>
-                            <select id="ptPresentacionSelect" class="presentacion-select" onchange="actualizarPTSugeridoYTotal()">
-                                <!-- Opciones dinámicas -->
-                            </select>
+                            <select id="ptPresentacionSelect" class="presentacion-select" onchange="actualizarPTSugeridoYTotal()"></select>
                         </div>
                     </div>
                 </div>
@@ -1454,7 +1520,7 @@
                         <label>Cantidad de Sobrantes (en la misma unidad que la materia prima)</label>
                         <input type="number" id="sobrantes" min="0" value="0" oninput="calcularTotalesMaquila()">
                     </div>
-                    <small style="color: rgba(255,255,255,0.7);">Los sobrantes se ingresan manualmente según la inspección.</small>
+                    <small style="color: rgba(255, 255, 255, 0.7);">Los sobrantes se ingresan manualmente según la inspección.</small>
                 </div>
 
                 <div class="transformacion-card">
@@ -1488,7 +1554,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN PARA VER TODAS LAS MAQUILAS -->
+        <!-- SECCIÓN MIS MAQUILAS -->
         <div class="card" data-aos="fade-up">
             <div class="card-header">
                 <h3><i class="fas fa-industry"></i> Mis Maquilas</h3>
@@ -1503,7 +1569,7 @@
         </div>
     </div>
 
-    <!-- VISTA DEVUELTAS (MEJORADA) -->
+    <!-- VISTA DEVUELTAS -->
     <div id="viewDevueltas" class="view">
         <div class="card" data-aos="fade-up">
             <div class="card-header">
@@ -1512,13 +1578,13 @@
                     <button class="btn btn-primary btn-sm" onclick="cargarInventariosDevueltos()">
                         <i class="fas fa-sync-alt"></i> Actualizar
                     </button>
-                    <button class="btn btn-success btn-sm" onclick="exportarDevueltasCSV()" style="margin-left: 8px;">
-                        <i class="fas fa-file-excel"></i> Exportar CSV
+                    <button class="btn btn-success btn-sm" onclick="exportarDevueltasExcel()" style="margin-left: 8px;">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
                     </button>
                 </div>
             </div>
 
-            <!-- FILTROS PARA DEVUELTAS -->
+            <!-- Filtros devueltas -->
             <div class="filtros-container">
                 <div class="filtros-grid">
                     <div class="filtro-grupo">
@@ -1560,7 +1626,7 @@
                 </button>
             </div>
 
-            <!-- FILTROS PARA INVENTARIO -->
+            <!-- Filtros inventario -->
             <div class="filtros-container">
                 <div class="filtros-grid">
                     <div class="filtro-grupo">
@@ -1583,8 +1649,8 @@
                     <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosInventario()">
                         <i class="fas fa-eraser"></i> Limpiar filtros
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="exportarInventarioCSV()">
-                        <i class="fas fa-file-excel"></i> Exportar CSV
+                    <button class="btn btn-primary btn-sm" onclick="exportarInventarioExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
                     </button>
                 </div>
             </div>
@@ -1592,8 +1658,7 @@
             <div id="historialContainer" class="table-container">
                 <p class="text-center">Cargando historial...</p>
             </div>
-            
-            <!-- Paginación para inventario -->
+
             <div id="paginationInventario" class="pagination"></div>
         </div>
 
@@ -1605,7 +1670,7 @@
                 </button>
             </div>
 
-            <!-- FILTROS PARA MAQUILAS EN HISTORIAL -->
+            <!-- Filtros maquilas -->
             <div class="filtros-container">
                 <div class="filtros-grid">
                     <div class="filtro-grupo">
@@ -1628,8 +1693,8 @@
                     <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosHistorialMaquilas()">
                         <i class="fas fa-eraser"></i> Limpiar filtros
                     </button>
-                    <button class="btn btn-primary btn-sm" onclick="exportarMaquilasCSV()">
-                        <i class="fas fa-file-excel"></i> Exportar CSV
+                    <button class="btn btn-primary btn-sm" onclick="exportarMaquilasExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
                     </button>
                 </div>
             </div>
@@ -1637,48 +1702,74 @@
             <div id="historialMaquilasContainer" class="table-container">
                 <p class="text-center">Cargando historial...</p>
             </div>
-            
-            <!-- Paginación para maquilas -->
+
             <div id="paginationMaquilas" class="pagination"></div>
+        </div>
+
+        <div class="card" data-aos="fade-up">
+            <div class="card-header">
+                <h3><i class="fas fa-check-circle"></i> Historial de Inventarios Precisos</h3>
+                <button class="btn btn-primary btn-sm" onclick="cargarHistorialPrecisos()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+
+            <!-- Filtros precisos -->
+            <div class="filtros-container">
+                <div class="filtros-grid">
+                    <div class="filtro-grupo">
+                        <i class="fas fa-search filtro-icon"></i>
+                        <label>Buscar por producto</label>
+                        <input type="text" class="filtro-input" id="filtroPrecisosProducto" placeholder="Nombre del producto..." style="padding-left: 40px;" onkeyup="filtrarHistorialPrecisos()">
+                    </div>
+                    <div class="filtro-grupo">
+                        <i class="fas fa-calendar filtro-icon"></i>
+                        <label>Fecha desde</label>
+                        <input type="date" class="filtro-input" id="filtroPrecisosFechaInicio" style="padding-left: 40px;" onchange="filtrarHistorialPrecisos()">
+                    </div>
+                    <div class="filtro-grupo">
+                        <i class="fas fa-calendar filtro-icon"></i>
+                        <label>Fecha hasta</label>
+                        <input type="date" class="filtro-input" id="filtroPrecisosFechaFin" style="padding-left: 40px;" onchange="filtrarHistorialPrecisos()">
+                    </div>
+                </div>
+                <div class="filtros-acciones">
+                    <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosPrecisos()">
+                        <i class="fas fa-eraser"></i> Limpiar filtros
+                    </button>
+                    <button class="btn btn-success btn-sm" onclick="exportarPrecisosExcel()">
+                        <i class="fas fa-file-excel"></i> Exportar Excel
+                    </button>
+                </div>
+            </div>
+
+            <div id="historialPrecisosContainer" class="table-container">
+                <p class="text-center">Cargando historial preciso...</p>
+            </div>
+
+            <div id="paginationPrecisos" class="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ASIGNACIONES PENDIENTES -->
+<div id="modalPendientes" class="modal-pendientes">
+    <div class="modal-pendientes-content">
+        <div id="modalPendientesContenido">
+            <p>Cargando asignaciones...</p>
         </div>
     </div>
 </div>
 
 <script>
+    "use strict";
+
+    // ============================================
+    // INICIALIZACIÓN Y CONFIGURACIÓN
+    // ============================================
+
     // Inicializar AOS
     AOS.init({ duration: 800, once: true, offset: 50 });
-
-    // ============================================
-    // FUNCIONES DE FECHA CORREGIDAS (ECUADOR)
-    // ============================================
-    function obtenerFechaEcuador() {
-        const formatter = new Intl.DateTimeFormat('es-EC', {
-            timeZone: 'America/Guayaquil',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false
-        });
-        
-        const parts = formatter.formatToParts(new Date());
-        const fechaParts = {};
-        parts.forEach(part => { fechaParts[part.type] = part.value; });
-        
-        const fechaStr = `${fechaParts.year}-${fechaParts.month}-${fechaParts.day}T${fechaParts.hour}:${fechaParts.minute}:${fechaParts.second}`;
-        return new Date(fechaStr);
-    }
-
-    function obtenerFechaHoyEcuador() {
-        const fecha = obtenerFechaEcuador();
-        return fecha.toISOString().split('T')[0];
-    }
-
-    function obtenerMesActualEcuador() {
-        return obtenerFechaEcuador().toISOString().substring(0, 7);
-    }
 
     // Configuración Firebase
     const firebaseConfig = {
@@ -1711,25 +1802,19 @@
     let productosEnviadosHoy = new Set();
     let grafico = null;
     let todosLosEnvios = [];
+    let todosLosPrecisos = [];
     let todasLasMaquilas = [];
     let notificaciones = [];
-
-    // Variables para devueltas
     let devoluciones = [];
-
-    // Variable para guardar el ID de la devolución que se está corrigiendo
     let devolucionEnCorreccion = null;
-
-    // Variables para paginación
     let inventarioPagina = 1;
+    let precisosPagina = 1;
     let maquilasPagina = 1;
     const ITEMS_POR_PAGINA = 20;
-
-    // Variables para maquilas
     let tipoMaquila = 'solido';
     let ptModificadoManualmente = false;
 
-    // Factores de conversión para presentaciones
+    // Factores de conversión
     const presentacionesSolido = [
         { nombre: '1000 kg', factor: 1000000 },
         { nombre: '100 kg', factor: 100000 },
@@ -1763,8 +1848,6 @@
         { nombre: 'cc', factor: 1 }
     ];
 
-    console.log("Fecha Ecuador hoy:", fechaHoy, "Mes actual:", mesActual);
-
     // Verificar sesión
     if (!usuario || rol === "admin") {
         window.location.href = "index.html";
@@ -1772,52 +1855,70 @@
 
     // Actualizar elementos del header
     document.getElementById('userName').textContent = usuario;
-    
-    function formatearFechaEcuador() {
-        const fecha = obtenerFechaEcuador();
-        return fecha.toLocaleDateString('es-ES', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-    }
-
     document.getElementById('currentDate').textContent = formatearFechaEcuador();
     document.getElementById('fechaActual').textContent = formatearFechaEcuador();
     document.getElementById('fechaActualInv').textContent = formatearFechaEcuador();
     document.getElementById('fechaMaquila').textContent = formatearFechaEcuador();
 
-    // Configurar fechas por defecto para filtros
-    function configurarFechasFiltros() {
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        
-        const fechaInicio = hace30Dias.toISOString().split('T')[0];
-        const fechaFin = hoy.toISOString().split('T')[0];
-        
-        document.getElementById('filtroInventarioFechaInicio').value = fechaInicio;
-        document.getElementById('filtroInventarioFechaFin').value = fechaFin;
-        document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
-        document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
-        // Para devueltas
-        document.getElementById('filtroDevFechaInicio').value = fechaInicio;
-        document.getElementById('filtroDevFechaFin').value = fechaFin;
+    // ============================================
+    // FUNCIONES DE FECHA (ECUADOR)
+    // ============================================
+
+    function obtenerFechaEcuador() {
+        const formatter = new Intl.DateTimeFormat('es-EC', {
+            timeZone: 'America/Guayaquil',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+
+        const parts = formatter.formatToParts(new Date());
+        const fechaParts = {};
+        parts.forEach(part => { fechaParts[part.type] = part.value; });
+
+        const fechaStr = `${fechaParts.year}-${fechaParts.month}-${fechaParts.day}T${fechaParts.hour}:${fechaParts.minute}:${fechaParts.second}`;
+        return new Date(fechaStr);
     }
 
-    // ===== FUNCIONES DE UTILIDAD =====
+    function obtenerFechaHoyEcuador() {
+        const fecha = obtenerFechaEcuador();
+        return fecha.toISOString().split('T')[0];
+    }
+
+    function obtenerMesActualEcuador() {
+        return obtenerFechaEcuador().toISOString().substring(0, 7);
+    }
+
+    function formatearFechaEcuador() {
+        const fecha = obtenerFechaEcuador();
+        return fecha.toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    // ============================================
+    // UTILIDADES GENERALES
+    // ============================================
+
     function mostrarLoading(mostrar) {
         document.getElementById('loadingOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
     function mostrarToast(titulo, mensaje, tipo = 'success') {
-        let container = document.getElementById('toastContainer');
-        let toastId = 'toast_' + Date.now();
-        let toast = document.createElement('div');
+        const container = document.getElementById('toastContainer');
+        const toastId = 'toast_' + Date.now();
+        const toast = document.createElement('div');
         toast.className = `toast ${tipo}`;
         toast.id = toastId;
-        let icono = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+
+        const icono = tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
         toast.innerHTML = `
             <div class="toast-icon"><i class="fas ${icono}"></i></div>
             <div class="toast-content">
@@ -1828,7 +1929,7 @@
         `;
         container.appendChild(toast);
         setTimeout(() => {
-            let el = document.getElementById(toastId);
+            const el = document.getElementById(toastId);
             if (el) el.remove();
         }, 4000);
     }
@@ -1836,12 +1937,12 @@
     async function registrarNotificacion(tipo, detalles) {
         if (!db) return;
         try {
-            await db.ref("notificaciones").push({ 
-                tipo, 
-                usuario, 
-                fecha: obtenerFechaEcuador().toISOString(), 
-                leida: false, 
-                detalles 
+            await db.ref("notificaciones").push({
+                tipo,
+                usuario,
+                fecha: obtenerFechaEcuador().toISOString(),
+                leida: false,
+                detalles
             });
             console.log("Notificación registrada:", tipo, detalles);
         } catch (error) {
@@ -1849,16 +1950,37 @@
         }
     }
 
+    function configurarFechasFiltros() {
+        const hoy = obtenerFechaEcuador();
+        const hace30Dias = new Date(hoy);
+        hace30Dias.setDate(hace30Dias.getDate() - 30);
+
+        const fechaInicio = hace30Dias.toISOString().split('T')[0];
+        const fechaFin = hoy.toISOString().split('T')[0];
+
+        document.getElementById('filtroInventarioFechaInicio').value = fechaInicio;
+        document.getElementById('filtroInventarioFechaFin').value = fechaFin;
+        document.getElementById('filtroPrecisosFechaInicio').value = fechaInicio;
+        document.getElementById('filtroPrecisosFechaFin').value = fechaFin;
+        document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
+        document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
+        document.getElementById('filtroDevFechaInicio').value = fechaInicio;
+        document.getElementById('filtroDevFechaFin').value = fechaFin;
+    }
+
+    // ============================================
+    // NAVEGACIÓN
+    // ============================================
+
     function cambiarVista(vista) {
-        // Limpiar cualquier corrección pendiente
         devolucionEnCorreccion = null;
 
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        
-        if (vista === 'resumen') {
+
+        if (vista === 'dashboard') {
             document.querySelectorAll('.nav-item')[0].classList.add('active');
-            document.getElementById('viewResumen').classList.add('active');
+            document.getElementById('viewDashboard').classList.add('active');
             cargarDashboard();
         } else if (vista === 'inventario') {
             document.querySelectorAll('.nav-item')[1].classList.add('active');
@@ -1884,16 +2006,27 @@
         }
     }
 
-    // ===== NOTIFICACIONES =====
+    function cerrarSesion() {
+        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
+        setTimeout(() => {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }, 1500);
+    }
+
+    // ============================================
+    // NOTIFICACIONES
+    // ============================================
+
     function iniciarListenerNotificaciones() {
         if (!db) return;
-        
+
         db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).on("child_added", (snapshot) => {
             const notificacion = snapshot.val();
             console.log("📬 Nueva notificación recibida:", notificacion);
-            
+
             cargarNotificaciones();
-            
+
             if (notificacion.tipo === 'inventario_devuelto') {
                 if (document.getElementById('viewDevueltas').classList.contains('active')) {
                     cargarInventariosDevueltos();
@@ -1907,71 +2040,70 @@
                 mostrarToast('Aprobado', notificacion.mensaje || '¡Tu inventario fue aprobado!', 'success');
             }
         });
-        
+
         console.log("✅ Listener de notificaciones iniciado");
     }
 
     async function cargarNotificaciones() {
         if (!db) return;
-        
+
         try {
-            let snap = await db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).limitToLast(50).once("value");
+            const snap = await db.ref("notificaciones").orderByChild("usuario").equalTo(usuario).limitToLast(50).once("value");
             notificaciones = [];
-            
+
             if (snap.exists()) {
                 snap.forEach(child => {
                     notificaciones.push({ id: child.key, ...child.val() });
                 });
             }
-            
+
             notificaciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-            
-            let noLeidas = notificaciones.filter(n => !n.leida).length;
-            let badge = document.getElementById('notificationCount');
+
+            const noLeidas = notificaciones.filter(n => !n.leida).length;
+            const badge = document.getElementById('notificationCount');
             if (badge) {
                 badge.textContent = noLeidas;
                 badge.style.display = noLeidas > 0 ? 'flex' : 'none';
             }
-            
         } catch (error) {
             console.error("Error cargando notificaciones:", error);
         }
     }
 
     function toggleNotificaciones() {
-        let dropdown = document.getElementById('notification-dropdown');
+        const dropdown = document.getElementById('notification-dropdown');
         if (!dropdown) return;
         dropdown.classList.toggle('active');
         if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
     }
 
     async function mostrarListadoNotificaciones() {
-        let container = document.getElementById("notification-dropdown");
+        const container = document.getElementById("notification-dropdown");
         if (!container) return;
-        
+
         await cargarNotificaciones();
-        
+
         if (notificaciones.length === 0) {
             container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
             return;
         }
-        
+
         let html = `<div style="max-height:600px; overflow-y:auto;">`;
         notificaciones.slice(0, 20).forEach(n => {
-            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
-                       n.tipo === "inventario_devuelto" ? "fa-undo" :
-                       n.tipo === "inventario_aprobado" ? "fa-check-circle" :
-                       n.tipo === "maquila" ? "fa-industry" : 
-                       n.tipo === "maquila_devuelta" ? "fa-undo" :
-                       n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
-            let color = n.tipo === "inventario" ? "badge-primary" : 
-                       n.tipo === "inventario_devuelto" ? "badge-warning" :
-                       n.tipo === "inventario_aprobado" ? "badge-success" :
-                       n.tipo === "maquila" ? "badge-warning" : 
-                       n.tipo === "maquila_devuelta" ? "badge-warning" :
-                       n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
+            let icono = n.tipo === "inventario" ? "fa-clipboard-list" :
+                n.tipo === "inventario_devuelto" ? "fa-undo" :
+                    n.tipo === "inventario_aprobado" ? "fa-check-circle" :
+                        n.tipo === "maquila" ? "fa-industry" :
+                            n.tipo === "maquila_devuelta" ? "fa-undo" :
+                                n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
+            let color = n.tipo === "inventario" ? "badge-primary" :
+                n.tipo === "inventario_devuelto" ? "badge-warning" :
+                    n.tipo === "inventario_aprobado" ? "badge-success" :
+                        n.tipo === "maquila" ? "badge-warning" :
+                            n.tipo === "maquila_devuelta" ? "badge-warning" :
+                                n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
             let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
-            
+
             let mensaje = n.mensaje || '';
             if (!mensaje) {
                 if (n.tipo === 'inventario') {
@@ -1990,7 +2122,7 @@
                     mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
                 }
             }
-            
+
             html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
                 <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
                     <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
@@ -2000,18 +2132,17 @@
                 ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
             </div>`;
         });
-        
+
         if (notificaciones.length > 20) {
             html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${notificaciones.length} notificaciones</p>`;
         }
-        
+
         html += `</div>`;
         container.innerHTML = html;
     }
 
     async function marcarComoLeida(id) {
         if (!db) return;
-        
         try {
             await db.ref(`notificaciones/${id}/leida`).set(true);
             mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
@@ -2023,18 +2154,21 @@
         }
     }
 
-    // ===== FUNCIONES DE INVENTARIO =====
+    // ============================================
+    // INVENTARIO - ASIGNACIONES Y CONTEO
+    // ============================================
+
     function calcularTotal() {
-        let fisico = parseInt(document.getElementById("fisico").value) || 0;
-        let muestras = parseInt(document.getElementById("muestras").value) || 0;
-        let caducados = parseInt(document.getElementById("caducados").value) || 0;
-        let total = fisico + muestras + caducados;
+        const fisico = parseInt(document.getElementById("fisico").value) || 0;
+        const muestras = parseInt(document.getElementById("muestras").value) || 0;
+        const caducados = parseInt(document.getElementById("caducados").value) || 0;
+        const total = fisico + muestras + caducados;
         document.getElementById("totalCalculado").textContent = total;
-        
+
         if (productoSeleccionado) {
-            let diferencia = total - productoSeleccionado.cantidadAsignada;
-            let comparacion = document.getElementById("comparacionStock");
-            
+            const diferencia = total - productoSeleccionado.cantidadAsignada;
+            const comparacion = document.getElementById("comparacionStock");
+
             if (diferencia === 0) {
                 comparacion.innerHTML = '✓ Cuadra exactamente';
                 document.getElementById('totalCard').style.background = 'linear-gradient(135deg, #00c853, #00a844)';
@@ -2050,25 +2184,24 @@
     }
 
     function cambiarProducto() {
-        let select = document.getElementById("productoSelect");
+        const select = document.getElementById("productoSelect");
         if (!select) return;
-        let selectedOption = select.options[select.selectedIndex];
+        const selectedOption = select.options[select.selectedIndex];
         if (selectedOption && selectedOption.value) {
-            let nombre = selectedOption.getAttribute("data-nombre");
-            let cantidad = selectedOption.getAttribute("data-cantidad");
+            const nombre = selectedOption.getAttribute("data-nombre");
+            const cantidad = selectedOption.getAttribute("data-cantidad");
             document.getElementById("productoNombre").textContent = nombre;
             document.getElementById("productoCantidad").textContent = cantidad;
             document.getElementById("productoInfo").style.display = "flex";
-            productoSeleccionado = { 
-                id: selectedOption.value, 
-                nombre, 
-                cantidadAsignada: parseInt(cantidad) 
+            productoSeleccionado = {
+                id: selectedOption.value,
+                nombre,
+                cantidadAsignada: parseInt(cantidad)
             };
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
             calcularTotal();
-            // Al cambiar de producto, cancelar cualquier corrección pendiente
             devolucionEnCorreccion = null;
         } else {
             document.getElementById("productoInfo").style.display = "none";
@@ -2077,13 +2210,13 @@
     }
 
     function filtrarProductos() {
-        let filtro = document.getElementById("buscadorProducto").value.toLowerCase();
-        let select = document.getElementById("productoSelect");
-        let noResultados = document.getElementById("noResultados");
+        const filtro = document.getElementById("buscadorProducto").value.toLowerCase();
+        const select = document.getElementById("productoSelect");
+        const noResultados = document.getElementById("noResultados");
         if (!select) return;
         let visibles = 0;
         for (let i = 1; i < select.options.length; i++) {
-            let option = select.options[i];
+            const option = select.options[i];
             if (option.text.toLowerCase().includes(filtro)) {
                 option.style.display = "";
                 visibles++;
@@ -2109,58 +2242,73 @@
         try {
             fechaHoy = obtenerFechaHoyEcuador();
             mesActual = obtenerMesActualEcuador();
-            
-            let asignacionesSnap = await db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value");
-            let select = document.getElementById("productoSelect");
-            let sinPendientes = document.getElementById("sinPendientes");
-            let buscador = document.getElementById("buscadorProducto");
-            let noResultados = document.getElementById("noResultados");
-            
+
+            const fechas = [];
+            for (let i = 0; i < 30; i++) {
+                const d = new Date(fechaHoy);
+                d.setDate(d.getDate() - i);
+                fechas.push(d.toISOString().split('T')[0]);
+            }
+
+            const select = document.getElementById("productoSelect");
+            const sinPendientes = document.getElementById("sinPendientes");
+            const buscador = document.getElementById("buscadorProducto");
+            const noResultados = document.getElementById("noResultados");
+
             if (!select) return;
             select.innerHTML = "<option value=''>Seleccione un producto...</option>";
             productosPendientes = [];
-            
-            if (!asignacionesSnap.exists()) {
-                if (sinPendientes) sinPendientes.style.display = "block";
-                if (select) select.style.display = "none";
-                if (buscador) buscador.style.display = "none";
-                if (noResultados) noResultados.style.display = "none";
-                return;
-            }
-            
-            let enviosSnap = await db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value");
-            productosEnviadosHoy.clear();
-            
-            if (enviosSnap.exists()) {
-                enviosSnap.forEach(child => {
-                    let envio = child.val();
-                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
-                        productosEnviadosHoy.add(envio.productoId);
-                    }
-                });
-            }
-            
-            let asignaciones = asignacionesSnap.val();
-            for (let productoId in asignaciones) {
-                let data = asignaciones[productoId];
-                let cantidadAsignada = data.cantidadAsignada || 0;
-                
-                if (!productosEnviadosHoy.has(productoId)) {
-                    let option = document.createElement("option");
-                    option.value = productoId;
-                    option.textContent = `${data.nombreProducto} (Cant: ${cantidadAsignada})`;
-                    option.setAttribute("data-nombre", data.nombreProducto);
-                    option.setAttribute("data-cantidad", cantidadAsignada);
-                    select.appendChild(option);
-                    productosPendientes.push({ 
-                        id: productoId, 
-                        nombre: data.nombreProducto, 
-                        cantidadAsignada 
+
+            const productosEnviados = new Set();
+            const mesesNecesarios = new Set();
+            fechas.forEach(f => mesesNecesarios.add(f.substring(0, 7)));
+            for (const mes of mesesNecesarios) {
+                const enviosSnap = await db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+                if (enviosSnap.exists()) {
+                    enviosSnap.forEach(child => {
+                        const envio = child.val();
+                        if (envio.productoId) {
+                            productosEnviados.add(`${mes}_${envio.productoId}`);
+                        }
                     });
                 }
             }
-            
-            if (productosPendientes.length === 0) {
+
+            let hayPendientes = false;
+            for (const fechaAsig of fechas) {
+                const asignacionesSnap = await db.ref("asignaciones/" + fechaAsig + "/" + usuario).once("value");
+                if (asignacionesSnap.exists()) {
+                    const mesAsig = fechaAsig.substring(0, 7);
+                    const asignaciones = asignacionesSnap.val();
+                    for (const productoId in asignaciones) {
+                        const data = asignaciones[productoId];
+                        const cantidadAsignada = data.cantidadAsignada || 0;
+                        const claveEnvio = `${mesAsig}_${productoId}`;
+                        if (!productosEnviados.has(claveEnvio)) {
+                            hayPendientes = true;
+                            const option = document.createElement("option");
+                            option.value = productoId;
+                            const urgente = (new Date(fechaAsig) < new Date(fechaHoy));
+                            const textoUrgente = urgente ? " (URGENTE)" : "";
+                            option.textContent = `${data.nombreProducto} (Cant: ${cantidadAsignada}) - ${fechaAsig}${textoUrgente}`;
+                            option.setAttribute("data-nombre", data.nombreProducto);
+                            option.setAttribute("data-cantidad", cantidadAsignada);
+                            option.setAttribute("data-fecha", fechaAsig);
+                            option.setAttribute("data-urgente", urgente);
+                            select.appendChild(option);
+                            productosPendientes.push({
+                                id: productoId,
+                                nombre: data.nombreProducto,
+                                cantidadAsignada,
+                                fecha: fechaAsig,
+                                urgente
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (!hayPendientes) {
                 if (sinPendientes) sinPendientes.style.display = "block";
                 if (select) select.style.display = "none";
                 if (buscador) buscador.style.display = "none";
@@ -2182,68 +2330,156 @@
         }
     }
 
+    async function abrirAsignacionesPendientes() {
+        mostrarLoading(true);
+        try {
+            const usuarioActual = usuario;
+            const [asigSnap, invSnap] = await Promise.all([
+                db.ref("asignaciones").once("value"),
+                db.ref("inventario").once("value")
+            ]);
+
+            const asignacionesDelUsuario = [];
+            const respuestasDelUsuario = new Set();
+
+            if (invSnap.exists()) {
+                invSnap.forEach(monthSnap => {
+                    monthSnap.forEach(inv => {
+                        const iv = inv.val();
+                        if (iv.nombre === usuarioActual && iv.productoId) {
+                            respuestasDelUsuario.add(iv.productoId);
+                        }
+                    });
+                });
+            }
+
+            if (asigSnap.exists()) {
+                asigSnap.forEach(dateSnap => {
+                    dateSnap.forEach(userSnap => {
+                        if (userSnap.key === usuarioActual) {
+                            userSnap.forEach(prodSnap => {
+                                const data = prodSnap.val();
+                                const productoId = prodSnap.key;
+                                if (!respuestasDelUsuario.has(productoId)) {
+                                    asignacionesDelUsuario.push({
+                                        productoId: productoId,
+                                        nombre: data.nombreProducto || 'Producto',
+                                        cantidad: data.cantidadAsignada || 0,
+                                        fecha: data.fechaAsignacion || new Date().toISOString()
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            let html = `<div style="max-height:70vh; overflow-y:auto;">
+                <h4 style="color:#1e7e34; margin-bottom:15px;">Mis Asignaciones Sin Responder</h4>`;
+
+            if (asignacionesDelUsuario.length === 0) {
+                html += `<div class="alert alert-success"><i class="fas fa-check-circle"></i> ¡Excelente! Has respondido todas tus asignaciones.</div>`;
+            } else {
+                html += `<table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:#f0f0f0; border-bottom:2px solid #1e7e34;">
+                            <th style="padding:10px; text-align:left;">Producto</th>
+                            <th style="padding:10px; text-align:center;">Cantidad</th>
+                            <th style="padding:10px; text-align:center;">Fecha Asignación</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                asignacionesDelUsuario.forEach(asig => {
+                    const fechaAsig = new Date(asig.fecha).toLocaleDateString('es-ES');
+                    html += `<tr style="border-bottom:1px solid #ddd;">
+                        <td style="padding:10px;"><strong>${asig.nombre}</strong></td>
+                        <td style="padding:10px; text-align:center;"><span class="badge badge-primary">${asig.cantidad}</span></td>
+                        <td style="padding:10px; text-align:center;">${fechaAsig}</td>
+                    </tr>`;
+                });
+
+                html += `</tbody></table>`;
+            }
+
+            html += `<div style="margin-top:20px; display:flex; gap:10px;">
+                <button class="btn btn-primary" onclick="cambiarVista('inventario'); cerrarModalPendientes()"><i class="fas fa-check"></i> Ir a Responder</button>
+                <button class="btn btn-secondary" onclick="cerrarModalPendientes()"><i class="fas fa-times"></i> Cerrar</button>
+            </div></div>`;
+
+            document.getElementById('modalPendientesContenido').innerHTML = html;
+            document.getElementById('modalPendientes').style.display = 'flex';
+        } catch (e) {
+            console.error(e);
+            mostrarToast('Error', 'Error al cargar asignaciones pendientes', 'error');
+        } finally {
+            mostrarLoading(false);
+        }
+    }
+
+    function cerrarModalPendientes() {
+        document.getElementById('modalPendientes').style.display = 'none';
+    }
+
     async function enviarInventario() {
         if (!db || !usuario || !productoSeleccionado) {
             mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
         }
-        
-        let fisico = parseInt(document.getElementById("fisico").value) || 0;
-        let muestras = parseInt(document.getElementById("muestras").value) || 0;
-        let caducados = parseInt(document.getElementById("caducados").value) || 0;
-        let total = fisico + muestras + caducados;
-        
+
+        const fisico = parseInt(document.getElementById("fisico").value) || 0;
+        const muestras = parseInt(document.getElementById("muestras").value) || 0;
+        const caducados = parseInt(document.getElementById("caducados").value) || 0;
+        const total = fisico + muestras + caducados;
+
         if (fisico === 0 && muestras === 0 && caducados === 0) {
             mostrarToast('Error', 'Ingrese al menos un valor', 'error');
             return;
         }
-        
+
         if (total !== productoSeleccionado.cantidadAsignada) {
-            let diferencia = total - productoSeleccionado.cantidadAsignada;
+            const diferencia = total - productoSeleccionado.cantidadAsignada;
             if (!confirm(`⚠ El total (${total}) no coincide con la cantidad asignada (${productoSeleccionado.cantidadAsignada}).\n${diferencia > 0 ? 'Sobrante: +' + diferencia : 'Faltante: ' + diferencia}\n¿Continuar?`)) return;
         }
-        
+
         mostrarLoading(true);
-        let btn = document.getElementById("btnEnviar");
-        if (btn) { 
-            btn.disabled = true; 
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...'; 
+        const btn = document.getElementById("btnEnviar");
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         }
-        
+
         try {
             const fechaEcuador = obtenerFechaEcuador();
-            
+
             await db.ref("inventario/" + mesActual).push({
-                nombre: usuario, 
-                producto: productoSeleccionado.nombre, 
+                nombre: usuario,
+                producto: productoSeleccionado.nombre,
                 productoId: productoSeleccionado.id,
                 sistema: productoSeleccionado.cantidadAsignada,
-                fisico, 
-                muestras, 
-                caducados, 
+                fisico,
+                muestras,
+                caducados,
                 fecha: fechaEcuador.toISOString()
             });
-            
-            await registrarNotificacion("inventario", { 
-                colaborador: usuario, 
-                producto: productoSeleccionado.nombre, 
-                fisico, 
-                muestras, 
-                caducados, 
+
+            await registrarNotificacion("inventario", {
+                colaborador: usuario,
+                producto: productoSeleccionado.nombre,
+                fisico,
+                muestras,
+                caducados,
                 total,
                 fecha: fechaEcuador.toISOString()
             });
-            
-            // Si hay una devolución en corrección, eliminarla
+
             if (devolucionEnCorreccion) {
                 try {
                     const dev = devoluciones.find(d => d.id === devolucionEnCorreccion);
                     if (dev && dev.fechaDevolucionRaw) {
                         const mesDevolucion = new Date(dev.fechaDevolucionRaw).toISOString().substring(0, 7);
                         await db.ref(`inventario_devuelto/${mesDevolucion}/${devolucionEnCorreccion}`).remove();
-                        // Eliminar del array local
                         devoluciones = devoluciones.filter(d => d.id !== devolucionEnCorreccion);
-                        // Si la vista de devueltas está activa, recargar
                         if (document.getElementById('viewDevueltas').classList.contains('active')) {
                             renderizarDevueltas();
                         }
@@ -2255,58 +2491,60 @@
                     devolucionEnCorreccion = null;
                 }
             }
-            
+
             mostrarToast('Éxito', 'Inventario enviado correctamente', 'success');
-            
+
             productosEnviadosHoy.add(productoSeleccionado.id);
             await cargarProductosAsignados();
             await cargarDashboard();
             await cargarPendientes();
             await cargarHistorial();
-            
+
             document.getElementById("fisico").value = "0";
             document.getElementById("muestras").value = "0";
             document.getElementById("caducados").value = "0";
             document.getElementById("buscadorProducto").value = "";
             calcularTotal();
             filtrarProductos();
-            
         } catch (error) {
             console.error("Error al enviar inventario:", error);
             mostrarToast('Error', 'Error al enviar inventario', 'error');
         } finally {
             mostrarLoading(false);
-            if (btn) { 
-                btn.disabled = false; 
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario'; 
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Inventario';
             }
         }
     }
 
-    // ===== FUNCIÓN: INVENTARIOS DEVUELTOS (MEJORADA) =====
+    // ============================================
+    // INVENTARIOS DEVUELTOS
+    // ============================================
+
     async function cargarInventariosDevueltos() {
         if (!db || !usuario) return;
-        
-        let container = document.getElementById("inventariosDevueltosContainer");
+
+        const container = document.getElementById("inventariosDevueltosContainer");
         if (!container) return;
-        
+
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
+
         try {
-            let meses = [];
+            const meses = [];
             for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
+                const fecha = obtenerFechaEcuador();
                 fecha.setMonth(fecha.getMonth() - i);
                 meses.push(fecha.toISOString().substring(0, 7));
             }
-            
+
             devoluciones = [];
-            
-            for (let mes of meses) {
-                let snap = await db.ref("inventario_devuelto/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+
+            for (const mes of meses) {
+                const snap = await db.ref("inventario_devuelto/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
                 if (snap.exists()) {
                     snap.forEach(child => {
-                        let d = child.val();
+                        const d = child.val();
                         devoluciones.push({
                             id: child.key,
                             fecha: new Date(d.fecha).toLocaleDateString('es-ES'),
@@ -2324,11 +2562,10 @@
                     });
                 }
             }
-            
+
             devoluciones.sort((a, b) => new Date(b.fechaDevolucionRaw || 0) - new Date(a.fechaDevolucionRaw || 0));
-            
+
             renderizarDevueltas();
-            
         } catch (error) {
             console.error("Error cargando inventarios devueltos:", error);
             container.innerHTML = "<p class='text-center'>Error al cargar inventarios devueltos</p>";
@@ -2338,12 +2575,14 @@
     function renderizarDevueltas() {
         const container = document.getElementById("inventariosDevueltosContainer");
         if (!container) return;
-        
+
         const filtroProducto = document.getElementById("filtroDevProducto")?.value.toLowerCase() || "";
         const fechaInicio = document.getElementById("filtroDevFechaInicio")?.value || "";
         const fechaFin = document.getElementById("filtroDevFechaFin")?.value || "";
-        
-        let filtradas = devoluciones.filter(d => {
+
+        const filtradas = devoluciones.filter(d => {
+            // Solo mostrar devoluciones de productos que aún están asignados (no respondidos)
+            if (!productosAsignados.some(p => p.nombre === d.producto)) return false;
             if (filtroProducto && !d.producto.toLowerCase().includes(filtroProducto)) return false;
             if (fechaInicio || fechaFin) {
                 const fechaDevo = new Date(d.fechaDevolucionRaw).toISOString().split('T')[0];
@@ -2352,12 +2591,12 @@
             }
             return true;
         });
-        
+
         if (filtradas.length === 0) {
             container.innerHTML = "<p class='text-center'>📭 No hay devoluciones que coincidan con los filtros</p>";
             return;
         }
-        
+
         let html = `<table>
             <thead>
                 <tr>
@@ -2374,20 +2613,20 @@
                 </tr>
             </thead>
             <tbody>`;
-        
+
         filtradas.forEach(d => {
-            let diferencia = d.total - d.sistema;
-            let diferenciaTexto = diferencia > 0 ? `+${diferencia}` : diferencia;
-            let diferenciaClass = diferencia === 0 ? 'badge-success' : diferencia > 0 ? 'badge-warning' : 'badge-danger';
-            
+            const diferencia = d.total - d.sistema;
+            const diferenciaTexto = diferencia > 0 ? `+${diferencia}` : diferencia;
+            const diferenciaClass = diferencia === 0 ? 'badge-success' : diferencia > 0 ? 'badge-warning' : 'badge-danger';
+
             let motivoClass = 'badge-info';
-            if (d.motivo.toLowerCase().includes('diferencia') || d.motivo.toLowerCase().includes('sobrante') || d.motivo.toLowerCase().includes('faltante')) 
+            if (d.motivo.toLowerCase().includes('diferencia') || d.motivo.toLowerCase().includes('sobrante') || d.motivo.toLowerCase().includes('faltante'))
                 motivoClass = 'badge-warning';
-            else if (d.motivo.toLowerCase().includes('caducado')) 
+            else if (d.motivo.toLowerCase().includes('caducado'))
                 motivoClass = 'badge-danger';
-            else if (d.motivo.toLowerCase().includes('muestra')) 
+            else if (d.motivo.toLowerCase().includes('muestra'))
                 motivoClass = 'badge-primary';
-            
+
             html += `<tr>
                 <td>${d.fechaDevolucion}</td>
                 <td><strong>${d.producto}</strong></td>
@@ -2405,7 +2644,7 @@
                 </td>
             </tr>`;
         });
-        
+
         html += `</tbody></table>`;
         container.innerHTML = html;
     }
@@ -2424,17 +2663,14 @@
         renderizarDevueltas();
     }
 
-    function exportarDevueltasCSV() {
-        if (devoluciones.length === 0) {
-            mostrarToast('Info', 'No hay datos para exportar', 'info');
-            return;
-        }
-        
+    function exportarDevueltasExcel() {
         const filtroProducto = document.getElementById("filtroDevProducto")?.value.toLowerCase() || "";
         const fechaInicio = document.getElementById("filtroDevFechaInicio")?.value || "";
         const fechaFin = document.getElementById("filtroDevFechaFin")?.value || "";
-        
-        let filtradas = devoluciones.filter(d => {
+
+        const filtradas = devoluciones.filter(d => {
+            // Solo exportar devoluciones de productos que aún están asignados (no respondidos)
+            if (!productosAsignados.some(p => p.nombre === d.producto)) return false;
             if (filtroProducto && !d.producto.toLowerCase().includes(filtroProducto)) return false;
             if (fechaInicio || fechaFin) {
                 const fechaDevo = new Date(d.fechaDevolucionRaw).toISOString().split('T')[0];
@@ -2443,35 +2679,26 @@
             }
             return true;
         });
-        
-        if (filtradas.length === 0) {
-            mostrarToast('Info', 'No hay datos con los filtros actuales', 'info');
-            return;
-        }
-        
-        let csv = [];
-        csv.push('Fecha Devolución,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Diferencia,Motivo');
-        
-        filtradas.forEach(d => {
-            let diferencia = d.total - d.sistema;
-            csv.push(`"${d.fechaDevolucion}","${d.producto}",${d.sistema},${d.fisico},${d.muestras},${d.caducados},${d.total},${diferencia},"${d.motivo}"`);
-        });
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "devoluciones_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
+
+        const data = filtradas.map(d => ({
+            'Fecha Devolución': d.fechaDevolucion,
+            Producto: d.producto,
+            'Stock Sistema': d.sistema,
+            Físico: d.fisico,
+            Muestras: d.muestras,
+            Caducados: d.caducados,
+            Total: d.total,
+            Diferencia: d.total - d.sistema,
+            Motivo: d.motivo
+        }));
+        exportarExcelGenerica(data, "devoluciones");
     }
 
     function corregirDevolucion(id, producto, sistema, fisico, muestras, caducados) {
-        // Guardar el ID de la devolución que se va a corregir
         devolucionEnCorreccion = id;
-        
-        // Cambiar a la vista de inventario
+
         cambiarVista('inventario');
-        
-        // Buscar el producto en el select de productos asignados
+
         const select = document.getElementById('productoSelect');
         let encontrado = false;
         for (let i = 0; i < select.options.length; i++) {
@@ -2482,22 +2709,24 @@
                 break;
             }
         }
-        
+
         if (!encontrado) {
             mostrarToast('Producto no encontrado', 'El producto no está en tus asignaciones de hoy. Puedes seleccionarlo manualmente si aparece en la lista.', 'warning');
             return;
         }
-        
-        // Precargar los valores de la devolución
+
         document.getElementById('fisico').value = fisico;
         document.getElementById('muestras').value = muestras;
         document.getElementById('caducados').value = caducados;
         calcularTotal();
-        
+
         mostrarToast('Corrigiendo devolución', 'Ajusta los valores y envía nuevamente', 'info');
     }
 
-    // ===== FUNCIONES DE MAQUILAS =====
+    // ============================================
+    // MAQUILAS
+    // ============================================
+
     function setTipoMaquila(tipo) {
         tipoMaquila = tipo;
         document.getElementById('tipoSolidoBtn').classList.toggle('active', tipo === 'solido');
@@ -2547,9 +2776,9 @@
     }
 
     function calcularTotalesMaquila() {
-        let ptCantidad = parseInt(document.getElementById('ptCantidad').value) || 0;
-        let sobrantes = parseInt(document.getElementById('sobrantes').value) || 0;
-        let total = ptCantidad + sobrantes;
+        const ptCantidad = parseInt(document.getElementById('ptCantidad').value) || 0;
+        const sobrantes = parseInt(document.getElementById('sobrantes').value) || 0;
+        const total = ptCantidad + sobrantes;
         document.getElementById('totalMaquilaCalculado').textContent = total;
         return total;
     }
@@ -2561,34 +2790,34 @@
 
     async function cargarProductosMaquila() {
         if (!db) return;
-        let select = document.getElementById("productoMaquilaSelect");
+        const select = document.getElementById("productoMaquilaSelect");
         if (!select) return;
-        
+
         select.innerHTML = "<option value=''>Cargando productos...</option>";
-        
+
         try {
-            let snapshot = await db.ref("maquilas_productos").once("value");
+            const snapshot = await db.ref("maquilas_productos").once("value");
             select.innerHTML = "<option value=''>Seleccione un producto...</option>";
-            
+
             if (!snapshot.exists()) {
-                let option = document.createElement("option");
+                const option = document.createElement("option");
                 option.value = "";
                 option.textContent = "No hay productos disponibles";
                 option.disabled = true;
                 select.appendChild(option);
                 return;
             }
-            
-            let productos = [];
+
+            const productos = [];
             snapshot.forEach(child => {
-                let data = child.val();
+                const data = child.val();
                 productos.push({ id: child.key, nombre: data.nombre, descripcion: data.descripcion || '' });
             });
-            
+
             productos.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            
+
             productos.forEach(p => {
-                let option = document.createElement("option");
+                const option = document.createElement("option");
                 option.value = p.id;
                 option.textContent = p.descripcion ? `${p.nombre} - ${p.descripcion}` : p.nombre;
                 option.setAttribute("data-nombre", p.nombre);
@@ -2601,55 +2830,60 @@
     }
 
     async function crearProductoMaquila() {
-        let nombre = document.getElementById("nombreProductoMaquila").value.trim();
-        let descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
-        
+        const nombre = document.getElementById("nombreProductoMaquila").value.trim();
+        const descripcion = document.getElementById("descripcionProductoMaquila").value.trim();
+
         if (!nombre) {
             mostrarToast('Error', 'Ingrese el nombre del producto', 'error');
             return;
         }
-        
-        let btn = document.getElementById("btnCrearProductoMaquila");
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...'; }
+
+        const btn = document.getElementById("btnCrearProductoMaquila");
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        }
         mostrarLoading(true);
-        
+
         try {
-            let id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
-            
-            await db.ref("maquilas_productos/" + id).set({ 
-                nombre, 
-                descripcion, 
-                fechaCreacion: obtenerFechaEcuador().toISOString() 
+            const id = nombre.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '') + '_' + Date.now();
+
+            await db.ref("maquilas_productos/" + id).set({
+                nombre,
+                descripcion,
+                fechaCreacion: obtenerFechaEcuador().toISOString()
             });
-            
-            await registrarNotificacion("producto_maquila", { 
-                colaborador: usuario, 
-                producto: nombre, 
-                descripcion 
+
+            await registrarNotificacion("producto_maquila", {
+                colaborador: usuario,
+                producto: nombre,
+                descripcion
             });
-            
+
             mostrarToast('Éxito', 'Producto creado correctamente', 'success');
             document.getElementById("nombreProductoMaquila").value = "";
             document.getElementById("descripcionProductoMaquila").value = "";
             await cargarProductosMaquila();
-            
         } catch (error) {
             console.error("Error creando producto maquila:", error);
             mostrarToast('Error', 'Error al crear producto', 'error');
         } finally {
             mostrarLoading(false);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila';
+            }
         }
     }
 
     function filtrarProductosMaquila() {
-        let filtro = document.getElementById("buscadorProductoMaquila").value.toLowerCase();
-        let select = document.getElementById("productoMaquilaSelect");
-        let noResultados = document.getElementById("noResultadosMaquila");
+        const filtro = document.getElementById("buscadorProductoMaquila").value.toLowerCase();
+        const select = document.getElementById("productoMaquilaSelect");
+        const noResultados = document.getElementById("noResultadosMaquila");
         if (!select) return;
         let visibles = 0;
         for (let i = 1; i < select.options.length; i++) {
-            let option = select.options[i];
+            const option = select.options[i];
             if (option.text.toLowerCase().includes(filtro)) {
                 option.style.display = "";
                 visibles++;
@@ -2661,15 +2895,15 @@
     }
 
     function cambiarProductoMaquila() {
-        let select = document.getElementById("productoMaquilaSelect");
-        let form = document.getElementById("maquilaForm");
+        const select = document.getElementById("productoMaquilaSelect");
+        const form = document.getElementById("maquilaForm");
         if (select && select.selectedIndex > 0) {
-            let selectedOption = select.options[select.selectedIndex];
+            const selectedOption = select.options[select.selectedIndex];
             if (selectedOption && selectedOption.value) {
                 form.style.display = "block";
-                productoMaquilaSeleccionado = { 
-                    id: select.value, 
-                    nombre: selectedOption.getAttribute("data-nombre") || selectedOption.text.split(' - ')[0] 
+                productoMaquilaSeleccionado = {
+                    id: select.value,
+                    nombre: selectedOption.getAttribute("data-nombre") || selectedOption.text.split(' - ')[0]
                 };
                 limpiarFormMaquila();
                 setTipoMaquila('solido');
@@ -2697,98 +2931,102 @@
             mostrarToast('Error', 'Seleccione un producto', 'error');
             return;
         }
-        
-        let mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
-        let ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
-        let sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
-        
+
+        const mpCantidad = parseInt(document.getElementById("mpCantidad").value) || 0;
+        const ptCantidad = parseInt(document.getElementById("ptCantidad").value) || 0;
+        const sobrantes = parseInt(document.getElementById("sobrantes").value) || 0;
+
         if (ptCantidad === 0 && sobrantes === 0) {
             mostrarToast('Error', 'Debe ingresar cantidad en Producto Terminado o Sobrantes', 'error');
             return;
         }
-        
+
         const mpPresentacionSelect = document.getElementById('mpPresentacionSelect');
         const ptPresentacionSelect = document.getElementById('ptPresentacionSelect');
         const mpPresentacion = mpPresentacionSelect.options[mpPresentacionSelect.selectedIndex]?.text || '';
         const ptPresentacion = ptPresentacionSelect.options[ptPresentacionSelect.selectedIndex]?.text || '';
-        
+
         mostrarLoading(true);
-        let btn = document.getElementById("btnEnviarMaquila");
-        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...'; }
-        
+        const btn = document.getElementById("btnEnviarMaquila");
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        }
+
         try {
             const fechaEcuador = obtenerFechaEcuador();
-            
-            let maquilaRef = db.ref("maquilas/" + mesActual).push();
+
+            const maquilaRef = db.ref("maquilas/" + mesActual).push();
             await maquilaRef.set({
-                nombre: usuario, 
-                producto: productoMaquilaSeleccionado.nombre, 
+                nombre: usuario,
+                producto: productoMaquilaSeleccionado.nombre,
                 productoId: productoMaquilaSeleccionado.id,
-                mpCantidad, 
-                mpPresentacion, 
-                ptCantidad, 
-                ptPresentacion, 
-                sobrantes, 
-                numTransformacion: "", 
-                fecha: fechaEcuador.toISOString(), 
+                mpCantidad,
+                mpPresentacion,
+                ptCantidad,
+                ptPresentacion,
+                sobrantes,
+                numTransformacion: "",
+                fecha: fechaEcuador.toISOString(),
                 estado: "pendiente",
                 tipo: tipoMaquila
             });
-            
-            await registrarNotificacion("maquila", { 
-                colaborador: usuario, 
-                producto: productoMaquilaSeleccionado.nombre, 
-                mpCantidad, 
-                mpPresentacion, 
-                ptCantidad, 
-                ptPresentacion, 
+
+            await registrarNotificacion("maquila", {
+                colaborador: usuario,
+                producto: productoMaquilaSeleccionado.nombre,
+                mpCantidad,
+                mpPresentacion,
+                ptCantidad,
+                ptPresentacion,
                 sobrantes,
                 fecha: fechaEcuador.toISOString()
             });
-            
+
             mostrarToast('Éxito', 'Maquila enviada correctamente', 'success');
-            
+
             limpiarFormMaquila();
             await cargarDashboard();
             await cargarTodasMaquilas();
-            
+
             document.getElementById("productoMaquilaSelect").selectedIndex = 0;
             document.getElementById("maquilaForm").style.display = "none";
             productoMaquilaSeleccionado = null;
-            
         } catch (error) {
             console.error("Error enviando maquila:", error);
             mostrarToast('Error', 'Error al enviar maquila', 'error');
         } finally {
             mostrarLoading(false);
-            if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Maquila'; }
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Maquila';
+            }
         }
     }
 
-    // ===== FUNCIÓN: Cargar todas las maquilas =====
     async function cargarTodasMaquilas() {
         if (!db || !usuario) return;
-        
-        let container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");
+
+        const container = document.getElementById("todasMaquilasContainer") || document.getElementById("historialMaquilasContainer");
         if (!container) return;
-        
+
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
+
         try {
-            let meses = [];
+            const meses = [];
             for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
+                const fecha = obtenerFechaEcuador();
                 fecha.setMonth(fecha.getMonth() - i);
                 meses.push(fecha.toISOString().substring(0, 7));
             }
-            
+
             todasLasMaquilas = [];
-            
-            for (let mes of meses) {
-                let snapshot = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+
+            for (const mes of meses) {
+                const snapshot = await db.ref("maquilas/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
-                        let m = child.val();
+                        const m = child.val();
                         todasLasMaquilas.push({
                             fecha: new Date(m.fecha).toLocaleDateString('es-ES'),
                             fechaRaw: m.fecha,
@@ -2804,47 +3042,18 @@
                     });
                 }
             }
-            
+
             todasLasMaquilas.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-            
+
             maquilasPagina = 1;
             filtrarHistorialMaquilas();
-            
         } catch (error) {
             console.error("Error cargando maquilas:", error);
             container.innerHTML = "<p class='text-center'>Error al cargar maquilas</p>";
         }
     }
 
-    function filtrarHistorialMaquilas() {
-        const container = document.getElementById("historialMaquilasContainer");
-        if (!container) return;
-        
-        const filtroProducto = document.getElementById("filtroHistorialMaquilaProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroHistorialMaquilaFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroHistorialMaquilaFechaFin")?.value || "";
-        
-        let filtradas = todasLasMaquilas.filter(m => {
-            if (filtroProducto && !m.producto.toLowerCase().includes(filtroProducto)) return false;
-            if (fechaInicio || fechaFin) {
-                const fechaMaquila = new Date(m.fechaRaw).toISOString().split('T')[0];
-                if (fechaInicio && fechaMaquila < fechaInicio) return false;
-                if (fechaFin && fechaMaquila > fechaFin) return false;
-            }
-            return true;
-        });
-        
-        const totalPaginas = Math.ceil(filtradas.length / ITEMS_POR_PAGINA);
-        const inicio = (maquilasPagina - 1) * ITEMS_POR_PAGINA;
-        const fin = inicio + ITEMS_POR_PAGINA;
-        const paginadas = filtradas.slice(inicio, fin);
-        
-        if (paginadas.length === 0) {
-            container.innerHTML = "<p class='text-center'>📭 No hay maquilas que coincidan con los filtros</p>";
-            document.getElementById('paginationMaquilas').innerHTML = '';
-            return;
-        }
-        
+    function renderHistorialMaquilas(paginadas) {
         let html = `<table>
             <thead>
                 <tr>
@@ -2860,7 +3069,7 @@
                 </tr>
             </thead>
             <tbody>`;
-        
+
         paginadas.forEach(m => {
             html += `<tr>
                 <td>${m.fecha}</td>
@@ -2874,103 +3083,103 @@
                 <td><span class="badge ${m.estado === 'Asignada' ? 'badge-success' : 'badge-warning'}">${m.estado}</span></td>
             </tr>`;
         });
-        
+
         html += `</tbody></table>`;
-        container.innerHTML = html;
-        
-        let paginacionHtml = '';
-        if (totalPaginas > 1) {
-            paginacionHtml += `<button onclick="cambiarPaginaMaquilas(1)" ${maquilasPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-double-left"></i></button>`;
-            paginacionHtml += `<button onclick="cambiarPaginaMaquilas(${maquilasPagina - 1})" ${maquilasPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-left"></i></button>`;
-            
-            for (let i = Math.max(1, maquilasPagina - 2); i <= Math.min(totalPaginas, maquilasPagina + 2); i++) {
-                paginacionHtml += `<button onclick="cambiarPaginaMaquilas(${i})" class="${maquilasPagina === i ? 'active' : ''}">${i}</button>`;
-            }
-            
-            paginacionHtml += `<button onclick="cambiarPaginaMaquilas(${maquilasPagina + 1})" ${maquilasPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-right"></i></button>`;
-            paginacionHtml += `<button onclick="cambiarPaginaMaquilas(${totalPaginas})" ${maquilasPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-double-right"></i></button>`;
-        }
-        
-        document.getElementById('paginationMaquilas').innerHTML = paginacionHtml;
+        return html;
+    }
+
+    function filtrarHistorialMaquilas() {
+        filtrarDatos(todasLasMaquilas, "filtroHistorialMaquilaProducto", "filtroHistorialMaquilaFechaInicio", "filtroHistorialMaquilaFechaFin", maquilasPagina, "historialMaquilasContainer", "paginationMaquilas", renderHistorialMaquilas, "📭 No hay maquilas que coincidan con los filtros");
     }
 
     function cambiarPaginaMaquilas(pagina) {
-        maquilasPagina = pagina;
-        filtrarHistorialMaquilas();
+        cambiarPaginaGenerica(pagina, 'Maquilas', maquilasPagina);
     }
 
     function limpiarFiltrosHistorialMaquilas() {
-        document.getElementById("filtroHistorialMaquilaProducto").value = "";
-        const hoy = obtenerFechaEcuador();
-        const hace30Dias = new Date(hoy);
-        hace30Dias.setDate(hace30Dias.getDate() - 30);
-        document.getElementById("filtroHistorialMaquilaFechaInicio").value = hace30Dias.toISOString().split('T')[0];
-        document.getElementById("filtroHistorialMaquilaFechaFin").value = hoy.toISOString().split('T')[0];
-        maquilasPagina = 1;
-        filtrarHistorialMaquilas();
+        limpiarFiltrosGenerica("filtroHistorialMaquilaProducto", "filtroHistorialMaquilaFechaInicio", "filtroHistorialMaquilaFechaFin", 'maquilasPagina', filtrarHistorialMaquilas);
     }
 
-    // ===== FUNCIONES DE DASHBOARD =====
+    // ============================================
+    // DASHBOARD
+    // ============================================
+
     async function cargarDashboard() {
         if (!db || !usuario) return;
         try {
             fechaHoy = obtenerFechaHoyEcuador();
             mesActual = obtenerMesActualEcuador();
-            
-            let [asignacionesSnap, enviosSnap, maquilasSnap] = await Promise.all([
+            const anoActual = fechaHoy.getFullYear().toString();
+
+            const [asignacionesSnap, enviosSnap, maquilasSnap, todoInventarioSnap] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
                 db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value"),
-                db.ref("maquilas/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
+                db.ref("maquilas/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value"),
+                db.ref("inventario").once("value")
             ]);
-            
-            let totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
-            let completadosHoy = 0, precisos = 0, totalEnvios = 0;
-            
-            if (enviosSnap.exists()) {
-                enviosSnap.forEach(child => {
-                    let envio = child.val();
-                    if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) completadosHoy++;
-                    let total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
-                    if (total === (envio.sistema || 0)) precisos++;
-                    totalEnvios++;
+
+            const totalAsignaciones = asignacionesSnap.exists() ? asignacionesSnap.numChildren() : 0;
+            let completadosHoy = 0, completadosAno = 0, precisos = 0, totalEnvios = 0;
+
+            // Contar respuestas del año completo
+            if (todoInventarioSnap.exists()) {
+                todoInventarioSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(child => {
+                            const envio = child.val();
+                            if (envio.nombre && envio.nombre.trim() === usuario.trim()) {
+                                completadosAno++;
+                                if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) {
+                                    completadosHoy++;
+                                }
+                                const total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
+                                if (total === (envio.sistema || 0)) {
+                                    precisos++;
+                                }
+                                totalEnvios++;
+                            }
+                        });
+                    }
                 });
             }
-            
+
             let totalMaquilasHoy = 0;
             if (maquilasSnap.exists()) {
                 maquilasSnap.forEach(child => {
-                    let maquila = child.val();
+                    const maquila = child.val();
                     if (maquila.fecha && maquila.fecha.split("T")[0] === fechaHoy) totalMaquilasHoy++;
                 });
             }
-            
+
+            console.log("Dashboard:", { usuario, totalAsignaciones, completadosAno, completadosHoy, totalEnvios });
             document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-            document.getElementById("totalCompletados").textContent = completadosHoy;
+            document.getElementById("totalCompletados").textContent = completadosAno;
             document.getElementById("totalMaquilas").textContent = totalMaquilasHoy;
-            
-            let precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
+
+            const precision = totalEnvios > 0 ? Math.round((precisos / totalEnvios) * 100) : 100;
             document.getElementById("precision").textContent = precision + '%';
             document.getElementById("progresoTexto").textContent = `${completadosHoy}/${totalAsignaciones}`;
             document.getElementById("progresoBarra").style.width = totalAsignaciones > 0 ? (completadosHoy / totalAsignaciones) * 100 + '%' : '0%';
             document.getElementById("pendientesCount").textContent = totalAsignaciones - completadosHoy;
 
             if (grafico) grafico.destroy();
-            
-            let fechas = [];
-            let datos = [];
+
+            const fechas = [];
+            const datos = [];
             for (let i = 6; i >= 0; i--) {
-                let fecha = new Date(obtenerFechaEcuador());
+                const fecha = new Date(obtenerFechaEcuador());
                 fecha.setDate(fecha.getDate() - i);
-                let fechaStr = fecha.toISOString().split('T')[0];
-                let fechaMes = fechaStr.substring(0, 7);
-                let diaSemana = fecha.toLocaleDateString('es-ES', { weekday: 'short' });
+                const fechaStr = fecha.toISOString().split('T')[0];
+                const fechaMes = fechaStr.substring(0, 7);
+                const diaSemana = fecha.toLocaleDateString('es-ES', { weekday: 'short' });
                 fechas.push(diaSemana);
-                
-                let snapDia = await db.ref("inventario/" + fechaMes).orderByChild("nombre").equalTo(usuario).once("value");
+
+                const snapDia = await db.ref("inventario/" + fechaMes).orderByChild("nombre").equalTo(usuario).once("value");
                 let count = 0;
                 if (snapDia.exists()) {
                     snapDia.forEach(child => {
-                        let envio = child.val();
+                        const envio = child.val();
                         if (envio.fecha && envio.fecha.split('T')[0] === fechaStr) {
                             count++;
                         }
@@ -2978,8 +3187,8 @@
                 }
                 datos.push(count);
             }
-            
-            let ctx = document.getElementById('graficoSemanal').getContext('2d');
+
+            const ctx = document.getElementById('graficoSemanal').getContext('2d');
             grafico = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -2996,21 +3205,21 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { 
-                            labels: { color: '#fff' } 
-                        } 
+                    plugins: {
+                        legend: {
+                            labels: { color: '#fff' }
+                        }
                     },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: 'rgba(255,255,255,0.1)' }, 
-                            ticks: { color: '#fff' } 
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#fff' }
                         },
-                        x: { 
-                            grid: { color: 'rgba(255,255,255,0.1)' }, 
-                            ticks: { color: '#fff' } 
-                        } 
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#fff' }
+                        }
                     }
                 }
             });
@@ -3021,82 +3230,84 @@
 
     async function cargarPendientes() {
         if (!db || !usuario) return;
-        let container = document.getElementById("pendientesContainer");
+        const container = document.getElementById("pendientesContainer");
         if (!container) return;
-        
+
         try {
             fechaHoy = obtenerFechaHoyEcuador();
             mesActual = obtenerMesActualEcuador();
-            
-            let [asignacionesSnap, enviosSnap] = await Promise.all([
+
+            const [asignacionesSnap, enviosSnap] = await Promise.all([
                 db.ref("asignaciones/" + fechaHoy + "/" + usuario).once("value"),
                 db.ref("inventario/" + mesActual).orderByChild("nombre").equalTo(usuario).once("value")
             ]);
-            
+
             if (!asignacionesSnap.exists()) {
                 container.innerHTML = "<p class='text-center'>No hay asignaciones para hoy</p>";
                 return;
             }
-            
-            let enviadosHoy = new Set();
+
+            const enviadosHoy = new Set();
             if (enviosSnap.exists()) {
                 enviosSnap.forEach(child => {
-                    let envio = child.val();
+                    const envio = child.val();
                     if (envio.fecha && envio.fecha.split("T")[0] === fechaHoy) enviadosHoy.add(envio.productoId);
                 });
             }
-            
-            let pendientes = [];
-            let asignaciones = asignacionesSnap.val();
-            
-            for (let productoId in asignaciones) {
+
+            const pendientes = [];
+            const asignaciones = asignacionesSnap.val();
+
+            for (const productoId in asignaciones) {
                 if (!enviadosHoy.has(productoId)) {
-                    pendientes.push({ 
-                        nombre: asignaciones[productoId].nombreProducto, 
-                        cantidad: asignaciones[productoId].cantidadAsignada || 0 
+                    pendientes.push({
+                        nombre: asignaciones[productoId].nombreProducto,
+                        cantidad: asignaciones[productoId].cantidadAsignada || 0
                     });
                 }
             }
-            
+
             if (pendientes.length === 0) {
                 container.innerHTML = "<p class='text-center'><i class='fas fa-check-circle' style='color: var(--success);'></i> ¡Todos los productos completados!</p>";
                 return;
             }
-            
+
             let html = `<table><thead><tr><th>Producto</th><th>Cantidad a verificar</th></tr></thead><tbody>`;
             pendientes.forEach(p => html += `<tr><td>${p.nombre}</td><td><span class="badge badge-primary">${p.cantidad}</span></td></tr>`);
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
         } catch (error) {
             console.error("Error cargando pendientes:", error);
             container.innerHTML = "<p class='text-center'>Error al cargar pendientes</p>";
         }
     }
 
-    // ===== FUNCIONES DE HISTORIAL =====
+    // ============================================
+    // HISTORIAL
+    // ============================================
+
     async function cargarHistorial() {
         if (!db || !usuario) return;
-        let container = document.getElementById("historialContainer");
+        const container = document.getElementById("historialContainer");
         if (!container) return;
-        
+
         container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-        
+
         try {
-            let meses = [];
+            const meses = [];
             for (let i = 0; i < 6; i++) {
-                let fecha = obtenerFechaEcuador();
+                const fecha = obtenerFechaEcuador();
                 fecha.setMonth(fecha.getMonth() - i);
                 meses.push(fecha.toISOString().substring(0, 7));
             }
-            
+
             todosLosEnvios = [];
-            
-            for (let mes of meses) {
-                let snapshot = await db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
+
+            for (const mes of meses) {
+                const snapshot = await db.ref("inventario/" + mes).orderByChild("nombre").equalTo(usuario).once("value");
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
-                        let envio = child.val();
+                        const envio = child.val();
                         todosLosEnvios.push({
                             fecha: new Date(envio.fecha).toLocaleDateString('es-ES'),
                             fechaRaw: envio.fecha,
@@ -3111,47 +3322,18 @@
                     });
                 }
             }
-            
+
             todosLosEnvios.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-            
+
             inventarioPagina = 1;
             filtrarHistorialInventario();
-            
         } catch (error) {
             console.error("Error cargando historial:", error);
             container.innerHTML = "<p class='text-center'>Error al cargar historial</p>";
         }
     }
 
-    function filtrarHistorialInventario() {
-        const container = document.getElementById("historialContainer");
-        if (!container) return;
-        
-        const filtroProducto = document.getElementById("filtroInventarioProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroInventarioFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
-        
-        let filtrados = todosLosEnvios.filter(e => {
-            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
-            if (fechaInicio || fechaFin) {
-                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
-                if (fechaInicio && fechaEnvio < fechaInicio) return false;
-                if (fechaFin && fechaEnvio > fechaFin) return false;
-            }
-            return true;
-        });
-        
-        const totalPaginas = Math.ceil(filtrados.length / ITEMS_POR_PAGINA);
-        const inicio = (inventarioPagina - 1) * ITEMS_POR_PAGINA;
-        const fin = inicio + ITEMS_POR_PAGINA;
-        const paginadas = filtrados.slice(inicio, fin);
-        
-        if (paginadas.length === 0) {
-            container.innerHTML = "<p class='text-center'>📭 No hay registros que coincidan con los filtros</p>";
-            document.getElementById('paginationInventario').innerHTML = '';
-            return;
-        }
-        
+    function renderHistorialInventario(paginadas) {
         let html = `<table><thead><tr>
             <th>Fecha</th>
             <th>Producto</th>
@@ -3163,11 +3345,11 @@
             <th>Estado</th>
             <th>Aprobado</th>
         </tr></thead><tbody>`;
-        
+
         paginadas.forEach(e => {
-            let estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
-            let aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
-            
+            const estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
+            const aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
+
             html += `<tr>
                 <td>${e.fecha}</td>
                 <td><strong>${e.producto}</strong></td>
@@ -3180,112 +3362,320 @@
                 <td>${aprobadoHtml}</td>
             </tr>`;
         });
-        
+
         html += `</tbody></table>`;
-        container.innerHTML = html;
-        
-        let paginacionHtml = '';
-        if (totalPaginas > 1) {
-            paginacionHtml += `<button onclick="cambiarPaginaInventario(1)" ${inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-double-left"></i></button>`;
-            paginacionHtml += `<button onclick="cambiarPaginaInventario(${inventarioPagina - 1})" ${inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-left"></i></button>`;
-            
-            for (let i = Math.max(1, inventarioPagina - 2); i <= Math.min(totalPaginas, inventarioPagina + 2); i++) {
-                paginacionHtml += `<button onclick="cambiarPaginaInventario(${i})" class="${inventarioPagina === i ? 'active' : ''}">${i}</button>`;
-            }
-            
-            paginacionHtml += `<button onclick="cambiarPaginaInventario(${inventarioPagina + 1})" ${inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-right"></i></button>`;
-            paginacionHtml += `<button onclick="cambiarPaginaInventario(${totalPaginas})" ${inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-double-right"></i></button>`;
-        }
-        
-        document.getElementById('paginationInventario').innerHTML = paginacionHtml;
+        return html;
+    }
+
+    function filtrarHistorialInventario() {
+        filtrarDatos(todosLosEnvios, "filtroInventarioProducto", "filtroInventarioFechaInicio", "filtroInventarioFechaFin", inventarioPagina, "historialContainer", "paginationInventario", renderHistorialInventario, "📭 No hay registros que coincidan con los filtros");
     }
 
     function cambiarPaginaInventario(pagina) {
-        inventarioPagina = pagina;
-        filtrarHistorialInventario();
+        cambiarPaginaGenerica(pagina, 'Inventario', inventarioPagina);
     }
 
     function limpiarFiltrosInventario() {
-        document.getElementById("filtroInventarioProducto").value = "";
+        limpiarFiltrosGenerica("filtroInventarioProducto", "filtroInventarioFechaInicio", "filtroInventarioFechaFin", 'inventarioPagina', filtrarHistorialInventario);
+    }
+
+    function exportarInventarioExcel() {
+        const filtroProducto = document.getElementById("filtroInventarioProducto")?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById("filtroInventarioFechaInicio")?.value || "";
+        const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
+
+        const filtrados = todosLosEnvios.filter(e => {
+            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
+            if (fechaInicio || fechaFin) {
+                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
+                if (fechaInicio && fechaEnvio < fechaInicio) return false;
+                if (fechaFin && fechaEnvio > fechaFin) return false;
+            }
+            return true;
+        });
+
+        const data = filtrados.map(e => ({
+            Fecha: e.fecha,
+            Producto: e.producto,
+            'Stock Sistema': e.sistema,
+            Físico: e.fisico,
+            Muestras: e.muestras,
+            Caducados: e.caducados,
+            Total: e.total,
+            Estado: e.total === e.sistema ? 'Correcto' : 'Diferencia',
+            Aprobado: e.aprobado ? 'Sí' : 'No'
+        }));
+        exportarExcelGenerica(data, "inventario");
+    }
+
+    function exportarMaquilasExcel() {
+        const filtroProducto = document.getElementById("filtroHistorialMaquilaProducto")?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById("filtroHistorialMaquilaFechaInicio")?.value || "";
+        const fechaFin = document.getElementById("filtroHistorialMaquilaFechaFin")?.value || "";
+
+        const filtradas = todasLasMaquilas.filter(m => {
+            if (filtroProducto && !m.producto.toLowerCase().includes(filtroProducto)) return false;
+            if (fechaInicio || fechaFin) {
+                const fechaMaquila = new Date(m.fechaRaw).toISOString().split('T')[0];
+                if (fechaInicio && fechaMaquila < fechaInicio) return false;
+                if (fechaFin && fechaMaquila > fechaFin) return false;
+            }
+            return true;
+        });
+
+        const data = filtradas.map(m => ({
+            Fecha: m.fecha,
+            Producto: m.producto,
+            'MP Cantidad': m.mpCantidad,
+            'MP Presentación': m.mpPresentacion,
+            'PT Cantidad': m.ptCantidad,
+            'PT Presentación': m.ptPresentacion,
+            Sobrantes: m.sobrantes,
+            'N° Transformación': m.numTransformacion,
+            Estado: m.estado
+        }));
+        exportarExcelGenerica(data, "maquilas");
+    }
+
+    // ============================================
+    // HISTORIAL PRECISOS
+    // ============================================
+
+    async function cargarHistorialPrecisos() {
+        if (!db || !usuario) return;
+        const container = document.getElementById("historialPrecisosContainer");
+        if (!container) return;
+
+        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
+
+        try {
+            const anoActual = obtenerFechaEcuador().getFullYear().toString();
+            todosLosPrecisos = [];
+
+            const snapshot = await db.ref("inventario").once("value");
+            if (snapshot.exists()) {
+                snapshot.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(child => {
+                            const envio = child.val();
+                            if (envio.nombre && envio.nombre.trim() === usuario.trim()) {
+                                const total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
+                                if (total === (envio.sistema || 0)) {
+                                    todosLosPrecisos.push({
+                                        fecha: new Date(envio.fecha).toLocaleDateString('es-ES'),
+                                        fechaRaw: envio.fecha,
+                                        producto: envio.producto,
+                                        sistema: envio.sistema || 0,
+                                        fisico: envio.fisico || 0,
+                                        muestras: envio.muestras || 0,
+                                        caducados: envio.caducados || 0,
+                                        total: total,
+                                        aprobado: envio.aprobado || false
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            todosLosPrecisos.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
+
+            precisosPagina = 1;
+            filtrarHistorialPrecisos();
+        } catch (error) {
+            console.error("Error cargando historial preciso:", error);
+            container.innerHTML = "<p class='text-center'>Error al cargar historial preciso</p>";
+        }
+    }
+
+    function renderHistorialPrecisos(paginadas) {
+        let html = `<table><thead><tr>
+            <th>Fecha</th>
+            <th>Producto</th>
+            <th>Stock</th>
+            <th>Físico</th>
+            <th>Muestras</th>
+            <th>Caducados</th>
+            <th>Total</th>
+            <th>Aprobado</th>
+        </tr></thead><tbody>`;
+
+        paginadas.forEach(e => {
+            const aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
+
+            html += `<tr>
+                <td>${e.fecha}</td>
+                <td><strong>${e.producto}</strong></td>
+                <td>${e.sistema}</td>
+                <td>${e.fisico}</td>
+                <td>${e.muestras}</td>
+                <td>${e.caducados}</td>
+                <td><strong>${e.total}</strong></td>
+                <td>${aprobadoHtml}</td>
+            </tr>`;
+        });
+
+        html += `</tbody></table>`;
+        return html;
+    }
+
+    function filtrarHistorialPrecisos() {
+        filtrarDatos(todosLosPrecisos, "filtroPrecisosProducto", "filtroPrecisosFechaInicio", "filtroPrecisosFechaFin", precisosPagina, "historialPrecisosContainer", "paginationPrecisos", renderHistorialPrecisos, "📭 No hay registros precisos que coincidan con los filtros");
+    }
+
+    function cambiarPaginaPrecisos(pagina) {
+        cambiarPaginaGenerica(pagina, 'Precisos', precisosPagina);
+    }
+
+    function limpiarFiltrosPrecisos() {
+        limpiarFiltrosGenerica("filtroPrecisosProducto", "filtroPrecisosFechaInicio", "filtroPrecisosFechaFin", 'precisosPagina', filtrarHistorialPrecisos);
+    }
+
+    function exportarPrecisosExcel() {
+        const filtroProducto = document.getElementById("filtroPrecisosProducto")?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById("filtroPrecisosFechaInicio")?.value || "";
+        const fechaFin = document.getElementById("filtroPrecisosFechaFin")?.value || "";
+
+        const filtrados = todosLosPrecisos.filter(e => {
+            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
+            if (fechaInicio || fechaFin) {
+                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
+                if (fechaInicio && fechaEnvio < fechaInicio) return false;
+                if (fechaFin && fechaEnvio > fechaFin) return false;
+            }
+            return true;
+        });
+
+        const data = filtrados.map(e => ({
+            Fecha: e.fecha,
+            Producto: e.producto,
+            'Stock Sistema': e.sistema,
+            Físico: e.fisico,
+            Muestras: e.muestras,
+            Caducados: e.caducados,
+            Total: e.total,
+            Aprobado: e.aprobado ? 'Sí' : 'No'
+        }));
+        exportarExcelGenerica(data, "inventarios_precisos");
+    }
+
+    // ============================================
+    // FUNCIONES GENÉRICAS PARA EVITAR DUPLICACIÓN
+    // ============================================
+
+    function filtrarDatos(dataArray, filtroProductoId, filtroFechaInicioId, filtroFechaFinId, pageVar, containerId, paginationId, renderFunction, emptyMessage) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const filtroProducto = document.getElementById(filtroProductoId)?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById(filtroFechaInicioId)?.value || "";
+        const fechaFin = document.getElementById(filtroFechaFinId)?.value || "";
+
+        const filtrados = dataArray.filter(item => {
+            if (filtroProducto && !item.producto.toLowerCase().includes(filtroProducto)) return false;
+            if (fechaInicio || fechaFin) {
+                const fechaItem = new Date(item.fechaRaw).toISOString().split('T')[0];
+                if (fechaInicio && fechaItem < fechaInicio) return false;
+                if (fechaFin && fechaItem > fechaFin) return false;
+            }
+            return true;
+        });
+
+        const totalPaginas = Math.ceil(filtrados.length / ITEMS_POR_PAGINA);
+        const inicio = (pageVar - 1) * ITEMS_POR_PAGINA;
+        const fin = inicio + ITEMS_POR_PAGINA;
+        const paginadas = filtrados.slice(inicio, fin);
+
+        if (paginadas.length === 0) {
+            container.innerHTML = `<p class='text-center'>${emptyMessage}</p>`;
+            document.getElementById(paginationId).innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = renderFunction(paginadas);
+
+        let paginacionHtml = '';
+        if (totalPaginas > 1) {
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(1, '${paginationId.replace('pagination', '')}')" ${pageVar === 1 ? 'disabled' : ''}><i class="fas fa-angle-double-left"></i></button>`;
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${pageVar - 1}, '${paginationId.replace('pagination', '')}')" ${pageVar === 1 ? 'disabled' : ''}><i class="fas fa-angle-left"></i></button>`;
+
+            for (let i = Math.max(1, pageVar - 2); i <= Math.min(totalPaginas, pageVar + 2); i++) {
+                paginacionHtml += `<button onclick="cambiarPaginaGenerica(${i}, '${paginationId.replace('pagination', '')}')" class="${pageVar === i ? 'active' : ''}">${i}</button>`;
+            }
+
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${pageVar + 1}, '${paginationId.replace('pagination', '')}')" ${pageVar === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-right"></i></button>`;
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${totalPaginas}, '${paginationId.replace('pagination', '')}')" ${pageVar === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-double-right"></i></button>`;
+        }
+
+        document.getElementById(paginationId).innerHTML = paginacionHtml;
+    }
+
+    function cambiarPaginaGenerica(pagina, tipo) {
+        if (tipo === 'Inventario') {
+            inventarioPagina = pagina;
+            filtrarHistorialInventario();
+        } else if (tipo === 'Precisos') {
+            precisosPagina = pagina;
+            filtrarHistorialPrecisos();
+        } else if (tipo === 'Maquilas') {
+            maquilasPagina = pagina;
+            filtrarHistorialMaquilas();
+        }
+    }
+
+    function limpiarFiltrosGenerica(filtroProductoId, filtroFechaInicioId, filtroFechaFinId, pageVarName, filtrarFunction) {
+        document.getElementById(filtroProductoId).value = "";
         const hoy = obtenerFechaEcuador();
         const hace30Dias = new Date(hoy);
         hace30Dias.setDate(hace30Dias.getDate() - 30);
-        document.getElementById("filtroInventarioFechaInicio").value = hace30Dias.toISOString().split('T')[0];
-        document.getElementById("filtroInventarioFechaFin").value = hoy.toISOString().split('T')[0];
-        inventarioPagina = 1;
-        filtrarHistorialInventario();
+        document.getElementById(filtroFechaInicioId).value = hace30Dias.toISOString().split('T')[0];
+        document.getElementById(filtroFechaFinId).value = hoy.toISOString().split('T')[0];
+        
+        if (pageVarName === 'inventarioPagina') inventarioPagina = 1;
+        else if (pageVarName === 'precisosPagina') precisosPagina = 1;
+        else if (pageVarName === 'maquilasPagina') maquilasPagina = 1;
+        
+        filtrarFunction();
     }
 
-    // ===== FUNCIONES DE EXPORTACIÓN =====
-    function exportarInventarioCSV() {
-        if (todosLosEnvios.length === 0) {
+    function exportarExcelGenerica(dataArray, filename) {
+        if (dataArray.length === 0) {
             mostrarToast('Info', 'No hay datos para exportar', 'info');
             return;
         }
-        
-        let csv = [];
-        csv.push('Fecha,Producto,Stock Sistema,Físico,Muestras,Caducados,Total,Estado,Aprobado');
-        
-        todosLosEnvios.forEach(e => {
-            let estado = e.total === e.sistema ? 'Correcto' : 'Diferencia';
-            let aprobado = e.aprobado ? 'Sí' : 'No';
-            csv.push(`"${e.fecha}","${e.producto}",${e.sistema},${e.fisico},${e.muestras},${e.caducados},${e.total},"${estado}","${aprobado}"`);
-        });
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "inventario_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
+
+        const ws = XLSX.utils.json_to_sheet(dataArray);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Datos");
+        XLSX.writeFile(wb, filename + "_" + obtenerFechaHoyEcuador() + ".xlsx");
+        mostrarToast('Éxito', 'Excel exportado', 'success');
     }
 
-    function exportarMaquilasCSV() {
-        if (todasLasMaquilas.length === 0) {
-            mostrarToast('Info', 'No hay datos para exportar', 'info');
-            return;
-        }
-        
-        let csv = [];
-        csv.push('Fecha,Producto,MP Cantidad,MP Presentación,PT Cantidad,PT Presentación,Sobrantes,N° Transformación,Estado');
-        
-        todasLasMaquilas.forEach(m => {
-            csv.push(`"${m.fecha}","${m.producto}",${m.mpCantidad},"${m.mpPresentacion}",${m.ptCantidad},"${m.ptPresentacion}",${m.sobrantes},"${m.numTransformacion}","${m.estado}"`);
-        });
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "maquilas_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
-    }
+    // ============================================
+    // INICIALIZACIÓN
+    // ============================================
 
-    function cerrarSesion() {
-        mostrarToast('Sesión cerrada', 'Hasta pronto', 'info');
-        setTimeout(() => { 
-            localStorage.clear(); 
-            window.location.href = "index.html"; 
-        }, 1500);
-    }
-
-    // ===== INICIALIZACIÓN =====
     async function inicializar() {
         mostrarLoading(true);
         console.log("Inicializando con fecha Ecuador:", fechaHoy, "mes:", mesActual);
-        
+
         configurarFechasFiltros();
         iniciarListenerNotificaciones();
-        
+
         await Promise.all([
-            cargarDashboard(), 
-            cargarProductosAsignados(), 
-            cargarPendientes(), 
-            cargarHistorial(), 
-            cargarProductosMaquila(), 
+            cargarDashboard(),
+            cargarProductosAsignados(),
+            cargarPendientes(),
+            cargarHistorial(),
+            cargarHistorialPrecisos(),
+            cargarProductosMaquila(),
             cargarTodasMaquilas(),
             cargarNotificaciones(),
             cargarInventariosDevueltos()
         ]);
-        
+
         mostrarLoading(false);
     }
 
@@ -3300,5 +3690,6 @@
         mesActual = obtenerMesActualEcuador();
     }, 60000);
 </script>
+
 </body>
 </html>
