@@ -309,6 +309,123 @@
             display: block;
         }
 
+        .view#viewDashboard {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: var(--border-radius-xl);
+            padding: 24px;
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+
+        .view#viewDashboard .card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.05);
+        }
+
+        .view#viewDashboard .stats-grid .stat-card {
+            background: white;
+            color: #0f172a;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .view#viewDashboard .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 32px rgba(15, 23, 42, 0.08);
+        }
+
+        .view#viewDashboard .stat-icon {
+            background: #e7f6ed;
+            color: #0f5132;
+            box-shadow: none;
+        }
+
+        .view#viewDashboard .stat-info h4,
+        .view#viewDashboard .card-header h3,
+        .view#viewDashboard .badge-primary,
+        .view#viewDashboard .progress-header {
+            color: #0f172a;
+        }
+
+        .view#viewDashboard .card-header {
+            border-bottom-color: rgba(15, 23, 42, 0.08);
+        }
+
+        .view#viewDashboard .badge-primary {
+            background: #d1e7dd;
+            color: #0f5132;
+            border-color: rgba(15, 23, 42, 0.08);
+        }
+
+        .view#viewDashboard .progress-container {
+            background: white;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .view#viewDashboard .progress-bar {
+            background: #e2e8f0;
+        }
+
+        .view#viewDashboard .progress-fill {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+        }
+
+        .view#viewDashboard .progress-header {
+            color: #475569;
+        }
+
+        .view#viewDashboard .progress-container span,
+        .view#viewDashboard .progress-container .progress-fill {
+            color: #0f172a;
+        }
+
+        .dashboard-welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-welcome h2 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-welcome p {
+            color: #475569;
+            font-size: 15px;
+            line-height: 1.6;
+            max-width: 760px;
+        }
+
+        .dashboard-welcome .welcome-badge {
+            background: #e7f6ed;
+            color: #0f5132;
+            padding: 12px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .view#viewDashboard .chart-container {
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .view#viewDashboard canvas {
+            max-height: 300px;
+        }
+
         /* Tarjetas */
         .card {
             background: rgba(255, 255, 255, 0.1);
@@ -1300,6 +1417,13 @@
 
     <!-- VISTA DASHBOARD -->
     <div id="viewDashboard" class="view active">
+        <div class="dashboard-welcome" data-aos="fade-up">
+            <div>
+                <h2>Panel de Colaborador</h2>
+                <p>Esto es tu resumen profesional: revisa las asignaciones de hoy, el progreso semanal y tus métricas clave en un solo lugar.</p>
+            </div>
+            <span class="welcome-badge">Resumen</span>
+        </div>
         <div class="stats-grid">
             <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="stat-icon"><i class="fas fa-tasks"></i></div>
@@ -1646,6 +1770,10 @@
                     </div>
                 </div>
                 <div class="filtros-acciones">
+                    <label style="display: flex; align-items: center; gap: 8px; margin-right: auto;">
+                        <input type="checkbox" id="filtroSoloPrecisos" onchange="filtrarHistorialInventario()" style="cursor: pointer;">
+                        <span>Solo precisos</span>
+                    </label>
                     <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosInventario()">
                         <i class="fas fa-eraser"></i> Limpiar filtros
                     </button>
@@ -1705,50 +1833,6 @@
 
             <div id="paginationMaquilas" class="pagination"></div>
         </div>
-
-        <div class="card" data-aos="fade-up">
-            <div class="card-header">
-                <h3><i class="fas fa-check-circle"></i> Historial de Inventarios Precisos</h3>
-                <button class="btn btn-primary btn-sm" onclick="cargarHistorialPrecisos()">
-                    <i class="fas fa-sync-alt"></i> Actualizar
-                </button>
-            </div>
-
-            <!-- Filtros precisos -->
-            <div class="filtros-container">
-                <div class="filtros-grid">
-                    <div class="filtro-grupo">
-                        <i class="fas fa-search filtro-icon"></i>
-                        <label>Buscar por producto</label>
-                        <input type="text" class="filtro-input" id="filtroPrecisosProducto" placeholder="Nombre del producto..." style="padding-left: 40px;" onkeyup="filtrarHistorialPrecisos()">
-                    </div>
-                    <div class="filtro-grupo">
-                        <i class="fas fa-calendar filtro-icon"></i>
-                        <label>Fecha desde</label>
-                        <input type="date" class="filtro-input" id="filtroPrecisosFechaInicio" style="padding-left: 40px;" onchange="filtrarHistorialPrecisos()">
-                    </div>
-                    <div class="filtro-grupo">
-                        <i class="fas fa-calendar filtro-icon"></i>
-                        <label>Fecha hasta</label>
-                        <input type="date" class="filtro-input" id="filtroPrecisosFechaFin" style="padding-left: 40px;" onchange="filtrarHistorialPrecisos()">
-                    </div>
-                </div>
-                <div class="filtros-acciones">
-                    <button class="btn btn-secondary btn-sm" onclick="limpiarFiltrosPrecisos()">
-                        <i class="fas fa-eraser"></i> Limpiar filtros
-                    </button>
-                    <button class="btn btn-success btn-sm" onclick="exportarPrecisosExcel()">
-                        <i class="fas fa-file-excel"></i> Exportar Excel
-                    </button>
-                </div>
-            </div>
-
-            <div id="historialPrecisosContainer" class="table-container">
-                <p class="text-center">Cargando historial preciso...</p>
-            </div>
-
-            <div id="paginationPrecisos" class="pagination"></div>
-        </div>
     </div>
 </div>
 
@@ -1802,13 +1886,11 @@
     let productosEnviadosHoy = new Set();
     let grafico = null;
     let todosLosEnvios = [];
-    let todosLosPrecisos = [];
     let todasLasMaquilas = [];
     let notificaciones = [];
     let devoluciones = [];
     let devolucionEnCorreccion = null;
     let inventarioPagina = 1;
-    let precisosPagina = 1;
     let maquilasPagina = 1;
     const ITEMS_POR_PAGINA = 20;
     let tipoMaquila = 'solido';
@@ -1958,14 +2040,23 @@
         const fechaInicio = hace30Dias.toISOString().split('T')[0];
         const fechaFin = hoy.toISOString().split('T')[0];
 
-        document.getElementById('filtroInventarioFechaInicio').value = fechaInicio;
-        document.getElementById('filtroInventarioFechaFin').value = fechaFin;
-        document.getElementById('filtroPrecisosFechaInicio').value = fechaInicio;
-        document.getElementById('filtroPrecisosFechaFin').value = fechaFin;
-        document.getElementById('filtroHistorialMaquilaFechaInicio').value = fechaInicio;
-        document.getElementById('filtroHistorialMaquilaFechaFin').value = fechaFin;
-        document.getElementById('filtroDevFechaInicio').value = fechaInicio;
-        document.getElementById('filtroDevFechaFin').value = fechaFin;
+        const filtroInventarioInicio = document.getElementById('filtroInventarioFechaInicio');
+        const filtroInventarioFin = document.getElementById('filtroInventarioFechaFin');
+        const filtroPrecisosInicio = document.getElementById('filtroPrecisosFechaInicio');
+        const filtroPrecisosFin = document.getElementById('filtroPrecisosFechaFin');
+        const filtroHistorialMaquilaInicio = document.getElementById('filtroHistorialMaquilaFechaInicio');
+        const filtroHistorialMaquilaFin = document.getElementById('filtroHistorialMaquilaFechaFin');
+        const filtroDevFechaInicio = document.getElementById('filtroDevFechaInicio');
+        const filtroDevFechaFin = document.getElementById('filtroDevFechaFin');
+
+        if (filtroInventarioInicio) filtroInventarioInicio.value = fechaInicio;
+        if (filtroInventarioFin) filtroInventarioFin.value = fechaFin;
+        if (filtroPrecisosInicio) filtroPrecisosInicio.value = fechaInicio;
+        if (filtroPrecisosFin) filtroPrecisosFin.value = fechaFin;
+        if (filtroHistorialMaquilaInicio) filtroHistorialMaquilaInicio.value = fechaInicio;
+        if (filtroHistorialMaquilaFin) filtroHistorialMaquilaFin.value = fechaFin;
+        if (filtroDevFechaInicio) filtroDevFechaInicio.value = fechaInicio;
+        if (filtroDevFechaFin) filtroDevFechaFin.value = fechaFin;
     }
 
     // ============================================
@@ -3343,11 +3434,13 @@
             <th>Caducados</th>
             <th>Total</th>
             <th>Estado</th>
+            <th>Precisión</th>
             <th>Aprobado</th>
         </tr></thead><tbody>`;
 
         paginadas.forEach(e => {
             const estado = e.total === e.sistema ? '<span class="badge badge-success">Correcto</span>' : '<span class="badge badge-warning">Diferencia</span>';
+            const precisionBadge = e.total === e.sistema ? '<span class="badge badge-success">Preciso</span>' : '<span class="badge badge-info">Aproximado</span>';
             const aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
 
             html += `<tr>
@@ -3359,6 +3452,7 @@
                 <td>${e.caducados}</td>
                 <td><strong>${e.total}</strong></td>
                 <td>${estado}</td>
+                <td>${precisionBadge}</td>
                 <td>${aprobadoHtml}</td>
             </tr>`;
         });
@@ -3368,7 +3462,53 @@
     }
 
     function filtrarHistorialInventario() {
-        filtrarDatos(todosLosEnvios, "filtroInventarioProducto", "filtroInventarioFechaInicio", "filtroInventarioFechaFin", inventarioPagina, "historialContainer", "paginationInventario", renderHistorialInventario, "📭 No hay registros que coincidan con los filtros");
+        const container = document.getElementById("historialContainer");
+        if (!container) return;
+
+        const filtroProducto = document.getElementById("filtroInventarioProducto")?.value.toLowerCase() || "";
+        const fechaInicio = document.getElementById("filtroInventarioFechaInicio")?.value || "";
+        const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
+        const soloPrecisos = document.getElementById("filtroSoloPrecisos")?.checked || false;
+
+        let filtrados = todosLosEnvios.filter(e => {
+            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
+            if (fechaInicio || fechaFin) {
+                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
+                if (fechaInicio && fechaEnvio < fechaInicio) return false;
+                if (fechaFin && fechaEnvio > fechaFin) return false;
+            }
+            if (soloPrecisos && e.total !== e.sistema) return false;
+            return true;
+        });
+
+        const totalPaginas = Math.ceil(filtrados.length / ITEMS_POR_PAGINA);
+        const inicio = (inventarioPagina - 1) * ITEMS_POR_PAGINA;
+        const fin = inicio + ITEMS_POR_PAGINA;
+        const paginadas = filtrados.slice(inicio, fin);
+
+        if (paginadas.length === 0) {
+            container.innerHTML = "<p class='text-center'>📭 No hay registros que coincidan con los filtros</p>";
+            document.getElementById('paginationInventario').innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = renderHistorialInventario(paginadas);
+
+        let tipo = 'Inventario';
+        let paginacionHtml = '';
+        if (totalPaginas > 1) {
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(1, '${tipo}')" ${inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-double-left"></i></button>`;
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${inventarioPagina - 1}, '${tipo}')" ${inventarioPagina === 1 ? 'disabled' : ''}><i class="fas fa-angle-left"></i></button>`;
+
+            for (let i = Math.max(1, inventarioPagina - 2); i <= Math.min(totalPaginas, inventarioPagina + 2); i++) {
+                paginacionHtml += `<button onclick="cambiarPaginaGenerica(${i}, '${tipo}')" class="${inventarioPagina === i ? 'active' : ''}">${i}</button>`;
+            }
+
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${inventarioPagina + 1}, '${tipo}')" ${inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-right"></i></button>`;
+            paginacionHtml += `<button onclick="cambiarPaginaGenerica(${totalPaginas}, '${tipo}')" ${inventarioPagina === totalPaginas ? 'disabled' : ''}><i class="fas fa-angle-double-right"></i></button>`;
+        }
+
+        document.getElementById('paginationInventario').innerHTML = paginacionHtml;
     }
 
     function cambiarPaginaInventario(pagina) {
@@ -3376,13 +3516,22 @@
     }
 
     function limpiarFiltrosInventario() {
-        limpiarFiltrosGenerica("filtroInventarioProducto", "filtroInventarioFechaInicio", "filtroInventarioFechaFin", 'inventarioPagina', filtrarHistorialInventario);
+        document.getElementById("filtroInventarioProducto").value = "";
+        const hoy = obtenerFechaEcuador();
+        const hace30Dias = new Date(hoy);
+        hace30Dias.setDate(hace30Dias.getDate() - 30);
+        document.getElementById("filtroInventarioFechaInicio").value = hace30Dias.toISOString().split('T')[0];
+        document.getElementById("filtroInventarioFechaFin").value = hoy.toISOString().split('T')[0];
+        document.getElementById("filtroSoloPrecisos").checked = false;
+        inventarioPagina = 1;
+        filtrarHistorialInventario();
     }
 
     function exportarInventarioExcel() {
         const filtroProducto = document.getElementById("filtroInventarioProducto")?.value.toLowerCase() || "";
         const fechaInicio = document.getElementById("filtroInventarioFechaInicio")?.value || "";
         const fechaFin = document.getElementById("filtroInventarioFechaFin")?.value || "";
+        const soloPrecisos = document.getElementById("filtroSoloPrecisos")?.checked || false;
 
         const filtrados = todosLosEnvios.filter(e => {
             if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
@@ -3391,6 +3540,7 @@
                 if (fechaInicio && fechaEnvio < fechaInicio) return false;
                 if (fechaFin && fechaEnvio > fechaFin) return false;
             }
+            if (soloPrecisos && e.total !== e.sistema) return false;
             return true;
         });
 
@@ -3403,6 +3553,7 @@
             Caducados: e.caducados,
             Total: e.total,
             Estado: e.total === e.sistema ? 'Correcto' : 'Diferencia',
+            Precisión: e.total === e.sistema ? 'Preciso' : 'Aproximado',
             Aprobado: e.aprobado ? 'Sí' : 'No'
         }));
         exportarExcelGenerica(data, "inventario");
@@ -3440,126 +3591,6 @@
     // ============================================
     // HISTORIAL PRECISOS
     // ============================================
-
-    async function cargarHistorialPrecisos() {
-        if (!db || !usuario) return;
-        const container = document.getElementById("historialPrecisosContainer");
-        if (!container) return;
-
-        container.innerHTML = "<p class='text-center'><i class='fas fa-spinner fa-spin'></i> Cargando...</p>";
-
-        try {
-            const anoActual = obtenerFechaEcuador().getFullYear().toString();
-            todosLosPrecisos = [];
-
-            const snapshot = await db.ref("inventario").once("value");
-            if (snapshot.exists()) {
-                snapshot.forEach(monthSnap => {
-                    let mes = monthSnap.key;
-                    if (mes && mes.startsWith(anoActual + "-")) {
-                        monthSnap.forEach(child => {
-                            const envio = child.val();
-                            if (envio.nombre && envio.nombre.trim() === usuario.trim()) {
-                                const total = (envio.fisico || 0) + (envio.muestras || 0) + (envio.caducados || 0);
-                                if (total === (envio.sistema || 0)) {
-                                    todosLosPrecisos.push({
-                                        fecha: new Date(envio.fecha).toLocaleDateString('es-ES'),
-                                        fechaRaw: envio.fecha,
-                                        producto: envio.producto,
-                                        sistema: envio.sistema || 0,
-                                        fisico: envio.fisico || 0,
-                                        muestras: envio.muestras || 0,
-                                        caducados: envio.caducados || 0,
-                                        total: total,
-                                        aprobado: envio.aprobado || false
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-
-            todosLosPrecisos.sort((a, b) => new Date(b.fechaRaw) - new Date(a.fechaRaw));
-
-            precisosPagina = 1;
-            filtrarHistorialPrecisos();
-        } catch (error) {
-            console.error("Error cargando historial preciso:", error);
-            container.innerHTML = "<p class='text-center'>Error al cargar historial preciso</p>";
-        }
-    }
-
-    function renderHistorialPrecisos(paginadas) {
-        let html = `<table><thead><tr>
-            <th>Fecha</th>
-            <th>Producto</th>
-            <th>Stock</th>
-            <th>Físico</th>
-            <th>Muestras</th>
-            <th>Caducados</th>
-            <th>Total</th>
-            <th>Aprobado</th>
-        </tr></thead><tbody>`;
-
-        paginadas.forEach(e => {
-            const aprobadoHtml = e.aprobado ? '<span class="badge badge-success">Aprobado</span>' : '<span class="badge badge-warning">Pendiente</span>';
-
-            html += `<tr>
-                <td>${e.fecha}</td>
-                <td><strong>${e.producto}</strong></td>
-                <td>${e.sistema}</td>
-                <td>${e.fisico}</td>
-                <td>${e.muestras}</td>
-                <td>${e.caducados}</td>
-                <td><strong>${e.total}</strong></td>
-                <td>${aprobadoHtml}</td>
-            </tr>`;
-        });
-
-        html += `</tbody></table>`;
-        return html;
-    }
-
-    function filtrarHistorialPrecisos() {
-        filtrarDatos(todosLosPrecisos, "filtroPrecisosProducto", "filtroPrecisosFechaInicio", "filtroPrecisosFechaFin", precisosPagina, "historialPrecisosContainer", "paginationPrecisos", renderHistorialPrecisos, "📭 No hay registros precisos que coincidan con los filtros");
-    }
-
-    function cambiarPaginaPrecisos(pagina) {
-        cambiarPaginaGenerica(pagina, 'Precisos', precisosPagina);
-    }
-
-    function limpiarFiltrosPrecisos() {
-        limpiarFiltrosGenerica("filtroPrecisosProducto", "filtroPrecisosFechaInicio", "filtroPrecisosFechaFin", 'precisosPagina', filtrarHistorialPrecisos);
-    }
-
-    function exportarPrecisosExcel() {
-        const filtroProducto = document.getElementById("filtroPrecisosProducto")?.value.toLowerCase() || "";
-        const fechaInicio = document.getElementById("filtroPrecisosFechaInicio")?.value || "";
-        const fechaFin = document.getElementById("filtroPrecisosFechaFin")?.value || "";
-
-        const filtrados = todosLosPrecisos.filter(e => {
-            if (filtroProducto && !e.producto.toLowerCase().includes(filtroProducto)) return false;
-            if (fechaInicio || fechaFin) {
-                const fechaEnvio = new Date(e.fechaRaw).toISOString().split('T')[0];
-                if (fechaInicio && fechaEnvio < fechaInicio) return false;
-                if (fechaFin && fechaEnvio > fechaFin) return false;
-            }
-            return true;
-        });
-
-        const data = filtrados.map(e => ({
-            Fecha: e.fecha,
-            Producto: e.producto,
-            'Stock Sistema': e.sistema,
-            Físico: e.fisico,
-            Muestras: e.muestras,
-            Caducados: e.caducados,
-            Total: e.total,
-            Aprobado: e.aprobado ? 'Sí' : 'No'
-        }));
-        exportarExcelGenerica(data, "inventarios_precisos");
-    }
 
     // ============================================
     // FUNCIONES GENÉRICAS PARA EVITAR DUPLICACIÓN
@@ -3616,9 +3647,6 @@
         if (tipo === 'Inventario') {
             inventarioPagina = pagina;
             filtrarHistorialInventario();
-        } else if (tipo === 'Precisos') {
-            precisosPagina = pagina;
-            filtrarHistorialPrecisos();
         } else if (tipo === 'Maquilas') {
             maquilasPagina = pagina;
             filtrarHistorialMaquilas();
@@ -3661,22 +3689,28 @@
         mostrarLoading(true);
         console.log("Inicializando con fecha Ecuador:", fechaHoy, "mes:", mesActual);
 
-        configurarFechasFiltros();
-        iniciarListenerNotificaciones();
+        try {
+            configurarFechasFiltros();
+            iniciarListenerNotificaciones();
 
-        await Promise.all([
-            cargarDashboard(),
-            cargarProductosAsignados(),
-            cargarPendientes(),
-            cargarHistorial(),
-            cargarHistorialPrecisos(),
-            cargarProductosMaquila(),
-            cargarTodasMaquilas(),
-            cargarNotificaciones(),
-            cargarInventariosDevueltos()
-        ]);
+            await Promise.all([
+                cargarDashboard(),
+                cargarProductosAsignados(),
+                cargarPendientes(),
+                cargarHistorial(),
+                cargarProductosMaquila(),
+                cargarTodasMaquilas(),
+                cargarNotificaciones(),
+                cargarInventariosDevueltos()
+            ]);
 
-        mostrarLoading(false);
+            mostrarLoading(false);
+            console.log("Inicialización completada exitosamente");
+        } catch (error) {
+            console.error("Error durante la inicialización:", error);
+            mostrarLoading(false);
+            mostrarToast('Error', 'Error al cargar la aplicación. Revisa la consola para más detalles.', 'error');
+        }
     }
 
     if (document.readyState === 'loading') {
