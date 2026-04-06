@@ -601,20 +601,40 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <div class="header" data-aos="fade-down">
-        <div class="logo">
-            <i class="fas fa-crown"></i>
-            <span class="logo-text">EUROFERT ADMIN</span>
-            <span class="logo-badge">ADMIN</span>
+    <!-- Modal de duplicadas -->
+    <div id="modalDuplicadas" class="modal">
+        <div class="modal-content" style="max-width: 90%; width: 90%;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                <h3><i class="fas fa-copy"></i> Respuestas Duplicadas</h3>
+                <button class="modal-close" onclick="cerrarModalDuplicadas()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+            </div>
+            <div id="modalDuplicadasContenido"></div>
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="btn btn-danger" onclick="eliminarSeleccionadas()">Eliminar Seleccionadas</button>
+                <button class="btn btn-secondary" onclick="cerrarModalDuplicadas()">Cancelar</button>
+            </div>
         </div>
-        <div class="user-info">
-            <div style="position: relative;">
-                <div class="notification-bell" onclick="toggleNotificaciones()">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge" id="notificationCount">0</span>
-                </div>
-                <div id="notification-dropdown" class="notification-dropdown"></div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-seedling"></i></div>
+            <div>
+                <span class="logo-text">EUROFERT B.AV</span>
+                <span class="badge-admin">ADMIN</span>
+            </div>
+        </div>
+        <div class="user-area">
+            <div class="notification-bell" onclick="toggleNotificaciones()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">0</span>
+            </div>
+            <div id="notification-dropdown" style="display: none; position: absolute; top: 70px; right: 20px; background: white; border-radius: 20px; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100;"></div>
+            <div class="profile-pic" id="profilePic" onclick="cambiarFotoPerfil()">
+                <i class="fas fa-user-circle"></i>
+                <img id="profileImg" style="display: none;" alt="Foto">
+                <div class="edit-icon-overlay"><i class="fas fa-camera"></i></div>
             </div>
             <div class="user-details">
                 <div class="user-name" id="userName">Admin</div>
@@ -636,43 +656,13 @@
     </div>
 
     <!-- SECCIÓN DASHBOARD -->
-    <div id="seccion-dashboard" class="card seccion">
-        <div class="dashboard-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-info">
-                    <h4>Usuarios</h4>
-                    <div class="stat-number" id="totalUsuarios">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-boxes"></i></div>
-                <div class="stat-info">
-                    <h4>Productos</h4>
-                    <div class="stat-number" id="totalProductos">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
-                <div class="stat-info">
-                    <h4>Asignaciones Hoy</h4>
-                    <div class="stat-number" id="totalAsignaciones">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
-                <div class="stat-info">
-                    <h4>Respuestas Hoy</h4>
-                    <div class="stat-number" id="totalRespuestas">0</div>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-industry"></i></div>
-                <div class="stat-info">
-                    <h4>Maquilas Pendientes</h4>
-                    <div class="stat-number" id="totalMaquilasPendientes">0</div>
-                </div>
-            </div>
+    <div id="section-dashboard" class="section active">
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-info"><h4>Usuarios</h4><div class="stat-number" id="totalUsuarios">0</div></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h4>Productos</h4><div class="stat-number" id="totalProductos">0</div></div><div class="stat-icon"><i class="fas fa-boxes"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h4>Asignaciones Totales</h4><div class="stat-number" id="totalAsignaciones">0</div></div><div class="stat-icon"><i class="fas fa-tasks"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h4>Respuestas Totales</h4><div class="stat-number" id="totalRespuestas">0</div></div><div class="stat-icon"><i class="fas fa-check-circle"></i></div></div>
+            <div class="stat-card"><div class="stat-info"><h4>Maquilas Pendientes</h4><div class="stat-number" id="totalMaquilasPendientes">0</div></div><div class="stat-icon"><i class="fas fa-industry"></i></div></div>
         </div>
 
         <div class="charts-row">
@@ -680,13 +670,15 @@
             <div class="chart-card"><div class="chart-title"><i class="fas fa-chart-bar"></i> Balance: Asignaciones vs Respuestas</div><div class="chart-container"><canvas id="chartBalance"></canvas></div></div>
         </div>
 
-        <div class="card" data-aos="fade-up">
-            <div class="card-header">
-                <h3><i class="fas fa-clock"></i> Acciones Pendientes por Colaborador</h3>
-                <span class="badge badge-warning" id="totalPendientesCount">0</span>
-            </div>
-            <div id="accionesPendientesContainer" class="table-container">
-                <p class="text-center">Cargando acciones pendientes...</p>
+        <div class="quick-actions">
+            <div class="quick-title"><i class="fas fa-bolt"></i> Accesos Rápidos</div>
+            <div class="actions-buttons">
+                <div class="action-btn" onclick="mostrarSeccion('gestion-productos'); document.querySelector('#tab-asignar-producto')?.click();"><i class="fas fa-plus-circle"></i> Nuevo Producto</div>
+                <div class="action-btn" onclick="mostrarSeccion('gestion-productos'); document.querySelector('#tab-asignar-producto')?.click();"><i class="fas fa-tasks"></i> Asignar Producto</div>
+                <div class="action-btn" onclick="mostrarSeccion('inventario')"><i class="fas fa-clipboard-list"></i> Ver Inventario</div>
+                <div class="action-btn" onclick="mostrarSeccion('maquilas')"><i class="fas fa-industry"></i> Gestionar Maquilas</div>
+                <div class="action-btn" onclick="abrirAsignacionesPendientesAdmin()"><i class="fas fa-hourglass-half"></i> Pendientes por Responder</div>
+                <div class="action-btn" onclick="cargarDashboard()"><i class="fas fa-sync-alt"></i> Actualizar Dashboard</div>
             </div>
         </div>
 
@@ -738,12 +730,12 @@
     </div>
 
     <!-- SECCIÓN INVENTARIO -->
-    <div id="seccion-inventario" class="card seccion">
-        <div class="card-header">
-            <h3><i class="fas fa-search"></i> Consultar Inventario</h3>
-            <button class="btn btn-success btn-export" onclick="exportarInventarioCSV()">
-                <i class="fas fa-file-excel"></i> Exportar CSV
-            </button>
+    <div id="section-inventario" class="section">
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-search"></i> Consultar Inventario</h3><div style="display:flex; gap:10px;"><button class="btn btn-warning" onclick="mostrarDuplicadasInventario()"><i class="fas fa-eye"></i> Ver Duplicadas</button><button class="btn btn-success" onclick="exportInventarioToExcel()"><i class="fas fa-file-excel"></i> Excel</button><button class="btn btn-danger" onclick="exportInventarioToPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div></div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-bottom:20px;"><div class="form-group"><label>Fecha Inicio</label><input type="date" id="fechaInicio" class="form-control"></div><div class="form-group"><label>Fecha Fin</label><input type="date" id="fechaFin" class="form-control"></div><div class="form-group"><label>Usuario</label><select id="filtroUsuario" class="form-control"><option value="">Todos</option></select></div><div class="form-group"><label>Estado</label><select id="filtroEstadoInventario" class="form-control" onchange="cargarInventario()"><option value="todos">Todos</option><option value="cuadra">Cuadra</option><option value="sobrante">Sobrante</option><option value="faltante">Faltante</option></select></div></div>
+            <button class="btn btn-primary" onclick="cargarInventario()"><i class="fas fa-search"></i> Buscar</button>
+            <div id="resultadoInventario" class="table-container" style="margin-top:20px;"></div>
         </div>
     </div>
 
@@ -761,12 +753,13 @@
     </div>
 
     <!-- SECCIÓN MAQUILAS -->
-    <div id="seccion-maquilas" class="card seccion">
-        <div class="card-header">
-            <h3><i class="fas fa-industry"></i> Gestión de Maquilas</h3>
-            <button class="btn btn-success btn-export" onclick="exportarMaquilasCSV()">
-                <i class="fas fa-file-excel"></i> Exportar CSV
-            </button>
+    <div id="section-maquilas" class="section">
+        <div class="card">
+            <div class="card-header"><h3><i class="fas fa-industry"></i> Gestión de Maquilas</h3><div><button class="btn btn-success" onclick="exportMaquilasToExcel()"><i class="fas fa-file-excel"></i> Excel</button><button class="btn btn-danger" onclick="exportMaquilasToPDF()"><i class="fas fa-file-pdf"></i> PDF</button></div></div>
+            <div style="margin-bottom:15px;"><select id="filtroEstadoMaquila" class="form-control" onchange="cargarMaquilas()"><option value="pendientes">Pendientes (sin asignar)</option><option value="asignadas">Asignadas</option><option value="todas">Todas</option></select></div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-bottom:20px;"><div class="form-group"><label>Fecha Inicio</label><input type="date" id="fechaInicioMaquila" class="form-control"></div><div class="form-group"><label>Fecha Fin</label><input type="date" id="fechaFinMaquila" class="form-control"></div><div class="form-group"><label>Usuario</label><select id="filtroUsuarioMaquila" class="form-control"><option value="">Todos</option></select></div></div>
+            <button class="btn btn-primary" onclick="cargarMaquilas()"><i class="fas fa-search"></i> Buscar</button>
+            <div id="listaMaquilas" class="table-container" style="margin-top:20px;"></div>
         </div>
     </div>
 </div>
@@ -815,522 +808,374 @@
         toast.className = `toast`;
         toast.innerHTML = `<strong>${titulo}</strong><br>${mensaje}`;
         container.appendChild(toast);
-        
-        setTimeout(() => {
-            let el = document.getElementById(toastId);
-            if (el) el.remove();
-        }, 4000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
-    // Cambiar entre tabs
-    function cambiarTab(tabId) {
-        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
-        document.getElementById(`tab-${tabId}`).classList.add('active');
-        document.getElementById(`tab-content-${tabId}`).classList.add('active');
-        
-        if (tabId === 'asignar-producto') {
-            cargarSelectoresAsignacion();
-            cargarAsignacionesHoy();
-        } else if (tabId === 'crear-producto') {
-            cargarTodosLosProductos();
-            cargarProductos(document.getElementById('filtroProductos')?.value || '');
+    function contarNodos(dataSnapshot, niveles) {
+        if (niveles <= 0) return 1;
+        let total = 0;
+        dataSnapshot.forEach(child => {
+            total += contarNodos(child, niveles - 1);
+        });
+        return total;
+    }
+
+    function contarNodosDelAno(dataSnapshot, niveles, ano) {
+        if (niveles <= 0) return 1;
+        let total = 0;
+        dataSnapshot.forEach(child => {
+            let clave = child.key;
+            if (clave && clave.startsWith(ano + "-")) {
+                total += contarNodos(child, niveles - 1);
+            }
+        });
+        return total;
+    }
+
+    // ==================== FOTO DE PERFIL ====================
+    function cargarFotoPerfil() {
+        const foto = localStorage.getItem('fotoPerfil');
+        const img = document.getElementById('profileImg');
+        const icon = document.querySelector('#profilePic i');
+        if (foto) {
+            img.src = foto;
+            img.style.display = 'block';
+            icon.style.display = 'none';
+        } else {
+            img.style.display = 'none';
+            icon.style.display = 'flex';
         }
     }
+    function cambiarFotoPerfil() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    localStorage.setItem('fotoPerfil', event.target.result);
+                    cargarFotoPerfil();
+                    mostrarToast('Foto actualizada', 'Tu foto de perfil ha sido cambiada', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
 
+    // ==================== NAVEGACIÓN ====================
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const sectionId = tab.dataset.section;
+            mostrarSeccion(sectionId);
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+        });
+    });
     function mostrarSeccion(seccion) {
-        document.querySelectorAll('.seccion').forEach(s => s.classList.remove('active'));
-        const target = document.getElementById(`seccion-${seccion}`);
-        if (target) target.classList.add('active');
-        
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(`section-${seccion}`).classList.add('active');
         if (seccion === 'dashboard') cargarDashboard();
         if (seccion === 'usuarios') cargarUsuarios();
-        if (seccion === 'gestion-productos') {
-            cambiarTab('crear-producto');
-            cargarTodosLosProductos();
-            cargarProductos(document.getElementById('filtroProductos')?.value || '');
-        }
-        if (seccion === 'inventario') { 
-            configurarFechas(); 
-            cargarFiltrosUsuarios(); 
-            cargarInventario(); 
-        }
-        if (seccion === 'productosMaquila') cargarProductosMaquila(document.getElementById('filtroProductosMaquila')?.value || '');
-        if (seccion === 'maquilas') { 
-            configurarFechasMaquila(); 
-            cargarFiltrosUsuariosMaquila(); 
-            cargarMaquilas(); 
-        }
+        if (seccion === 'gestion-productos') { cambiarTab('crear-producto'); cargarTodosLosProductos(); cargarProductos(); }
+        if (seccion === 'inventario') { configurarFechas(); cargarFiltrosUsuarios(); cargarInventario(); }
+        if (seccion === 'productosMaquila') cargarProductosMaquila();
+        if (seccion === 'maquilas') { configurarFechasMaquila(); cargarFiltrosUsuariosMaquila(); cargarMaquilas(); }
     }
 
-    // ============================================
-    // VERIFICAR CONEXIÓN FIREBASE
-    // ============================================
-    function verificarConexionFirebase() {
-        if (!db) {
-            console.error("Firebase no inicializado");
-            return false;
-        }
-        
-        const connectedRef = db.ref(".info/connected");
-        connectedRef.on("value", (snap) => {
-            const connected = snap.val() === true;
-            const indicator = document.getElementById('connectionIndicator');
-            if (indicator) {
-                if (connected) {
-                    indicator.classList.remove('offline');
-                    indicator.classList.add('online');
-                    indicator.title = 'Conectado a Firebase';
-                } else {
-                    indicator.classList.remove('online');
-                    indicator.classList.add('offline');
-                    indicator.title = 'Sin conexión a Firebase';
-                }
-            }
-            firebaseConnected = connected;
-        });
-        return true;
-    }
-
-    // ============================================
-    // NOTIFICACIONES
-    // ============================================
-    function iniciarListenerNotificaciones() {
-        if (!db) return;
-        
-        db.ref("notificaciones").orderByChild("fecha").limitToLast(1).on("child_added", (snapshot) => {
-            console.log("📬 Nueva notificación recibida:", snapshot.val());
-            cargarNotificaciones();
-            const dashboardSection = document.getElementById('seccion-dashboard');
-            if (dashboardSection && dashboardSection.classList.contains('active')) {
-                cargarDashboard();
-            }
-        });
-        
-        console.log("✅ Listener de notificaciones iniciado");
-    }
-
-    async function cargarNotificaciones() {
-        if (!db) {
-            console.warn("Firebase no disponible");
-            return;
-        }
-        
-        try {
-            console.log("📥 Cargando notificaciones...");
-            let snap = await db.ref("notificaciones").orderByChild("fecha").limitToLast(50).once("value");
-            notificaciones = [];
-            
-            if (snap.exists()) {
-                snap.forEach(child => {
-                    notificaciones.push({ id: child.key, ...child.val() });
-                });
-                console.log(`✅ ${notificaciones.length} notificaciones cargadas`);
-            }
-            
-            notificaciones.sort((a, b) => new Date(b.fecha || 0) - new Date(a.fecha || 0));
-            
-            let noLeidas = notificaciones.filter(n => !n.leida).length;
-            let badge = document.getElementById('notificationCount');
-            if (badge) {
-                badge.textContent = noLeidas;
-                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
-            }
-            
-        } catch (error) {
-            console.error("❌ Error cargando notificaciones:", error);
-        }
-    }
-
-    function toggleNotificaciones() {
-        let dropdown = document.getElementById('notification-dropdown');
-        if (!dropdown) return;
-        dropdown.classList.toggle('active');
-        if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
-    }
-
-    async function mostrarListadoNotificaciones() {
-        let container = document.getElementById("notification-dropdown");
-        if (!container) return;
-        
-        await cargarNotificaciones();
-        
-        if (notificaciones.length === 0) {
-            container.innerHTML = "<p class='text-center' style='padding:20px;'>📭 No hay notificaciones</p>";
-            return;
-        }
-        
-        let html = `<div style="max-height:600px; overflow-y:auto;">`;
-        notificaciones.slice(0, 20).forEach(n => {
-            let icono = n.tipo === "inventario" ? "fa-clipboard-list" : 
-                       n.tipo === "inventario_devuelto" ? "fa-undo" :
-                       n.tipo === "inventario_aprobado" ? "fa-check-circle" :
-                       n.tipo === "maquila" ? "fa-industry" : 
-                       n.tipo === "maquila_devuelta" ? "fa-undo" :
-                       n.tipo === "producto_maquila" ? "fa-cube" : "fa-bell";
-            let color = n.tipo === "inventario" ? "badge-primary" : 
-                       n.tipo === "inventario_devuelto" ? "badge-warning" :
-                       n.tipo === "inventario_aprobado" ? "badge-success" :
-                       n.tipo === "maquila" ? "badge-warning" : 
-                       n.tipo === "maquila_devuelta" ? "badge-warning" :
-                       n.tipo === "producto_maquila" ? "badge-info" : "badge-secondary";
-            let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : 'Fecha desconocida';
-            let usuario = n.usuario || n.detalles?.colaborador || 'Sistema';
-            
-            let mensaje = n.mensaje || '';
-            if (!mensaje) {
-                if (n.tipo === 'inventario') {
-                    mensaje = `📦 Envió inventario: ${n.detalles?.producto || 'producto'} (F:${n.detalles?.fisico || 0}, M:${n.detalles?.muestras || 0}, C:${n.detalles?.caducados || 0})`;
-                } else if (n.tipo === 'inventario_devuelto') {
-                    mensaje = `🔄 Inventario devuelto: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
-                } else if (n.tipo === 'inventario_aprobado') {
-                    mensaje = `✅ ¡Felicidades! Tu reporte de inventario para ${n.detalles?.producto || 'producto'} ha sido aprobado. ¡Excelente trabajo!`;
-                } else if (n.tipo === 'maquila') {
-                    mensaje = `🏭 Envió maquila: ${n.detalles?.producto || 'producto'} (MP:${n.detalles?.mpCantidad || 0}, PT:${n.detalles?.ptCantidad || 0})`;
-                } else if (n.tipo === 'maquila_devuelta') {
-                    mensaje = `🔄 Maquila devuelta: ${n.detalles?.producto || 'producto'} - Motivo: ${n.detalles?.motivo || 'Sin motivo'}`;
-                } else if (n.tipo === 'producto_maquila') {
-                    mensaje = `📦 Creó producto de maquila: ${n.detalles?.producto || ''}`;
-                } else {
-                    mensaje = n.detalles?.mensaje || JSON.stringify(n.detalles).replace(/[{}]/g, '');
-                }
-            }
-            
-            html += `<div style="background:rgba(255,255,255,0.05); padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--primary); ${!n.leida ? 'border-left-color: var(--warning);' : ''}">
-                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:8px;">
-                    <span class="badge ${color}"><i class="fas ${icono}"></i> ${(n.tipo || 'NOTIFICACION').toUpperCase().replace('_', ' ')}</span>
-                    <small style="color:var(--light);">${fecha}</small>
-                </div>
-                <strong style="color: var(--primary);">${usuario}</strong>
-                <p style="margin:8px 0; font-size:13px; color: var(--white);">${mensaje}</p>
-                ${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')" style="margin-top:5px;"><i class="fas fa-check"></i> Marcar como leída</button>` : ''}
-            </div>`;
-        });
-        
-        if (notificaciones.length > 20) {
-            html += `<p class='text-center' style='padding:10px; color:rgba(255,255,255,0.5);'>Mostrando 20 de ${notificaciones.length} notificaciones</p>`;
-        }
-        
-        html += `</div>`;
-        container.innerHTML = html;
-    }
-
-    async function marcarComoLeida(id) {
-        if (!db) return;
-        
-        try {
-            await db.ref(`notificaciones/${id}/leida`).set(true);
-            mostrarToast('Éxito', 'Notificación marcada como leída', 'success');
-            await mostrarListadoNotificaciones();
-            await cargarNotificaciones();
-        } catch (error) {
-            console.error("Error al marcar notificación:", error);
-            mostrarToast('Error', 'No se pudo marcar la notificación', 'error');
-        }
-    }
-
-    // ============================================
-    // FUNCIÓN HASH
-    // ============================================
-    function hashPassword(password) {
-        try {
-            const shaObj = new jsSHA("SHA-256", "TEXT");
-            shaObj.update(password);
-            return shaObj.getHash("HEX");
-        } catch (error) {
-            console.error("Error al generar hash:", error);
-            return password;
-        }
-    }
-
-    // ============================================
-    // DASHBOARD - CORREGIDO
-    // ============================================
+    // ==================== DASHBOARD COMPLETO ====================
     async function cargarDashboard() {
+        mostrarLoading(true);
         try {
-            mostrarLoading(true);
-            
-            const fechaEcuador = obtenerFechaEcuador();
-            const fechaHoy = fechaEcuador.toISOString().split('T')[0];
-            const mesActual = fechaEcuador.toISOString().substring(0,7);
-
-            console.log("Cargando dashboard para fecha:", fechaHoy);
-
-            const [usuariosSnap, productosSnap, maquilasProductosSnap, asignacionesHoySnap, inventarioHoySnap] = await Promise.all([
-                db.ref("usuarios").once("value").catch(e => ({ exists: () => false, val: () => null })),
-                db.ref("productos").once("value").catch(e => ({ exists: () => false, val: () => null })),
-                db.ref("maquilas_productos").once("value").catch(e => ({ exists: () => false, val: () => null })),
-                db.ref("asignaciones/" + fechaHoy).once("value").catch(e => ({ exists: () => false, val: () => null })),
-                db.ref("inventario/" + mesActual).once("value").catch(e => ({ exists: () => false, val: () => null }))
+            const fechaHoy = obtenerFechaEcuador();
+            const anoActual = fechaHoy.getFullYear().toString();
+            const mesActual = fechaHoy.toISOString().substring(0, 7);
+            const [usuariosSnap, productosSnap, maqProdSnap, asigSnap, invSnap, invDevueltoSnap] = await Promise.all([
+                db.ref("usuarios").once("value"),
+                db.ref("productos").once("value"),
+                db.ref("maquilas_productos").once("value"),
+                db.ref("asignaciones").once("value"),
+                db.ref("inventario").once("value"),
+                db.ref("inventario_devuelto").once("value")
             ]);
-
-            // ===== CONTEO DE USUARIOS =====
-            let totalUsuarios = 0, admins = 0, colaboradores = 0;
-            let colaboradoresList = [];
-            
-            if (usuariosSnap && usuariosSnap.exists()) {
-                usuariosSnap.forEach(child => {
-                    totalUsuarios++;
-                    if (child.val().rol === "admin") admins++; 
-                    else {
-                        colaboradores++;
-                        colaboradoresList.push(child.key);
-                    }
-                });
-            }
+            let totalUsuarios = 0, totalProductos = 0;
+            if(usuariosSnap.exists()) totalUsuarios = Object.keys(usuariosSnap.val()).length;
+            if(productosSnap.exists()) totalProductos += Object.keys(productosSnap.val()).length;
+            if(maqProdSnap.exists()) totalProductos += Object.keys(maqProdSnap.val()).length;
             document.getElementById("totalUsuarios").textContent = totalUsuarios;
-
-            // ===== CONTEO DE PRODUCTOS CORREGIDO =====
-            let totalProductos = 0;
-            
-            // Contar productos de inventario
-            if (productosSnap && productosSnap.exists()) {
-                productosSnap.forEach(() => {
-                    totalProductos++;
-                });
-                console.log("📦 Productos de inventario encontrados:", totalProductos);
-            } else {
-                console.log("📦 No hay productos de inventario");
-            }
-            
-            // Contar productos de maquila
-            if (maquilasProductosSnap && maquilasProductosSnap.exists()) {
-                let countMaquila = 0;
-                maquilasProductosSnap.forEach(() => {
-                    countMaquila++;
-                });
-                totalProductos += countMaquila;
-                console.log("🏭 Productos de maquila encontrados:", countMaquila);
-            } else {
-                console.log("🏭 No hay productos de maquila");
-            }
-            
             document.getElementById("totalProductos").textContent = totalProductos;
-            console.log("✅ TOTAL PRODUCTOS:", totalProductos);
 
-            // ===== ASIGNACIONES =====
-            let totalAsignaciones = 0;
-            let asignacionesPendientes = 0;
-            let asignacionesRespondidas = 0;
-            let accionesPorColaborador = {};
-            
-            if (asignacionesHoySnap && asignacionesHoySnap.exists()) {
-                asignacionesHoySnap.forEach(userSnap => {
-                    let usuario = userSnap.key;
-                    userSnap.forEach(prodSnap => {
-                        totalAsignaciones++;
-                        
-                        let respondida = false;
-                        if (inventarioHoySnap && inventarioHoySnap.exists()) {
-                            inventarioHoySnap.forEach(child => {
-                                let inv = child.val();
-                                if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy && 
-                                    inv.nombre === usuario && inv.productoId === prodSnap.key) {
-                                    respondida = true;
-                                }
-                            });
-                        }
-                        
-                        if (respondida) {
-                            asignacionesRespondidas++;
-                            
-                            if (!accionesPorColaborador[usuario]) {
-                                accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
-                            }
-                            accionesPorColaborador[usuario].respondidas.push({
-                                producto: prodSnap.val().nombreProducto || 'Producto'
-                            });
-                        } else {
-                            asignacionesPendientes++;
-                            
-                            if (!accionesPorColaborador[usuario]) {
-                                accionesPorColaborador[usuario] = { pendientes: [], respondidas: [] };
-                            }
-                            accionesPorColaborador[usuario].pendientes.push({
-                                producto: prodSnap.val().nombreProducto || 'Producto',
-                                cantidad: prodSnap.val().cantidadAsignada || 0
-                            });
-                        }
-                    });
-                });
+            let totalAsignaciones = 0, totalRespuestas = 0;
+            if (asigSnap.exists()) {
+                totalAsignaciones = contarNodosDelAno(asigSnap, 3, anoActual);
             }
-            
-            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
-
-            let respuestasHoy = 0;
-            if (inventarioHoySnap && inventarioHoySnap.exists()) {
-                inventarioHoySnap.forEach(child => {
-                    let inv = child.val();
-                    if (inv.fecha && inv.fecha.split("T")[0] === fechaHoy) {
-                        respuestasHoy++;
+            if (invSnap.exists()) {
+                invSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(() => {
+                            totalRespuestas++;
+                        });
                     }
                 });
             }
-            document.getElementById("totalRespuestas").textContent = respuestasHoy;
+            document.getElementById("totalAsignaciones").textContent = totalAsignaciones;
+            document.getElementById("totalRespuestas").textContent = totalRespuestas;
 
-            // ===== MAQUILAS =====
-            let maquilasPendientes = 0, maquilasAsignadas = 0;
-            let maquilasPorColaborador = {};
-            
+            let maqPendientes=0;
             const meses = [];
-            const fechaInicio = new Date(fechaEcuador);
-            fechaInicio.setMonth(fechaInicio.getMonth() - 5);
-            fechaInicio.setDate(1);
-            
-            for (let i = 0; i < 6; i++) {
-                const fecha = new Date(fechaInicio);
-                fecha.setMonth(fechaInicio.getMonth() + i);
-                const anio = fecha.getFullYear();
-                const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
-                meses.push(`${anio}-${mes}`);
+            let fechaAux = new Date(obtenerFechaEcuador());
+            fechaAux.setMonth(fechaAux.getMonth()-5);
+            fechaAux.setDate(1);
+            for(let i=0;i<6;i++){
+                let f = new Date(fechaAux);
+                f.setMonth(fechaAux.getMonth()+i);
+                meses.push(`${f.getFullYear()}-${(f.getMonth()+1).toString().padStart(2,'0')}`);
             }
+            for(let mes of meses){
+                let snap = await db.ref("maquilas/"+mes).once("value");
+                if(snap.exists()){
+                    snap.forEach(m=>{
+                        if(!m.val().numTransformacion || m.val().numTransformacion.toString().trim()==='' || m.val().numTransformacion==='null') maqPendientes++;
+                    });
+                }
+            }
+            document.getElementById("totalMaquilasPendientes").textContent = maqPendientes;
 
-            for (const mes of meses) {
-                try {
-                    const snap = await db.ref("maquilas/" + mes).once("value");
-                    if (snap.exists()) {
-                        snap.forEach(child => {
-                            const m = child.val();
-                            const tieneNumero = m.numTransformacion && 
-                                              m.numTransformacion.toString().trim() !== '' && 
-                                              m.numTransformacion !== 'null' && 
-                                              m.numTransformacion !== 'undefined';
-                            
-                            if (tieneNumero) {
-                                maquilasAsignadas++;
-                            } else {
-                                maquilasPendientes++;
-                                
-                                if (m.nombre) {
-                                    if (!maquilasPorColaborador[m.nombre]) {
-                                        maquilasPorColaborador[m.nombre] = 0;
-                                    }
-                                    maquilasPorColaborador[m.nombre]++;
-                                }
+            // Gráficos
+            const pendientesAsig = Math.max(0, totalAsignaciones - totalRespuestas);
+            if(chartCartera) chartCartera.destroy();
+            const ctxCartera = document.getElementById('chartCartera').getContext('2d');
+            chartCartera = new Chart(ctxCartera, {
+                type: 'doughnut',
+                data: { labels: ['Pendientes', 'Respondidas'], datasets: [{ data: [pendientesAsig, totalRespuestas], backgroundColor: ['#f59e0b', '#1e7e34'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+            if(chartBalance) chartBalance.destroy();
+            const ctxBalance = document.getElementById('chartBalance').getContext('2d');
+            chartBalance = new Chart(ctxBalance, {
+                type: 'bar',
+                data: { labels: ['Asignaciones', 'Respuestas'], datasets: [{ label: 'Cantidad', data: [totalAsignaciones, totalRespuestas], backgroundColor: ['#0f3b2c', '#1e7e34'] }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+
+            // Acciones pendientes - buscar todas las asignaciones del año 2026 sin respuesta
+            let acciones = {};
+            const respuestasMap = new Map();
+            
+            if (invSnap.exists()) {
+                invSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(inv => {
+                            let iv = inv.val();
+                            if (iv.nombre && iv.productoId) {
+                                let clave = `${iv.nombre}_${iv.productoId}`;
+                                respuestasMap.set(clave, true);
                             }
                         });
                     }
-                } catch (e) {
-                    console.warn(`Error cargando maquilas del mes ${mes}:`, e);
-                }
+                });
+            }
+            if (invDevueltoSnap.exists()) {
+                invDevueltoSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(inv => {
+                            let iv = inv.val();
+                            if (iv.nombre && iv.productoId) {
+                                let clave = `${iv.nombre}_${iv.productoId}`;
+                                respuestasMap.set(clave, true);
+                            }
+                        });
+                    }
+                });
             }
             
-            document.getElementById("totalMaquilasPendientes").textContent = maquilasPendientes;
+            // Revisar TODAS las asignaciones del año actual, no solo de hoy
+            if (asigSnap.exists()) {
+                asigSnap.forEach(dateSnap => {
+                    let fechaAsig = dateSnap.key;
+                    if (fechaAsig && fechaAsig.startsWith(anoActual + "-")) {
+                        dateSnap.forEach(u => {
+                            let usuario = u.key;
+                            u.forEach(p => {
+                                let clave = `${usuario}_${p.key}`;
+                                if (!respuestasMap.has(clave)) {
+                                    if (!acciones[usuario]) acciones[usuario] = { pendientes: [] };
+                                    acciones[usuario].pendientes.push({ 
+                                        producto: p.val().nombreProducto || 'Producto', 
+                                        cantidad: p.val().cantidadAsignada || 0,
+                                        fecha: fechaAsig,
+                                        urgente: new Date(fechaAsig) < new Date(Date.now() - 24*60*60*1000)
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+            renderAccionesPendientes(acciones);
+        } catch(e) { console.error(e); mostrarToast('Error','Error cargando dashboard','error'); }
+        finally { mostrarLoading(false); }
+    }
 
-            renderizarAccionesPendientes(accionesPorColaborador, maquilasPorColaborador, colaboradoresList);
-            await renderizarGraficos(admins, colaboradores, asignacionesPendientes, asignacionesRespondidas, 
-                              maquilasPendientes, maquilasAsignadas, fechaEcuador);
+    function renderAccionesPendientes(acciones){
+        const cont = document.getElementById('accionesPendientesContainer');
+        if(Object.keys(acciones).length===0) { cont.innerHTML='<p style="padding:20px;">No hay acciones pendientes</p>'; document.getElementById('totalPendientesCount').textContent='0'; return; }
+        let html = `<table class="table"><thead><tr><th>Colaborador</th><th>Producto</th><th>Cantidad</th><th>Fecha Asignación</th><th>Estado</th><th>Acción</th></tr></thead><tbody>`;
+        let totalPend=0;
+        for(let colab in acciones){
+            acciones[colab].pendientes.forEach(p => {
+                totalPend++;
+                let estadoClass = p.urgente ? 'badge-danger' : 'badge-warning';
+                let estadoTexto = p.urgente ? 'URGENTE' : 'Pendiente';
+                html += `<tr><td><strong>${colab}</strong></td><td>${p.producto}</td><td><span class="badge badge-primary">${p.cantidad}</span></td><td>${p.fecha}</td><td><span class="badge ${estadoClass}">${estadoTexto}</span></td><td><button class="btn btn-primary btn-sm" onclick="verDetalleColaborador('${colab}')"><i class="fas fa-eye"></i> Ver</button></td></tr>`;
+            });
+        }
+        html += `</tbody></table>`;
+        cont.innerHTML = html;
+        document.getElementById('totalPendientesCount').textContent = totalPend;
+    }
 
-        } catch (error) {
-            console.error("Error en dashboard:", error);
-            mostrarToast('Error', 'No se pudo cargar el dashboard', 'error');
+    async function abrirAsignacionesPendientesAdmin() {
+        mostrarLoading(true);
+        try {
+            const anoActual = new Date().getFullYear().toString();
+            const [asigSnap, invSnap, maqSnap] = await Promise.all([
+                db.ref("asignaciones").once("value"),
+                db.ref("inventario").once("value"),
+                db.ref("maquilas").once("value")
+            ]);
+            
+            let pendientesInventario = [];
+            let pendientesMaquila = [];
+            let respuestasInventario = new Set();
+            let respuestasMaquila = new Set();
+            
+            if (invSnap.exists()) {
+                invSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(inv => {
+                            let iv = inv.val();
+                            if (iv.nombre && iv.productoId) {
+                                respuestasInventario.add(`${iv.nombre}_${iv.productoId}`);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            if (maqSnap.exists()) {
+                maqSnap.forEach(monthSnap => {
+                    let mes = monthSnap.key;
+                    if (mes && mes.startsWith(anoActual + "-")) {
+                        monthSnap.forEach(maq => {
+                            let m = maq.val();
+                            if (m.nombre && m.producto && m.numTransformacion) {
+                                respuestasMaquila.add(`${m.nombre}_${m.producto}`);
+                            }
+                        });
+                    }
+                });
+            }
+            
+            if (asigSnap.exists()) {
+                asigSnap.forEach(dateSnap => {
+                    let fechaAsig = dateSnap.key;
+                    if (fechaAsig && fechaAsig.startsWith(anoActual + "-")) {
+                        dateSnap.forEach(userSnap => {
+                            let usuario = userSnap.key;
+                            userSnap.forEach(prodSnap => {
+                                let productoId = prodSnap.key;
+                                let data = prodSnap.val();
+                                if (!respuestasInventario.has(`${usuario}_${productoId}`)) {
+                                    pendientesInventario.push({
+                                        usuario: usuario,
+                                        producto: data.nombreProducto || 'Producto',
+                                        cantidad: data.cantidadAsignada || 0,
+                                        productoId: productoId,
+                                        fecha: fechaAsig
+                                    });
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+            
+            let html = `<div style="max-height:80vh; overflow-y:auto; padding:20px;">
+                <h4 style="color:#1e7e34; margin-bottom:20px;"><i class="fas fa-hourglass-half"></i> Asignaciones Pendientes de Responder (${anoActual})</h4>`;
+            
+            if (pendientesInventario.length === 0) {
+                html += `<div style="background:#d4edda; border:1px solid #c3e6cb; border-radius:6px; padding:15px; margin-bottom:20px;">
+                    <i class="fas fa-check-circle" style="color:#28a745;"></i>
+                    <strong style="color:#28a745;"> ¡Excelente!</strong> Todas las asignaciones de inventario han sido respondidas.
+                </div>`;
+            } else {
+                let urgentes = 0;
+                pendientesInventario.forEach(p => {
+                    let fechaAsig = new Date(p.fecha);
+                    let ayer = new Date();
+                    ayer.setDate(ayer.getDate() - 1);
+                    if (fechaAsig < ayer) urgentes++;
+                });
+                html += `<div style="margin-bottom:20px; background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:15px;">
+                    <i class="fas fa-exclamation-triangle" style="color:#ff6600;"></i>
+                    <strong style="color:#ff6600;">${pendientesInventario.length} asignaciones sin responder</strong> (${urgentes} urgentes)
+                </div>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                    <thead>
+                        <tr style="background:#f0f0f0; border-bottom:2px solid #1e7e34;">
+                            <th style="padding:10px; text-align:left;">Colaborador</th>
+                            <th style="padding:10px; text-align:left;">Producto</th>
+                            <th style="padding:10px; text-align:center;">Cantidad</th>
+                            <th style="padding:10px; text-align:center;">Fecha Asignación</th>
+                            <th style="padding:10px; text-align:center;">Estado</th>
+                            <th style="padding:10px; text-align:center;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                
+                pendientesInventario.forEach(p => {
+                    let fechaFormateada = new Date(p.fecha).toLocaleDateString('es-ES');
+                    let fechaAsig = new Date(p.fecha);
+                    let ayer = new Date();
+                    ayer.setDate(ayer.getDate() - 1);
+                    let urgente = fechaAsig < ayer;
+                    html += `<tr style="border-bottom:1px solid #ddd;">
+                        <td style="padding:10px;"><strong>${p.usuario}</strong></td>
+                        <td style="padding:10px;">${p.producto}</td>
+                        <td style="padding:10px; text-align:center;"><span class="badge badge-warning">${p.cantidad}</span></td>
+                        <td style="padding:10px; text-align:center;">${fechaFormateada}</td>
+                        <td style="padding:10px; text-align:center;">${urgente ? '<span class="badge badge-danger">URGENTE</span>' : '<span class="badge badge-warning">Pendiente</span>'}</td>
+                        <td style="padding:10px; text-align:center;"><button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${p.usuario}','${p.productoId}','${p.fecha.split('T')[0]}')"><i class="fas fa-trash"></i> Eliminar</button></td>
+                    </tr>`;
+                });
+                
+                html += `</tbody></table>`;
+            }
+            
+            html += `<div style="margin-top:20px; display:flex; gap:10px;">
+                <button class="btn btn-primary" onclick="cerrarModalPendientesAdmin()"><i class="fas fa-times"></i> Cerrar</button>
+            </div></div>`;
+            
+            document.getElementById('modalPendientesAdminContenido').innerHTML = html;
+            document.getElementById('modalPendientesAdmin').style.display = 'flex';
+            
+        } catch(e) {
+            console.error(e);
+            mostrarToast('Error', 'Error al cargar asignaciones pendientes', 'error');
         } finally {
             mostrarLoading(false);
         }
     }
 
-    // ============================================
-    // FUNCIÓN DE PRUEBA PARA VERIFICAR CONTEO
-    // ============================================
-    async function verificarConteoProductos() {
-        console.log("🔍 VERIFICANDO CONTEO DE PRODUCTOS MANUALMENTE...");
-        
-        try {
-            // Verificar productos de inventario
-            const prodSnap = await db.ref("productos").once("value");
-            let prodInventario = 0;
-            if (prodSnap.exists()) {
-                prodSnap.forEach(() => prodInventario++);
-            }
-            console.log("📦 Productos de inventario en Firebase:", prodInventario);
-            
-            // Verificar productos de maquila
-            const maqSnap = await db.ref("maquilas_productos").once("value");
-            let prodMaquila = 0;
-            if (maqSnap.exists()) {
-                maqSnap.forEach(() => prodMaquila++);
-            }
-            console.log("🏭 Productos de maquila en Firebase:", prodMaquila);
-            
-            console.log("✅ TOTAL REAL:", prodInventario + prodMaquila);
-            
-            mostrarToast('Verificación', `Inventario: ${prodInventario}, Maquila: ${prodMaquila}, Total: ${prodInventario + prodMaquila}`, 'info');
-            
-        } catch (error) {
-            console.error("Error en verificación:", error);
-        }
-    }
-
-    function actualizarDashboard() {
-        cargarDashboard();
-        cargarNotificaciones();
-        mostrarToast('Actualizando', 'Datos actualizados manualmente', 'info');
-    }
-
-    function renderizarAccionesPendientes(accionesInventario, maquilasPendientes, todosColaboradores) {
-        const container = document.getElementById('accionesPendientesContainer');
-        if (!container) return;
-        
-        let totalPendientesGlobal = 0;
-        const colaboradoresUnicos = new Set([...todosColaboradores]);
-        
-        if (colaboradoresUnicos.size === 0) {
-            container.innerHTML = '<p class="text-center">No hay colaboradores registrados</p>';
-            return;
-        }
-        
-        let html = `<table>
-            <thead>
-                <tr>
-                    <th>Colaborador</th>
-                    <th>Inventario Pendiente</th>
-                    <th>Maquilas Pendientes</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        
-        const colaboradoresOrdenados = Array.from(colaboradoresUnicos).sort();
-        
-        colaboradoresOrdenados.forEach(colab => {
-            const invPendientes = accionesInventario[colab]?.pendientes?.length || 0;
-            const maqPendientes = maquilasPendientes[colab] || 0;
-            const total = invPendientes + maqPendientes;
-            totalPendientesGlobal += total;
-            
-            let detalleInventario = '';
-            if (invPendientes > 0 && accionesInventario[colab]?.pendientes) {
-                detalleInventario = accionesInventario[colab].pendientes.slice(0, 3).map(p => 
-                    `${p.producto} (${p.cantidad})`
-                ).join('<br>');
-                if (accionesInventario[colab].pendientes.length > 3) {
-                    detalleInventario += `<br><small>... y ${accionesInventario[colab].pendientes.length - 3} más</small>`;
-                }
-            }
-            
-            html += `<tr>
-                <td><strong>${colab}</strong></td>
-                <td>
-                    <span class="badge ${invPendientes > 0 ? 'badge-warning' : 'badge-success'}">${invPendientes}</span>
-                    ${detalleInventario ? `<br><small style="color: rgba(255,255,255,0.7);">${detalleInventario}</small>` : ''}
-                </td>
-                <td><span class="badge ${maqPendientes > 0 ? 'badge-warning' : 'badge-success'}">${maqPendientes}</span></td>
-                <td><span class="badge badge-primary">${total}</span></td>
-                <td>
-                    <button class="btn btn-primary btn-sm" onclick="verDetalleColaborador('${colab}')">
-                        <i class="fas fa-eye"></i> Ver
-                    </button>
-                </td>
-            </tr>`;
-        });
-        
-        html += `</tbody></table>`;
-        container.innerHTML = html;
-        
-        const totalBadge = document.getElementById('totalPendientesCount');
-        if (totalBadge) totalBadge.textContent = totalPendientesGlobal;
+    function cerrarModalPendientesAdmin() {
+        document.getElementById('modalPendientesAdmin').style.display = 'none';
     }
 
     async function verDetalleColaborador(colaborador) {
@@ -1395,28 +1240,28 @@
             console.log("Creando usuario:", user, "Rol:", rolUser);
             let exists = await db.ref("usuarios/" + user).once("value");
             if (exists.exists()) { 
+                console.log("Usuario ya existe:", user);
                 mostrarToast('Error', 'El usuario ya existe', 'error'); 
                 return; 
             }
-            
-            await db.ref("usuarios/" + user).set({
-                password: hashPassword(pass),
-                rol: rol,
-                fechaCreacion: obtenerFechaEcuador().toISOString()
+            const hashedPass = hashPassword(pass);
+            console.log("Password hasheado:", hashedPass);
+            await db.ref("usuarios/" + user).set({ 
+                password: hashedPass, 
+                rol: rolUser, 
+                fechaCreacion: obtenerFechaEcuador().toISOString() 
             });
-            
+            console.log("Usuario creado exitosamente:", user);
             mostrarToast('Éxito', 'Usuario creado correctamente', 'success');
             document.getElementById("nuevoUsuario").value = "";
             document.getElementById("nuevoPassword").value = "";
             await cargarUsuarios();
             await cargarDashboard();
-            
-        } catch (error) {
-            console.error("Error al crear usuario:", error);
-            mostrarToast('Error', 'Error al crear usuario', 'error');
-        } finally { 
-            mostrarLoading(false); 
+        } catch(e) { 
+            console.error("Error creando usuario:", e); 
+            mostrarToast('Error', 'Error al crear usuario', 'error'); 
         }
+        finally { mostrarLoading(false); }
     }
     async function cargarUsuarios() {
         let container = document.getElementById("listaUsuarios");
@@ -1651,41 +1496,22 @@
             asignaciones.forEach(a => {
                 let estadoClass = a.respondida ? 'badge-success' : 'badge-warning';
                 let estadoTexto = a.respondida ? '✓ RESPONDIDA' : '⏳ PENDIENTE';
-                
-                html += `<tr>
-                    <td><strong>${a.usuario}</strong></td>
-                    <td>${a.producto}</td>
-                    <td><span class="badge badge-primary">${a.cantidadAsignada}</span></td>
-                    <td><span class="badge ${estadoClass}">${estadoTexto}</span></td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" onclick="editarAsignacion('${a.usuario}','${a.productoId}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${a.usuario}','${a.productoId}')" style="margin-left:5px;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
+                html += `<tr><td><strong>${a.usuario}</strong></td><td>${a.producto}</td><td><span class="badge badge-primary">${a.cantidadAsignada}</span></td><td><span class="badge ${estadoClass}">${estadoTexto}</span></td><td><button class="btn btn-warning btn-sm" onclick="editarAsignacion('${a.usuario}','${a.productoId}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger btn-sm" onclick="eliminarAsignacion('${a.usuario}','${a.productoId}','${fechaHoy}')"><i class="fas fa-trash"></i></button></td></tr>`;
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
-            
-        } catch (error) { 
-            console.error("Error al cargar asignaciones:", error); 
-            container.innerHTML = "<p class='text-center'>Error al cargar asignaciones</p>"; 
-        }
+        } catch(e) { console.error(e); container.innerHTML = "<p>Error al cargar asignaciones</p>"; }
     }
-
-    function eliminarAsignacion(usuario, productoId) {
+    function eliminarAsignacion(usuario, productoId, fecha) {
         if (!confirm('¿Eliminar esta asignación?')) return;
-        let fechaHoy = obtenerFechaHoyEcuador();
-        db.ref(`asignaciones/${fechaHoy}/${usuario}/${productoId}`).remove()
-            .then(() => {
-                mostrarToast('Éxito', 'Asignación eliminada', 'success');
-                cargarAsignacionesHoy();
-                cargarDashboard();
-            })
-            .catch(() => mostrarToast('Error', 'Error al eliminar asignación', 'error'));
+        db.ref(`asignaciones/${fecha}/${usuario}/${productoId}`).remove().then(() => { 
+            mostrarToast('Éxito', 'Asignación eliminada', 'success'); 
+            cargarAsignacionesHoy(); 
+            cargarDashboard(); 
+            // Cerrar y volver a abrir el modal para actualizar la lista
+            document.getElementById('modalPendientesAdmin').style.display = 'none';
+            setTimeout(() => abrirAsignacionesPendientesAdmin(), 500);
+        }).catch(()=>mostrarToast('Error','Error','error'));
     }
     function editarAsignacion(usuario, productoId) {
         let fechaHoy = obtenerFechaHoyEcuador();
@@ -1720,15 +1546,9 @@
             document.getElementById("descripcionProductoMaquila").value = "";
             document.getElementById("filtroProductosMaquila").value = "";
             await cargarProductosMaquila();
-            
-        } catch (error) { 
-            console.error("Error al crear producto:", error); 
-            mostrarToast('Error', 'Error al crear producto', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-            btn.disabled = false; 
-            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; 
-        }
+            await cargarDashboard();
+        } catch(e) { console.error(e); mostrarToast('Error', 'Error al crear', 'error'); }
+        finally { mostrarLoading(false); btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar Producto de Maquila'; }
     }
     async function cargarProductosMaquila(filtro = "") {
         let container = document.getElementById("listaProductosMaquila");
@@ -1862,134 +1682,113 @@
             mostrarToast('Éxito', 'Inventario aprobado', 'success');
             await cargarInventario();
             await cargarDashboard();
-            
-        } catch (error) {
-            console.error("Error al aprobar inventario:", error);
-            mostrarToast('Error', 'Error al aprobar inventario', 'error');
+        } catch(e) { console.error(e); mostrarToast('Error', 'Error al aprobar', 'error'); }
+        finally { mostrarLoading(false); }
+    }
+    function abrirModalEdicion(registro, mes, key) { registroEditando = { ...registro, mes, key }; let html = `<form onsubmit="guardarEdicion(event)"><div class="form-group"><label>Usuario</label><input class="form-control" value="${registro.nombre||''}" readonly></div><div class="form-group"><label>Producto</label><input class="form-control" value="${registro.producto||''}" readonly></div><div class="form-group"><label>Stock Sistema</label><input type="number" id="editSistema" class="form-control" value="${registro.sistema||0}"></div><div class="form-group"><label>Físico</label><input type="number" id="editFisico" class="form-control" value="${registro.fisico||0}"></div><div class="form-group"><label>Muestras</label><input type="number" id="editMuestras" class="form-control" value="${registro.muestras||0}"></div><div class="form-group"><label>Caducados</label><input type="number" id="editCaducados" class="form-control" value="${registro.caducados||0}"></div><div style="display:flex; gap:10px;"><button type="submit" class="btn btn-success">Guardar</button><button type="button" class="btn btn-danger" onclick="cerrarModal()">Cancelar</button></div></form>`; document.getElementById('modalContenido').innerHTML = html; document.getElementById('modalTitulo').innerHTML = '<i class="fas fa-edit"></i> Editar Registro'; document.getElementById('modalEdicion').classList.add('active'); }
+    function cerrarModal() { document.getElementById('modalEdicion').classList.remove('active'); registroEditando = null; }
+    async function guardarEdicion(event) { event.preventDefault(); if (!registroEditando) return; let nuevos = { sistema: parseInt(document.getElementById('editSistema').value)||0, fisico: parseInt(document.getElementById('editFisico').value)||0, muestras: parseInt(document.getElementById('editMuestras').value)||0, caducados: parseInt(document.getElementById('editCaducados').value)||0 }; mostrarLoading(true); try { await db.ref(`inventario/${registroEditando.mes}/${registroEditando.key}`).update(nuevos); mostrarToast('Éxito', 'Registro actualizado', 'success'); cerrarModal(); await cargarInventario(); await cargarDashboard(); } catch(e) { mostrarToast('Error', 'Error al actualizar', 'error'); } finally { mostrarLoading(false); } }
+    async function eliminarRegistro(key, mes) { if (confirm('¿Eliminar permanentemente?')) { mostrarLoading(true); try { await db.ref(`inventario/${mes}/${key}`).remove(); mostrarToast('Éxito', 'Registro eliminado', 'success'); await cargarInventario(); await cargarDashboard(); } catch(e) { mostrarToast('Error', 'Error', 'error'); } finally { mostrarLoading(false); } } }
+    async function mostrarDuplicadasInventario() {
+        mostrarLoading(true);
+        try {
+            const fechaInicio = document.getElementById("fechaInicio").value;
+            const fechaFin = document.getElementById("fechaFin").value;
+            if (!fechaInicio || !fechaFin) { mostrarToast('Error', 'Seleccione fechas para buscar duplicadas', 'error'); return; }
+            const meses = obtenerMesesEntre(fechaInicio, fechaFin);
+            let duplicadas = [];
+            for (const mes of meses) {
+                const snap = await db.ref(`inventario/${mes}`).once("value");
+                if (snap.exists()) {
+                    const registros = [];
+                    snap.forEach(child => {
+                        registros.push({ key: child.key, mes, ...child.val() });
+                    });
+                    const grupos = {};
+                    registros.forEach(r => {
+                        const clave = `${r.nombre}_${r.productoId}`;
+                        if (!grupos[clave]) grupos[clave] = [];
+                        grupos[clave].push(r);
+                    });
+                    for (const clave in grupos) {
+                        const grupo = grupos[clave];
+                        if (grupo.length > 1) {
+                            duplicadas.push(...grupo);
+                        }
+                    }
+                }
+            }
+            if (duplicadas.length === 0) {
+                mostrarToast('Info', 'No se encontraron respuestas duplicadas', 'info');
+                return;
+            }
+            let html = `<p>Se encontraron ${duplicadas.length} respuestas duplicadas. Selecciona cuáles eliminar:</p>
+            <div style="max-height: 400px; overflow-y: auto; margin-top: 16px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 8px; text-align: left;"><input type="checkbox" id="selectAllDuplicadas" onchange="toggleSelectAll()"></th>
+                            <th style="padding: 8px; text-align: left;">Usuario</th>
+                            <th style="padding: 8px; text-align: left;">Producto</th>
+                            <th style="padding: 8px; text-align: left;">Fecha</th>
+                            <th style="padding: 8px; text-align: left;">Físico</th>
+                            <th style="padding: 8px; text-align: left;">Mes</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            duplicadas.forEach(d => {
+                const fechaFormateada = d.fecha ? new Date(d.fecha).toLocaleDateString('es-ES') : 'N/A';
+                html += `<tr>
+                    <td style="padding: 8px;"><input type="checkbox" class="duplicada-checkbox" data-key="${d.key}" data-mes="${d.mes}"></td>
+                    <td style="padding: 8px;">${d.nombre || 'N/A'}</td>
+                    <td style="padding: 8px;">${d.producto || 'N/A'}</td>
+                    <td style="padding: 8px;">${fechaFormateada}</td>
+                    <td style="padding: 8px;">${d.fisico || 0}</td>
+                    <td style="padding: 8px;">${d.mes}</td>
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            document.getElementById('modalDuplicadasContenido').innerHTML = html;
+            document.getElementById('modalDuplicadas').classList.add('active');
+        } catch(e) {
+            console.error(e);
+            mostrarToast('Error', 'Error al buscar duplicadas', 'error');
         } finally {
             mostrarLoading(false);
         }
     }
-
-    function exportarInventarioCSV() {
-        let tabla = document.querySelector("#resultadoInventario table");
-        if (!tabla) { 
-            mostrarToast('Info', 'No hay datos para exportar', 'info'); 
-            return; 
+    function cerrarModalDuplicadas() {
+        document.getElementById('modalDuplicadas').classList.remove('active');
+    }
+    function toggleSelectAll() {
+        const selectAll = document.getElementById('selectAllDuplicadas').checked;
+        document.querySelectorAll('.duplicada-checkbox').forEach(cb => cb.checked = selectAll);
+    }
+    async function eliminarSeleccionadas() {
+        const seleccionadas = document.querySelectorAll('.duplicada-checkbox:checked');
+        if (seleccionadas.length === 0) {
+            mostrarToast('Error', 'Selecciona al menos una respuesta para eliminar', 'error');
+            return;
         }
-        
-        let filas = tabla.querySelectorAll("tr");
-        let csv = [];
-        
-        let encabezados = Array.from(tabla.querySelectorAll("th")).slice(0, -1).map(th => `"${th.innerText}"`).join(",");
-        csv.push(encabezados);
-        
-        for (let i = 1; i < filas.length; i++) {
-            let celdas = filas[i].querySelectorAll("td");
-            let fila = Array.from(celdas).slice(0, -1).map(td => `"${td.innerText.replace(/"/g, '""')}"`).join(",");
-            csv.push(fila);
-        }
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "inventario_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
-    }
-
-    function abrirModalEdicion(registro, mes, key) {
-        registroEditando = { ...registro, mes, key };
-        
-        let html = `
-            <form onsubmit="guardarEdicion(event)">
-                <div class="form-group">
-                    <label>Usuario</label>
-                    <input class="form-control" value="${registro.nombre||''}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Producto</label>
-                    <input class="form-control" value="${registro.producto||''}" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Stock Sistema</label>
-                    <input type="number" id="editSistema" class="form-control" value="${registro.sistema||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Físico</label>
-                    <input type="number" id="editFisico" class="form-control" value="${registro.fisico||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Muestras</label>
-                    <input type="number" id="editMuestras" class="form-control" value="${registro.muestras||0}" min="0">
-                </div>
-                <div class="form-group">
-                    <label>Caducados</label>
-                    <input type="number" id="editCaducados" class="form-control" value="${registro.caducados||0}" min="0">
-                </div>
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button type="submit" class="btn btn-success" style="flex:1;">
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
-                    <button type="button" class="btn btn-danger" onclick="cerrarModal()" style="flex:1;">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                </div>
-            </form>
-        `;
-        
-        let modalContenido = document.getElementById('modalContenido');
-        if (modalContenido) modalContenido.innerHTML = html;
-        
-        let modal = document.getElementById('modalEdicion');
-        if (modal) modal.classList.add('active');
-    }
-
-    function cerrarModal() {
-        let modal = document.getElementById('modalEdicion');
-        if (modal) modal.classList.remove('active');
-        registroEditando = null;
-    }
-
-    async function guardarEdicion(event) {
-        event.preventDefault();
-        if (!registroEditando) return;
-        
-        let nuevos = {
-            sistema: parseInt(document.getElementById('editSistema').value) || 0,
-            fisico: parseInt(document.getElementById('editFisico').value) || 0,
-            muestras: parseInt(document.getElementById('editMuestras').value) || 0,
-            caducados: parseInt(document.getElementById('editCaducados').value) || 0
-        };
-        
+        if (!confirm(`¿Eliminar ${seleccionadas.length} respuestas seleccionadas?`)) return;
         mostrarLoading(true);
-        
+        let eliminados = 0;
         try {
-            await db.ref(`inventario/${registroEditando.mes}/${registroEditando.key}`).update(nuevos);
-            mostrarToast('Éxito', 'Registro actualizado correctamente', 'success');
-            cerrarModal();
+            for (const cb of seleccionadas) {
+                const key = cb.dataset.key;
+                const mes = cb.dataset.mes;
+                await db.ref(`inventario/${mes}/${key}`).remove();
+                eliminados++;
+            }
+            mostrarToast('Éxito', `Eliminadas ${eliminados} respuestas`, 'success');
+            cerrarModalDuplicadas();
             await cargarInventario();
-        } catch (error) { 
-            console.error("Error al actualizar:", error); 
-            mostrarToast('Error', 'Error al actualizar registro', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
-        }
-    }
-
-    async function eliminarRegistro(key, mes) {
-        if (!confirm('¿Está seguro de eliminar este registro permanentemente?')) return;
-        
-        mostrarLoading(true);
-        
-        try {
-            await db.ref(`inventario/${mes}/${key}`).remove();
-            mostrarToast('Éxito', 'Registro eliminado', 'success');
-            await cargarInventario();
-        } catch (error) { 
-            console.error("Error al eliminar:", error); 
-            mostrarToast('Error', 'Error al eliminar registro', 'error'); 
-        } finally { 
-            mostrarLoading(false); 
+            await cargarDashboard();
+        } catch(e) {
+            console.error(e);
+            mostrarToast('Error', 'Error al eliminar', 'error');
+        } finally {
+            mostrarLoading(false);
         }
     }
 
@@ -2056,198 +1855,48 @@
             container.innerHTML = html;
         } catch(e) { console.error(e); container.innerHTML = "<p>Error al cargar maquilas</p>"; }
     }
+    function asignarNumero(key, mes) { let num = prompt("Ingrese número de transformación:"); if (num && num.trim()) { db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim()).then(() => { mostrarToast('Éxito', 'Número asignado', 'success'); cargarMaquilas(); cargarDashboard(); }).catch(()=>mostrarToast('Error','Error','error')); } }
+    function editarNumero(key, mes, actual) { let num = prompt("Editar número:", actual); if (num && num.trim()) { db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim()).then(() => { mostrarToast('Éxito', 'Número actualizado', 'success'); cargarMaquilas(); cargarDashboard(); }).catch(()=>mostrarToast('Error','Error','error')); } }
+    function eliminarMaquila(key, mes) { if (confirm('¿Eliminar maquila?')) { db.ref(`maquilas/${mes}/${key}`).remove().then(() => { mostrarToast('Éxito', 'Maquila eliminada', 'success'); cargarMaquilas(); cargarDashboard(); }).catch(()=>mostrarToast('Error','Error','error')); } }
+    function editarMaquilaAdmin(key, mes) { db.ref(`maquilas/${mes}/${key}`).once('value').then(snap => { if (!snap.exists()) return; const m = snap.val(); let producto = prompt('Producto:', m.producto || ''); let mpCant = prompt('MP Cantidad:', m.mpCantidad || ''); let mpPres = prompt('MP Presentación:', m.mpPresentacion || ''); let ptCant = prompt('PT Cantidad:', m.ptCantidad || ''); let ptPres = prompt('PT Presentación:', m.ptPresentacion || ''); let sobr = prompt('Sobrantes:', m.sobrantes || ''); if (producto !== null) db.ref(`maquilas/${mes}/${key}`).update({ producto: producto.trim(), mpCantidad: parseInt(mpCant)||0, mpPresentacion: mpPres.trim(), ptCantidad: parseInt(ptCant)||0, ptPresentacion: ptPres.trim(), sobrantes: parseInt(sobr)||0 }).then(() => { mostrarToast('Éxito', 'Maquila actualizada', 'success'); cargarMaquilas(); cargarDashboard(); }).catch(()=>mostrarToast('Error','Error','error')); }); }
+    async function devolverMaquila(key, mes, colaborador, producto) { let motivo = prompt("Motivo de devolución:"); if (!motivo) return; mostrarLoading(true); try { let snap = await db.ref(`maquilas/${mes}/${key}`).once("value"); if (!snap.exists()) { mostrarToast('Error', 'No existe', 'error'); return; } const original = snap.val(); await db.ref(`maquilas_devueltas/${mes}/${key}`).set({ ...original, motivo, fechaDevolucion: obtenerFechaEcuador().toISOString(), devueltoPor: usuario }); await db.ref(`maquilas/${mes}/${key}`).remove(); await db.ref("notificaciones").push({ tipo: "maquila_devuelta", usuario: colaborador, fecha: obtenerFechaEcuador().toISOString(), leida: false, detalles: { colaborador, producto, motivo, key, mes, devueltoPor: usuario } }); mostrarToast('Éxito', 'Maquila devuelta', 'success'); await cargarMaquilas(); await cargarDashboard(); } catch(e) { console.error(e); mostrarToast('Error', 'Error al devolver', 'error'); } finally { mostrarLoading(false); } }
 
-    function exportarMaquilasCSV() {
-        let tabla = document.querySelector("#listaMaquilas table");
-        if (!tabla) { 
-            mostrarToast('Info', 'No hay datos para exportar', 'info'); 
-            return; 
-        }
-        
-        let filas = tabla.querySelectorAll("tr");
-        let csv = [];
-        
-        let encabezados = Array.from(tabla.querySelectorAll("th")).slice(0, -1).map(th => `"${th.innerText}"`).join(",");
-        csv.push(encabezados);
-        
-        for (let i = 1; i < filas.length; i++) {
-            let celdas = filas[i].querySelectorAll("td");
-            let fila = Array.from(celdas).slice(0, -1).map(td => `"${td.innerText.replace(/"/g, '""')}"`).join(",");
-            csv.push(fila);
-        }
-        
-        let blob = new Blob(["\uFEFF" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-        let link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "maquilas_" + obtenerFechaHoyEcuador() + ".csv";
-        link.click();
+    // ==================== NOTIFICACIONES ====================
+    async function cargarNotificaciones() { try { let snap = await db.ref("notificaciones").orderByChild("fecha").limitToLast(50).once("value"); notificaciones = []; if (snap.exists()) snap.forEach(child => notificaciones.push({ id: child.key, ...child.val() })); notificaciones.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)); let noLeidas = notificaciones.filter(n=>!n.leida).length; document.getElementById('notificationCount').textContent = noLeidas; } catch(e) { console.error(e); } }
+    function toggleNotificaciones() { let dropdown = document.getElementById('notification-dropdown'); if (dropdown.style.display === 'none') { mostrarNotificaciones(); dropdown.style.display = 'block'; } else dropdown.style.display = 'none'; }
+    async function mostrarNotificaciones() { let container = document.getElementById('notification-dropdown'); await cargarNotificaciones(); if (notificaciones.length===0) { container.innerHTML = "<p>No hay notificaciones</p>"; return; } let html = `<div style="max-height:400px; overflow-y:auto;">`; notificaciones.slice(0,20).forEach(n=>{ let fecha = n.fecha ? new Date(n.fecha).toLocaleString() : ''; html += `<div style="padding:12px; border-bottom:1px solid #e2e8f0;"><strong>${n.tipo || 'Notificación'}</strong><br><small>${fecha}</small><p>${n.mensaje || 'Sin mensaje'}</p>${!n.leida ? `<button class="btn btn-primary btn-sm" onclick="marcarComoLeida('${n.id}')">Marcar leída</button>` : ''}</div>`; }); html += `</div>`; container.innerHTML = html; }
+    async function marcarComoLeida(id) { try { await db.ref(`notificaciones/${id}/leida`).set(true); mostrarToast('Éxito', 'Notificación marcada', 'success'); mostrarNotificaciones(); cargarNotificaciones(); } catch(e) { console.error(e); } }
+
+    // ==================== EXPORTACIONES ====================
+    async function exportInventarioToExcel() { let tabla = document.querySelector("#resultadoInventario table"); if (!tabla) { mostrarToast('Info', 'No hay datos', 'info'); return; } let wb = XLSX.utils.book_new(); let ws = XLSX.utils.table_to_sheet(tabla, { raw: true }); XLSX.utils.book_append_sheet(wb, ws, "Inventario"); XLSX.writeFile(wb, `Inventario_${obtenerFechaHoyEcuador()}.xlsx`); mostrarToast('Éxito', 'Excel exportado', 'success'); }
+    async function exportInventarioToPDF() { let container = document.querySelector("#resultadoInventario"); if (!container || !container.innerHTML.trim()) { mostrarToast('Info', 'No hay datos', 'info'); return; } let canvas = await html2canvas(container, { scale: 2, backgroundColor: "#ffffff" }); let imgData = canvas.toDataURL("image/png"); let { jsPDF } = window.jspdf; let pdf = new jsPDF("p", "mm", "a4"); let imgWidth = 190; let imgHeight = (canvas.height * imgWidth) / canvas.width; pdf.addImage(imgData, "PNG", 10, 0, imgWidth, imgHeight); pdf.save(`Inventario_${obtenerFechaHoyEcuador()}.pdf`); mostrarToast('Éxito', 'PDF generado', 'success'); }
+    async function exportMaquilasToExcel() { let tabla = document.querySelector("#listaMaquilas table"); if (!tabla) { mostrarToast('Info', 'No hay datos', 'info'); return; } let wb = XLSX.utils.book_new(); let ws = XLSX.utils.table_to_sheet(tabla, { raw: true }); XLSX.utils.book_append_sheet(wb, ws, "Maquilas"); XLSX.writeFile(wb, `Maquilas_${obtenerFechaHoyEcuador()}.xlsx`); mostrarToast('Éxito', 'Excel exportado', 'success'); }
+    async function exportMaquilasToPDF() { let container = document.querySelector("#listaMaquilas"); if (!container || !container.innerHTML.trim()) { mostrarToast('Info', 'No hay datos', 'info'); return; } let canvas = await html2canvas(container, { scale: 2, backgroundColor: "#ffffff" }); let imgData = canvas.toDataURL("image/png"); let { jsPDF } = window.jspdf; let pdf = new jsPDF("p", "mm", "a4"); let imgWidth = 190; let imgHeight = (canvas.height * imgWidth) / canvas.width; pdf.addImage(imgData, "PNG", 10, 0, imgWidth, imgHeight); pdf.save(`Maquilas_${obtenerFechaHoyEcuador()}.pdf`); mostrarToast('Éxito', 'PDF generado', 'success'); }
+
+    // ==================== INICIALIZACIÓN ====================
+    function cambiarTab(tabId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.getElementById(`tab-content-${tabId}`).classList.add('active');
+        if (tabId === 'asignar-producto') { cargarSelectoresAsignacion(); cargarAsignacionesHoy(); } else if (tabId === 'crear-producto') { cargarTodosLosProductos(); cargarProductos(); }
     }
-
-    function asignarNumero(key, mes) {
-        let num = prompt("Ingrese el número de transformación:");
-        if (num && num.trim() !== '') {
-            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim())
-                .then(() => { 
-                    mostrarToast('Éxito', 'Número asignado correctamente', 'success'); 
-                    cargarMaquilas(); 
-                    cargarDashboard(); 
-                })
-                .catch(() => mostrarToast('Error', 'Error al asignar número', 'error'));
-        }
-    }
-
-    function editarNumero(key, mes, actual) {
-        let num = prompt("Editar número de transformación:", actual);
-        if (num && num.trim() !== '') {
-            db.ref(`maquilas/${mes}/${key}/numTransformacion`).set(num.trim())
-                .then(() => { 
-                    mostrarToast('Éxito', 'Número actualizado', 'success'); 
-                    cargarMaquilas(); 
-                    cargarDashboard(); 
-                })
-                .catch(() => mostrarToast('Error', 'Error al actualizar número', 'error'));
-        }
-    }
-
-    function eliminarMaquila(key, mes) {
-        if (confirm('¿Eliminar esta maquila?')) {
-            db.ref(`maquilas/${mes}/${key}`).remove()
-                .then(() => {
-                    mostrarToast('Éxito', 'Maquila eliminada', 'success');
-                    cargarMaquilas();
-                    cargarDashboard();
-                })
-                .catch(() => mostrarToast('Error', 'Error al eliminar maquila', 'error'));
-        }
-    }
-
-    function editarMaquilaAdmin(key, mes) {
-        db.ref(`maquilas/${mes}/${key}`).once('value').then(snap => {
-            if (!snap.exists()) return;
-            const m = snap.val();
-            let producto = prompt('Producto:', m.producto || '');
-            let mpCant = prompt('MP Cantidad:', m.mpCantidad || '');
-            let mpPres = prompt('MP Presentación:', m.mpPresentacion || '');
-            let ptCant = prompt('PT Cantidad:', m.ptCantidad || '');
-            let ptPres = prompt('PT Presentación:', m.ptPresentacion || '');
-            let sobr = prompt('Sobrantes:', m.sobrantes || '');
-            if (producto == null || mpCant == null || ptCant == null || sobr == null) return;
-            db.ref(`maquilas/${mes}/${key}`).update({
-                producto: producto.trim(),
-                mpCantidad: parseInt(mpCant) || 0,
-                mpPresentacion: mpPres.trim(),
-                ptCantidad: parseInt(ptCant) || 0,
-                ptPresentacion: ptPres.trim(),
-                sobrantes: parseInt(sobr) || 0
-            }).then(() => {
-                mostrarToast('Éxito', 'Maquila actualizada', 'success');
-                cargarMaquilas();
-                cargarDashboard();
-            }).catch(err => {
-                console.error('Error editando maquila admin', err);
-                mostrarToast('Error', 'No se pudo actualizar maquila', 'error');
-            });
-        });
-    }
-
-    async function devolverMaquila(key, mes, colaborador, producto) {
-        let motivo = prompt("Motivo de la devolución:");
-        if (!motivo) return;
-        
-        mostrarLoading(true);
-        
-        try {
-            const snap = await db.ref(`maquilas/${mes}/${key}`).once("value");
-            if (!snap.exists()) {
-                mostrarToast('Error', 'La maquila ya no existe', 'error');
-                return;
-            }
-            
-            const maquilaOriginal = snap.val();
-            
-            await db.ref(`maquilas_devueltas/${mes}/${key}`).set({
-                ...maquilaOriginal,
-                motivo,
-                fechaDevolucion: obtenerFechaEcuador().toISOString(),
-                devueltoPor: usuario
-            });
-            
-            await db.ref(`maquilas/${mes}/${key}`).remove();
-            
-            await db.ref("notificaciones").push({
-                tipo: "maquila_devuelta",
-                usuario: colaborador,
-                fecha: obtenerFechaEcuador().toISOString(),
-                leida: false,
-                detalles: {
-                    colaborador,
-                    producto,
-                    motivo,
-                    key,
-                    mes,
-                    devueltoPor: usuario
-                }
-            });
-            
-            mostrarToast('Éxito', 'Maquila devuelta para corrección', 'success');
-            await cargarMaquilas();
-            await cargarDashboard();
-            
-        } catch (error) {
-            console.error("Error al devolver maquila:", error);
-            mostrarToast('Error', 'Error al devolver maquila', 'error');
-        } finally {
-            mostrarLoading(false);
-        }
-    }
-
-    // ============================================
-    // CERRAR SESIÓN
-    // ============================================
-    function cerrarSesion() {
-        if (confirm('¿Está seguro de cerrar sesión?')) {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }
-    }
-
-    // Cerrar sugerencias al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        let sugerenciasProdCrear = document.getElementById('sugerenciasProductos');
-        let inputProdCrear = document.getElementById('nombreProducto');
-        if (sugerenciasProdCrear && inputProdCrear && !inputProdCrear.contains(e.target) && !sugerenciasProdCrear.contains(e.target)) {
-            sugerenciasProdCrear.style.display = 'none';
-        }
-        
-        let sugerenciasColab = document.getElementById('sugerenciasColaboradores');
-        let inputColab = document.getElementById('buscarColaborador');
-        if (sugerenciasColab && inputColab && !inputColab.contains(e.target) && !sugerenciasColab.contains(e.target)) {
-            sugerenciasColab.style.display = 'none';
-        }
-        
-        let sugerenciasProdAsignar = document.getElementById('sugerenciasProductosAsignar');
-        let inputProdAsignar = document.getElementById('buscarProductoAsignar');
-        if (sugerenciasProdAsignar && inputProdAsignar && !inputProdAsignar.contains(e.target) && !sugerenciasProdAsignar.contains(e.target)) {
-            sugerenciasProdAsignar.style.display = 'none';
-        }
-    });
-
-    // ============================================
-    // INICIALIZACIÓN
-    // ============================================
-    document.addEventListener('DOMContentLoaded', () => {
-        AOS.init({ duration: 800, once: true });
-        verificarConexionFirebase();
-        iniciarListenerNotificaciones();
-        mostrarSeccion('dashboard');
-        
-        setTimeout(() => {
-            cargarTodosLosProductos();
-            cargarColaboradores();
-            cargarNotificaciones();
-            console.log("⏰ Carga inicial de notificaciones y productos");
-        }, 1000);
-    });
+    async function cargarSelectoresAsignacion() { await cargarColaboradores(); await cargarTodosLosProductos(); document.getElementById("fechaAsignacion").value = obtenerFechaHoyEcuador(); document.getElementById("buscarColaborador").value = ""; document.getElementById("buscarProductoAsignar").value = ""; document.getElementById("selectUsuario").value = ""; document.getElementById("selectProducto").value = ""; }
+    function cerrarSesion() { if (confirm('¿Cerrar sesión?')) { localStorage.clear(); window.location.href = "index.html"; } }
+    document.addEventListener('DOMContentLoaded', () => { AOS.init({ duration: 800, once: true }); cargarFotoPerfil(); mostrarSeccion('dashboard'); setTimeout(() => { cargarTodosLosProductos(); cargarColaboradores(); cargarNotificaciones(); }, 1000); });
 </script>
+
+<!-- MODAL ASIGNACIONES PENDIENTES ADMIN -->
+<div id="modalPendientesAdmin" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:0; max-width:800px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh; display:flex; flex-direction:column;">
+        <div style="background:linear-gradient(135deg, #1e7e34, #0f3b2c); color:white; padding:20px; border-radius:12px 12px 0 0;">
+            <h3><i class="fas fa-hourglass-half"></i> Asignaciones Pendientes</h3>
+        </div>
+        <div id="modalPendientesAdminContenido" style="overflow-y:auto; flex:1;">
+            <p style="padding:20px; text-align:center;">Cargando asignaciones...</p>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
