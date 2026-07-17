@@ -1292,6 +1292,22 @@
             display: block;
         }
 
+        .notification-dropdown .notification-close-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .notification-dropdown .notification-close-btn:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.4);
+        }
+
         /* ============================================
            RESPONSIVE
         ============================================ */
@@ -2168,6 +2184,21 @@
         if (dropdown.classList.contains('active')) mostrarListadoNotificaciones();
     }
 
+    function cerrarNotificaciones() {
+        const dropdown = document.getElementById('notification-dropdown');
+        if (!dropdown) return;
+        dropdown.classList.remove('active');
+    }
+
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('notification-dropdown');
+        const bell = document.querySelector('.notification-bell');
+        if (!dropdown || !bell) return;
+        if (!dropdown.classList.contains('active')) return;
+        if (dropdown.contains(event.target) || bell.contains(event.target)) return;
+        dropdown.classList.remove('active');
+    });
+
     async function mostrarListadoNotificaciones() {
         const container = document.getElementById("notification-dropdown");
         if (!container) return;
@@ -2229,6 +2260,7 @@
         }
 
         html += `</div>`;
+        html += `<div style="text-align:right; margin-top:10px;"><button class="notification-close-btn" onclick="cerrarNotificaciones()">Cerrar</button></div>`;
         container.innerHTML = html;
     }
 
